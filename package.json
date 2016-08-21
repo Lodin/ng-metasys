@@ -4,6 +4,7 @@
   "description": "A decorator framework for AngularJS that makes easy using Angular meta-info with ES2015 modules",
   "main": "dist/index.js",
   "scripts": {
+    "build": "tsc -p src",
     "test": "karma start config/karma.conf.js"
   },
   "repository": {
@@ -21,5 +22,29 @@
   "bugs": {
     "url": "https://github.com/Lodin/ng-metasys/issues"
   },
-  "homepage": "https://github.com/Lodin/ng-metasys#readme"
+  "homepage": "https://github.com/Lodin/ng-metasys#readme",
+  "devDependencies": {
+    "@types/jasmine": "^2.2.32",
+    "awesome-typescript-loader": "^2.2.1",
+    "jasmine-core": "^2.4.1",
+    "karma": "^1.2.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-jasmine": "^1.0.2",
+    "karma-remap-istanbul": "^0.2.1",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^1.8.0",
+    "source-map-loader": "^0.1.5",
+    "sourcemap-istanbul-instrumenter-loader": "^0.2.0",
+    "tslint": "^3.14.0",
+    "tslint-loader": "^2.1.5",
+    "typescript": "2.0.0",
+    "webpack": "^2.1.0-beta.21"
+  },
+  "peerDependencies": {
+    "angular": "^1.5.0"
+  },
+  "dependencies": {
+    "core-js": "^2.4.1",
+    "ts-helpers": "^1.1.1"
+  }
 }
