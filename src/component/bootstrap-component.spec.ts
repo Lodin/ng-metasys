@@ -10,10 +10,18 @@ describe('Function `bootstrapComponent`', () => {
   const decorateComponent = (metadata: ComponentMetadata) =>
     Reflect.defineMetadata('ngms:component', metadata, TestComponent.prototype);
 
-  const unarmExtensionBootstrapper = () => {
-    spyOn(ExtensionBootstrapper, 'bootstrapInject').and.returnValue(null);
-    spyOn(ExtensionBootstrapper, 'bootstrapProperty').and.returnValue(null);
-    spyOn(ExtensionBootstrapper, 'bootstrapTransclude').and.returnValue(null);
+  const unarmBootstrappers = (...fnToUnarm: string[]) => {
+    if (fnToUnarm.indexOf('inject') !== -1 || fnToUnarm.indexOf('all') !== -1) {
+      spyOn(ExtensionBootstrapper, 'bootstrapInject').and.returnValue(null);
+    }
+
+    if (fnToUnarm.indexOf('property') !== -1 || fnToUnarm.indexOf('all') !== -1) {
+      spyOn(ExtensionBootstrapper, 'bootstrapProperty').and.returnValue(null);
+    }
+
+    if (fnToUnarm.indexOf('transclude') !== -1 || fnToUnarm.indexOf('all') !== -1) {
+      spyOn(ExtensionBootstrapper, 'bootstrapTransclude').and.returnValue(null);
+    }
   };
 
   let ngModule: angular.IModule;
@@ -27,22 +35,20 @@ describe('Function `bootstrapComponent`', () => {
   });
 
   it('should generate a component data fitting to the raw angular component metadata', () => {
-    const metadata: ComponentMetadata = {
+    decorateComponent({
       selector: 'app-test',
-      template: '<div class="container"></div>'
-    };
-
-    decorateComponent(metadata);
+      template: '<div></div>'
+    });
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
       expect(name).toEqual('appTest');
       expect(data).toEqual({
-        template: '<div class="container"></div>',
+        template: '<div></div>',
         controller: TestComponent
       });
     });
 
-    unarmExtensionBootstrapper();
+    unarmBootstrappers('all');
 
     bootstrapComponent(ngModule, TestComponent);
 
@@ -52,32 +58,28 @@ describe('Function `bootstrapComponent`', () => {
   });
 
   it('should allow using `templateUrl` metadata', () => {
-    const metadata: ComponentMetadata = {
+    decorateComponent({
       selector: 'app-test',
-      templateUrl: 'test.component.html',
-    };
-
-    decorateComponent(metadata);
+      templateUrl: 'test.component.html'
+    });
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
-      expect(data).toEqual(<angular.IComponentOptions> {
+      expect(data).toEqual({
         templateUrl: 'test.component.html',
-        controller: TestComponent,
+        controller: TestComponent
       });
     });
 
-    unarmExtensionBootstrapper();
+    unarmBootstrappers('all');
 
     bootstrapComponent(ngModule, TestComponent);
   });
 
   it('should allow using `controllerAs` metadata', () => {
-    const metadata: ComponentMetadata = {
+    decorateComponent({
       selector: 'app-test',
       controllerAs: 'vm'
-    };
-
-    decorateComponent(metadata);
+    });
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
       expect(data).toEqual(<angular.IComponentOptions> {
@@ -86,24 +88,23 @@ describe('Function `bootstrapComponent`', () => {
       });
     });
 
-    unarmExtensionBootstrapper();
+    unarmBootstrappers('all');
 
     bootstrapComponent(ngModule, TestComponent);
   });
 
   it('should add common injections defined with @Inject to component data', () => {
-    const metadata: ComponentMetadata = {selector: 'app-test'};
-    decorateComponent(metadata);
+    decorateComponent({selector: 'app-test'});
 
     spyOn(ExtensionBootstrapper, 'bootstrapInject').and.returnValue({
       hasCommon: true,
       hasProperties: false,
       injectCommon: (declaration: any) => {
         declaration.$inject = ['$http', '$q'];
-      },
+      }
     });
-    spyOn(ExtensionBootstrapper, 'bootstrapProperty').and.returnValue(null);
-    spyOn(ExtensionBootstrapper, 'bootstrapTransclude').and.returnValue(null);
+
+    unarmBootstrappers('property', 'transclude');
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
       expect(data).toEqual({
@@ -117,8 +118,7 @@ describe('Function `bootstrapComponent`', () => {
   });
 
   it('should add property injections (properties marked with @Inject) to component data', () => {
-    const metadata: ComponentMetadata = {selector: 'app-test'};
-    decorateComponent(metadata);
+    decorateComponent({selector: 'app-test'});
 
     spyOn(ExtensionBootstrapper, 'bootstrapInject').and.returnValue({
       hasCommon: false,
@@ -128,8 +128,8 @@ describe('Function `bootstrapComponent`', () => {
         Object.defineProperty(declaration, 'mockService', {get: () => service});
       }
     });
-    spyOn(ExtensionBootstrapper, 'bootstrapProperty').and.returnValue(null);
-    spyOn(ExtensionBootstrapper, 'bootstrapTransclude').and.returnValue(null);
+
+    unarmBootstrappers('property', 'transclude');
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
       expect(data).toEqual({
@@ -143,16 +143,15 @@ describe('Function `bootstrapComponent`', () => {
   });
 
   it('should add properties marked with @Property to component data', () => {
-    const metadata: ComponentMetadata = {selector: 'app-test'};
-    decorateComponent(metadata);
+    decorateComponent({selector: 'app-test'});
 
-    spyOn(ExtensionBootstrapper, 'bootstrapInject').and.returnValue(null);
     spyOn(ExtensionBootstrapper, 'bootstrapProperty').and.returnValue({
       someObject: '<',
       someString: '@',
       someExpr: '&'
     });
-    spyOn(ExtensionBootstrapper, 'bootstrapTransclude').and.returnValue(null);
+
+    unarmBootstrappers('inject', 'transclude');
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
       expect(data).toEqual({
@@ -161,19 +160,17 @@ describe('Function `bootstrapComponent`', () => {
           someObject: '<',
           someString: '@',
           someExpr: '&'
-        },
+        }
       });
     });
 
     bootstrapComponent(ngModule, TestComponent);
   });
 
-  it('should add transclude defined with @Transclude to component data ', () => {
-    const metadata: ComponentMetadata = {selector: 'app-test'};
-    decorateComponent(metadata);
+  it('should add transclude defined with @Transclude to component data', () => {
+    decorateComponent({selector: 'app-test'});
 
-    spyOn(ExtensionBootstrapper, 'bootstrapInject').and.returnValue(null);
-    spyOn(ExtensionBootstrapper, 'bootstrapProperty').and.returnValue(null);
+    unarmBootstrappers('inject', 'property');
     spyOn(ExtensionBootstrapper, 'bootstrapTransclude').and.returnValue({slot: 'testSlot'});
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {

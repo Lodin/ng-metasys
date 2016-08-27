@@ -7,5 +7,5 @@ export function Component(metadata: ComponentMetadata) {
     }
 
     Reflect.defineMetadata('ngms:component', metadata, target.prototype);
-  }
+  };
 }
