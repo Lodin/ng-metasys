@@ -5,7 +5,7 @@ import 'ts-helpers';
 
 declare var __karma__: any;
 
-__karma__.loaded = (): undefined => undefined;
+__karma__.loaded = () => {};
 
 Promise.all([
   System.import('angular')

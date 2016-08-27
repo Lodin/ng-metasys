@@ -22,6 +22,13 @@
       "public-before-private",
       "static-before-instance",
       "variables-before-functions"
-    ]
+    ],
+    "variable-name": [
+      true,
+      "allow-leading-underscore"
+    ],
+    "object-literal-sort-keys": false,
+    "ordered-imports": false,
+    "no-empty": false
   }
 }
