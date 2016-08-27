@@ -2,8 +2,8 @@ import * as angular from 'angular';
 import * as ModuleBootstrapper from '../module/bootstrap';
 import {bootstrap} from './bootstrap';
 
-describe('bootstrap function', () => {
-  class SomeModule {
+describe('Function `bootstrap`', () => {
+  class TestModule {
   }
 
   let testModule: angular.IModule;
@@ -20,7 +20,7 @@ describe('bootstrap function', () => {
         expect(modules).toEqual([testModule]);
       });
 
-    bootstrap(SomeModule);
+    bootstrap(TestModule);
 
     expect(ModuleBootstrapper.bootstrapModule).toHaveBeenCalled();
     expect(angular.bootstrap).toHaveBeenCalled();
