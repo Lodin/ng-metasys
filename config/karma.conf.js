@@ -1,6 +1,6 @@
 var WebpackTestConfig = require('./webpack-test.conf');
 
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
     basePath: '..',
     frameworks: ['jasmine'],
@@ -9,7 +9,8 @@ module.exports = function(config) {
       require('karma-chrome-launcher'),
       require('karma-remap-istanbul'),
       require('karma-webpack'),
-      require('karma-sourcemap-loader')
+      require('karma-sourcemap-loader'),
+      require('karma-mocha-reporter')
     ],
     customLaunchers: {
       Chrome_travis_ci: {
@@ -18,7 +19,7 @@ module.exports = function(config) {
       }
     },
     files: [
-      { pattern: './src/test.ts', watched: false }
+      {pattern: './src/test.ts', watched: false}
     ],
     exclude: [],
     preprocessors: {
@@ -29,7 +30,7 @@ module.exports = function(config) {
         html: 'coverage'
       }
     },
-    reporters: ['progress', 'karma-remap-istanbul'],
+    reporters: ['mocha', 'karma-remap-istanbul'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
@@ -53,7 +54,13 @@ module.exports = function(config) {
         chunks: false,
         chunkModules: false
       }
-    }
+    },
 
+    client: {
+      captureConsole: true,
+      mocha: {
+        bail: true
+      }
+    }
   });
 };
