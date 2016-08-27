@@ -24,7 +24,10 @@
   },
   "homepage": "https://github.com/Lodin/ng-metasys#readme",
   "devDependencies": {
+    "@types/angular": "^1.5.12",
+    "@types/camel-case": "0.0.29",
     "@types/jasmine": "^2.2.32",
+    "@types/reflect-metadata": "0.0.2",
     "awesome-typescript-loader": "^2.2.1",
     "jasmine-core": "^2.4.1",
     "karma": "^1.2.0",
@@ -41,10 +44,11 @@
     "webpack": "^2.1.0-beta.21"
   },
   "peerDependencies": {
-    "angular": "^1.5.0"
-  },
-  "dependencies": {
+    "angular": "^1.5.0",
     "core-js": "^2.4.1",
     "ts-helpers": "^1.1.1"
+  },
+  "dependencies": {
+    "camel-case": "^3.0.0"
   }
 }

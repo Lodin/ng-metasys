@@ -4,6 +4,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "noEmitHelpers": true,
+    "noImplicitAny": true,
     "lib": ["es6", "dom"],
     "mapRoot": "./",
     "module": "commonjs",
@@ -15,7 +16,9 @@
       "../node_modules/@types"
     ],
     "types": [
-      "jasmine"
+      "jasmine",
+      "reflect-metadata",
+      "camel-case"
     ]
   }
 }
