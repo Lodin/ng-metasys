@@ -1,5 +1,4 @@
 import * as angular from 'angular';
-import * as ProviderBootstrapper from '../providers/bootstrap';
 import {bootstrapInject} from './bootstrap-inject';
 
 describe('Function `bootstrapInject`', () => {
@@ -13,7 +12,6 @@ describe('Function `bootstrapInject`', () => {
 
   beforeEach(() => {
     ngModule = angular.module('TestModule', []);
-    spyOn(ProviderBootstrapper, 'bootstrapProviders').and.returnValue(null);
   });
 
   afterEach(() => {
@@ -28,15 +26,13 @@ describe('Function `bootstrapInject`', () => {
       MockInjectDeclaration
     ], TestDeclaration.prototype);
 
-    const injector = bootstrapInject(ngModule, TestDeclaration);
+    const injector = bootstrapInject(TestDeclaration);
     expect(injector.hasCommon).toBeTruthy();
     expect(injector.hasMethods).not.toBeTruthy();
     expect(injector.hasProperties).not.toBeTruthy();
 
     injector.injectCommon(TestDeclaration);
     expect(TestDeclaration.$inject).toEqual(['$http', 'MockInjectDeclaration']);
-
-    expect(ProviderBootstrapper.bootstrapProviders).toHaveBeenCalled();
   });
 
   it('should create DeclarationInjector instance with method injections', () => {
@@ -44,7 +40,7 @@ describe('Function `bootstrapInject`', () => {
       'config': ['$http', MockInjectDeclaration]
     }, TestDeclaration);
 
-    const injector = bootstrapInject(ngModule, TestDeclaration);
+    const injector = bootstrapInject(TestDeclaration);
 
     expect(injector.hasCommon).not.toBeTruthy();
     expect(injector.hasMethods).toBeTruthy();
@@ -65,7 +61,7 @@ describe('Function `bootstrapInject`', () => {
       'mockInjectDeclaration': MockInjectDeclaration
     }, TestDeclaration.prototype);
 
-    const injector = bootstrapInject(ngModule, TestDeclaration);
+    const injector = bootstrapInject(TestDeclaration);
 
     expect(injector.hasCommon).not.toBeTruthy();
     expect(injector.hasMethods).not.toBeTruthy();

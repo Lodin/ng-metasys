@@ -1,5 +1,4 @@
 import * as angular from 'angular';
-import {bootstrapProviders} from '../providers/bootstrap';
 
 type CommonInjections = any[];
 type BootstrappedCommonInjections = string[];
@@ -46,8 +45,7 @@ class DeclarationInjector {
   }
 
   public injectProperties(declaration: any) {
-    for (let i = 0, keys = Object.keys(this._properties); i < keys.length; i++) {
-      const property = keys[i];
+    for (const property in this._properties) {
       const service = angular.injector().get(this._properties[property]);
 
       Object.defineProperty(declaration, property, {
@@ -59,86 +57,60 @@ class DeclarationInjector {
   }
 }
 
-export function bootstrapInject(ngModule: angular.IModule, declaration: any): DeclarationInjector {
+export function bootstrapInject(declaration: any): DeclarationInjector {
   const injections: CollectedInjections = {};
 
   if (declaration.prototype && Reflect.hasMetadata('ngms:inject', declaration.prototype)) {
     injections.common
-      = initCommon(ngModule, Reflect.getMetadata('ngms:inject', declaration.prototype));
+      = initCommon(Reflect.getMetadata('ngms:inject', declaration.prototype));
   }
 
   if (Reflect.hasMetadata('ngms:inject:method', declaration)) {
     injections.methods
-      = initMethods(ngModule, Reflect.getMetadata('ngms:inject:method', declaration));
+      = initMethods(Reflect.getMetadata('ngms:inject:method', declaration));
   }
 
   if (Reflect.hasMetadata('ngms:inject:property', declaration.prototype)) {
-    injections.properties = initProperties(
-      ngModule,
-      Reflect.getMetadata('ngms:inject:property', declaration.prototype)
-    );
+    injections.properties
+      = initProperties(Reflect.getMetadata('ngms:inject:property', declaration.prototype));
   }
 
   return new DeclarationInjector(injections);
 }
 
-function initCommon(ngModule: angular.IModule,
-                    data: CommonInjections): BootstrappedCommonInjections {
+function initCommon(data: CommonInjections): BootstrappedCommonInjections {
   const common = new Array<string>(data.length);
 
-  let i = 0;
-  for (const inject of data) {
-    if (typeof inject === 'string') {
-      common[i] = inject;
-    } else {
-      bootstrapProviders(ngModule, inject);
-      common[i] = inject.name;
-    }
-
-    i += 1;
+  for (let i = 0, len = data.length; i < len; i++) {
+    const inject = data[i];
+    common[i] = typeof inject === 'string' ? inject : inject.name;
   }
 
   return common;
 }
 
-function initMethods(ngModule: angular.IModule,
-                     data: MethodsInjections): BootstrappedMethodsInjections {
+function initMethods(data: MethodsInjections): BootstrappedMethodsInjections {
   const methods: BootstrappedMethodsInjections = {};
 
-  for (let i = 0, keys = Object.keys(data); i < keys.length; i++) {
-    const method = keys[i];
-
+  for (const method in data) {
     methods[method] = new Array<string>(data[method].length);
 
-    let j = 0;
-    for (const inject of data[method]) {
-      if (typeof inject === 'string') {
-        methods[method][j] = inject;
-      } else {
-        bootstrapProviders(ngModule, inject);
-        methods[method][j] = inject.name;
-      }
-
-      j += 1;
+    for (let i = 0, len = data[method].length; i < len; i++) {
+      const inject = data[method][i];
+      methods[method][i] = typeof inject === 'string' ? inject : inject.name;
     }
   }
 
   return methods;
 }
 
-function initProperties(ngModule: angular.IModule,
-                        data: PropertyInjections): BootstrappedPropertyInjections {
+function initProperties(data: PropertyInjections): BootstrappedPropertyInjections {
   const properties: BootstrappedPropertyInjections = {};
 
-  for (let i = 0, keys = Object.keys(data); i < keys.length; i++) {
-    const property = keys[i];
-
-    if (typeof data[property] === 'string') {
-      properties[property] = data[property];
-    } else {
-      bootstrapProviders(ngModule, data[property]);
-      properties[property] = data[property].name;
-    }
+  for (const property in data) {
+    properties[property] = typeof data[property] === 'string'
+      ? data[property]
+      : data[property].name;
   }
 
   return properties;

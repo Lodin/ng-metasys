@@ -1,4 +1,4 @@
-import camelCase = require('camel-case');
+import * as camelCase from 'camelcase';
 
 const attributePattern = /\[(.+?)\]/;
 const commentPattern = /\/\/(.+)/;

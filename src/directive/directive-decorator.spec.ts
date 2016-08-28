@@ -1,7 +1,7 @@
 import {Directive} from './directive-decorator';
 import {DirectiveMetadata} from './directive-metadata';
 
-describe('Decorator `@Component`', () => {
+describe('Decorator `@Directive`', () => {
   it('should add a directive metadata to a decorated class', () => {
     const metadata = {
       selector: '[test-attribute]',

@@ -1,6 +1,6 @@
 import {Link} from './link-decorator';
 
-describe('Decorator `Link`', () => {
+describe('Decorator `@Link`', () => {
   it('should add a link metadata to a decorated class', () => {
     class TestDirective {
       @Link

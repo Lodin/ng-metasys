@@ -1,6 +1,6 @@
 import {Transclude} from './transclude-decorator';
 
-describe('Decorator `Transclude`', () => {
+describe('Decorator `@Transclude`', () => {
   it('should define transclude metadata for decorated declaration', () => {
     @Transclude()
     class TestDeclaration {}

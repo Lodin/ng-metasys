@@ -1,7 +1,7 @@
 import * as angular from 'angular';
-import camelCase = require('camel-case');
-import {ComponentMetadata} from './component-metadata';
+import * as camelCase from 'camelcase';
 import {bootstrapInject, bootstrapProperty, bootstrapTransclude} from '../extensions/bootstrap';
+import {ComponentMetadata} from './component-metadata';
 
 export function bootstrapComponent(ngModule: angular.IModule, component: any) {
   const metadata: ComponentMetadata = Reflect.getMetadata('ngms:component', component.prototype);
@@ -20,7 +20,7 @@ export function bootstrapComponent(ngModule: angular.IModule, component: any) {
     componentData.controllerAs = metadata.controllerAs;
   }
 
-  const injector = bootstrapInject(ngModule, component);
+  const injector = bootstrapInject(component);
   const properties = bootstrapProperty(component);
   const transclude = bootstrapTransclude(component);
 

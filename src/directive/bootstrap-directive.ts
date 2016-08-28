@@ -24,7 +24,7 @@ export function bootstrapDirective(ngModule: angular.IModule, directive: any) {
     directiveData.controllerAs = '$ctrl';
   }
 
-  const injector = bootstrapInject(ngModule, directive);
+  const injector = bootstrapInject(directive);
   const properties = bootstrapProperty(directive);
   const transclude = bootstrapTransclude(directive);
   const link = bootstrapLink(directive);

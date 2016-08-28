@@ -1,6 +1,6 @@
 import {Inject} from './inject-decorator';
 
-describe('Decorator `Inject`', () => {
+describe('Decorator `@Inject`', () => {
   class MockInject {
   }
 
