@@ -25,4 +25,14 @@ describe('Function `bootstrap`', () => {
     expect(ModuleBootstrapper.bootstrapModule).toHaveBeenCalled();
     expect(angular.bootstrap).toHaveBeenCalled();
   });
+
+  it('should receive a html element and bootstrap module to it', () => {
+    spyOn(ModuleBootstrapper, 'bootstrapModule').and.returnValue(testModule);
+
+    spyOn(angular, 'bootstrap').and.callFake((element: Element|JQuery|Document) => {
+      expect(element).toEqual(document.body);
+    });
+
+    bootstrap(TestModule, document.body);
+  });
 });
