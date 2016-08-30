@@ -158,9 +158,10 @@ More about [Angular Directive](https://docs.angularjs.org/guide/directive).
 `@Directive` signature is equal to `@Component`:
 ```typescript
 interface DirectiveMetadata {
-  selector: string, // should be class or attribute
-  template?: string,
-  templateUrl?: string 
+  selector: string; // should be class, attribute or comment
+  template?: string;
+  templateUrl?: string;
+  controllerAs?: string;
 }
 ```
 If directive should be applied to the element with attribute, it
@@ -174,6 +175,12 @@ If directive should be applied to some class, it has to be following:
 ```javascript
 @Directive({
   selector: '.some-class'
+})
+```
+If directive should be applied to some comment, it has to be following:
+```javascript
+@Directive({
+  selector: '//some-comment'
 })
 ```
 Unlike component, directive can contain a static method marked with 
@@ -192,7 +199,7 @@ import {Directive, Link} from 'ng-metasys/directive';
 export class SomeDirective {
   @Inject('$q') $q;
   
-  @Property('&onClose') close;
+  @Property('&') close;
   
   @Link
   static link(scope, element, attrs, controllers) {}
@@ -205,8 +212,9 @@ angular.module('AppModule')
     return {
       restrict: 'A',
       templateUrl: 'some.directive.html',
-      scope: {
-        close: '&onClose'
+      scope: true,
+      bindToController: {
+        close: '&'
       },
       controller: ['$q', function SomeDirective($q) {
         this.$q = $q;
@@ -246,7 +254,7 @@ angular.module('AppModule')
 
 ## @Factory
 Factory is a function shared in AngularJS. To implement it using 
-`@Factory` mark just create a class with static method `execute`.
+`@Factory` mark just create a class with static method `$get`.
  
 More: [Angular Factory](https://docs.angularjs.org/guide/providers)
  
@@ -259,7 +267,7 @@ import {Factory} from 'ng-metasys/providers';
 export class SomeFactory {
   
   @Inject('$http')
-  static execute($http) {}
+  static $get($http) {}
 }
 ```
 Which is equivalent to the following code:
@@ -459,3 +467,6 @@ angular.module('AppModule')
     }
   });
 ```
+
+## License
+Information about license you can found [here](./LICENSE).
