@@ -25,7 +25,7 @@
   "homepage": "https://github.com/Lodin/ng-metasys#readme",
   "devDependencies": {
     "@types/angular": "^1.5.12",
-    "@types/camel-case": "0.0.29",
+    "@types/camelcase": "0.0.29",
     "@types/jasmine": "^2.2.32",
     "@types/reflect-metadata": "0.0.2",
     "awesome-typescript-loader": "^2.2.1",
@@ -50,6 +50,6 @@
     "ts-helpers": "^1.1.1"
   },
   "dependencies": {
-    "camel-case": "^3.0.0"
+    "camelcase": "^3.0.0"
   }
 }
