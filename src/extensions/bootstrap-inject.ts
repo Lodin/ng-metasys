@@ -1,24 +1,15 @@
 import * as angular from 'angular';
 
-type CommonInjections = any[];
-type BootstrappedCommonInjections = string[];
-type MethodsInjections = {[method: string]: any[]};
-type BootstrappedMethodsInjections = {[method: string]: string[]};
-type PropertyInjections = {[method: string]: any};
-type BootstrappedPropertyInjections = {[property: string]: string};
+export class DeclarationInjector {
+  private _common: string[];
+  private _methods: {[method: string]: string[]};
+  private _properties: {[property: string]: string};
 
-type CollectedInjections = {
-  common?: BootstrappedCommonInjections,
-  methods?: BootstrappedMethodsInjections,
-  properties?: BootstrappedPropertyInjections
-};
-
-class DeclarationInjector {
-  private _common: BootstrappedCommonInjections;
-  private _methods: BootstrappedMethodsInjections;
-  private _properties: BootstrappedPropertyInjections;
-
-  constructor({common, methods, properties}: CollectedInjections) {
+  constructor({common, methods, properties}: {
+    common?: string[],
+    methods?: {[method: string]: string[]},
+    properties?: {[property: string]: string}
+  }) {
     this._common = common;
     this._properties = properties;
     this._methods = methods;
@@ -58,7 +49,11 @@ class DeclarationInjector {
 }
 
 export function bootstrapInject(declaration: any): DeclarationInjector {
-  const injections: CollectedInjections = {};
+  const injections: {
+    common?: string[],
+    methods?: {[method: string]: string[]},
+    properties?: {[property: string]: string}
+  } = {};
 
   if (declaration.prototype && Reflect.hasMetadata('ngms:inject', declaration.prototype)) {
     injections.common
@@ -78,7 +73,7 @@ export function bootstrapInject(declaration: any): DeclarationInjector {
   return new DeclarationInjector(injections);
 }
 
-function initCommon(data: CommonInjections): BootstrappedCommonInjections {
+function initCommon(data: any[]): string[] {
   const common = new Array<string>(data.length);
 
   for (let i = 0, len = data.length; i < len; i++) {
@@ -89,8 +84,8 @@ function initCommon(data: CommonInjections): BootstrappedCommonInjections {
   return common;
 }
 
-function initMethods(data: MethodsInjections): BootstrappedMethodsInjections {
-  const methods: BootstrappedMethodsInjections = {};
+function initMethods(data: {[method: string]: any[]}): {[method: string]: string[]} {
+  const methods: {[method: string]: string[]} = {};
 
   for (const method in data) {
     methods[method] = new Array<string>(data[method].length);
@@ -104,8 +99,8 @@ function initMethods(data: MethodsInjections): BootstrappedMethodsInjections {
   return methods;
 }
 
-function initProperties(data: PropertyInjections): BootstrappedPropertyInjections {
-  const properties: BootstrappedPropertyInjections = {};
+function initProperties(data: {[method: string]: any}): {[property: string]: string} {
+  const properties: {[property: string]: string} = {};
 
   for (const property in data) {
     properties[property] = typeof data[property] === 'string'
