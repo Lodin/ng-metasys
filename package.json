@@ -2,9 +2,9 @@
   "name": "ng-metasys",
   "version": "0.1.0",
   "description": "A decorator framework for AngularJS that makes easy using Angular meta-info with ES2015 modules",
-  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc -p src",
+    "build": "tsc -p src && del 'dist/**/*.spec.js' 'dist/**/*.spec.js.map'",
+    "prepublish": "npm run build",
     "test": "karma start config/karma.conf.js"
   },
   "repository": {
@@ -29,6 +29,7 @@
     "@types/jasmine": "^2.2.32",
     "@types/reflect-metadata": "0.0.2",
     "awesome-typescript-loader": "^2.2.1",
+    "del-cli": "^0.2.0",
     "jasmine-core": "^2.4.1",
     "karma": "^1.2.0",
     "karma-chrome-launcher": "^2.0.0",
