@@ -37,7 +37,7 @@ describe('Function `bootstrapInject`', () => {
 
   it('should create DeclarationInjector instance with method injections', () => {
     Reflect.defineMetadata('ngms:inject:method', {
-      'config': ['$http', MockInjectDeclaration]
+      config: ['$http', MockInjectDeclaration]
     }, TestDeclaration);
 
     const injector = bootstrapInject(TestDeclaration);
@@ -57,8 +57,8 @@ describe('Function `bootstrapInject`', () => {
     });
 
     Reflect.defineMetadata('ngms:inject:property', {
-      '$http': '$http',
-      'mockInjectDeclaration': MockInjectDeclaration
+      $http: '$http',
+      mockInjectDeclaration: MockInjectDeclaration
     }, TestDeclaration.prototype);
 
     const injector = bootstrapInject(TestDeclaration);

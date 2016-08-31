@@ -1,5 +1,5 @@
 import * as angular from 'angular';
-import {moduleList} from '../core';
+import {NgmsReflect} from '../core';
 import {bootstrapComponent} from '../component/bootstrap';
 import {bootstrapDirective} from '../directive/bootstrap';
 import {bootstrapFilter} from '../filter/bootstrap';
@@ -9,23 +9,23 @@ import {bootstrapModuleConfig} from './bootstrap-module-config';
 
 const moduleConfigTypes = ['value', 'constant', 'config', 'run'];
 
-export function bootstrapModule(module: any): string {
-  if (!Reflect.hasMetadata('ngms:module', module.prototype)) {
-    throw new Error(`${module.name} is not marked with @Module decorator`);
+export function bootstrapModule(declaration: any): string {
+  if (!Reflect.hasMetadata('ngms:module', declaration.prototype)) {
+    throw new Error(`${declaration.name} is not marked with @Module decorator`);
   }
 
-  const metadata: ModuleMetadata = Reflect.getMetadata('ngms:module', module.prototype);
+  const metadata: ModuleMetadata = Reflect.getMetadata('ngms:module', declaration.prototype);
 
   const imports = metadata.imports ? initImports(metadata.imports) : [];
 
-  const ngModule = angular.module(module.name, imports);
-  moduleList.set(module.name, ngModule);
+  const ngModule = angular.module(declaration.name, imports);
+  NgmsReflect.modules.set(declaration.name, ngModule);
 
   if (metadata.declarations) {
     initDeclarations(ngModule, metadata.declarations);
   }
 
-  initConfig(ngModule, module);
+  initConfig(ngModule, declaration);
 
   if (metadata.providers) {
     for (const provider of metadata.providers) {

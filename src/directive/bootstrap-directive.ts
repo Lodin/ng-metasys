@@ -1,57 +1,61 @@
 import * as angular from 'angular';
+import {NgmsReflect} from '../core';
 import {bootstrapInject, bootstrapProperty, bootstrapTransclude} from '../extensions/bootstrap';
 import {DirectiveMetadata} from './directive-metadata';
 import {bootstrapLink} from './bootstrap-link';
 import {parseSelector} from './parse-selector';
 
-export function bootstrapDirective(ngModule: angular.IModule, directive: any) {
-  const metadata: DirectiveMetadata = Reflect.getMetadata('ngms:directive', directive.prototype);
+export function bootstrapDirective(ngModule: angular.IModule, declaration: any) {
+  const metadata: DirectiveMetadata = Reflect.getMetadata('ngms:directive', declaration.prototype);
 
-  const directiveData: angular.IDirective = {
-    controller: directive,
+  const data: angular.IDirective = {
+    controller: declaration,
     scope: true
   };
 
   if (metadata.template) {
-    directiveData.template = metadata.template;
+    data.template = metadata.template;
   } else if (metadata.templateUrl) {
-    directiveData.templateUrl = metadata.templateUrl;
+    data.templateUrl = metadata.templateUrl;
   }
 
   if (metadata.controllerAs) {
-    directiveData.controllerAs = metadata.controllerAs;
+    data.controllerAs = metadata.controllerAs;
   } else {
-    directiveData.controllerAs = '$ctrl';
+    data.controllerAs = '$ctrl';
   }
 
-  const injector = bootstrapInject(directive);
-  const properties = bootstrapProperty(directive);
-  const transclude = bootstrapTransclude(directive);
-  const link = bootstrapLink(directive);
+  const injector = bootstrapInject(declaration);
+  const properties = bootstrapProperty(declaration);
+  const transclude = bootstrapTransclude(declaration);
+  const link = bootstrapLink(declaration);
 
   if (injector) {
     if (injector.hasCommon) {
-      injector.injectCommon(directive);
+      injector.injectCommon(declaration);
     }
 
     if (injector.hasProperties) {
-      injector.injectProperties(directive);
+      injector.injectProperties(declaration);
     }
   }
 
   if (properties) {
-    directiveData.bindToController = properties;
+    data.bindToController = properties;
   }
 
   if (transclude) {
-    directiveData.transclude = transclude;
+    data.transclude = transclude;
   }
 
   if (link) {
-    directiveData.link = directive[link];
+    data.link = declaration[link];
   }
 
   const [name, restrict] = parseSelector(metadata.selector);
-  directiveData.restrict = restrict;
-  ngModule.directive(name, () => directiveData);
+  data.restrict = restrict;
+
+  ngModule.directive(name, () => data);
+
+  NgmsReflect.defineMetadata(declaration, 'directive', Object.assign({name}, data));
 }

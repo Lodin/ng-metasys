@@ -1,8 +1,41 @@
 import * as angular from 'angular';
+import {NgmsReflect} from '../core';
 import * as ExtensionBootstrapper from '../extensions/bootstrap';
 import * as LinkBootstrapper from './bootstrap-link';
 import {bootstrapDirective} from './bootstrap-directive';
 import {DirectiveMetadata} from './directive-metadata';
+
+class Bootstrapper {
+  public bootstrapInject = spyOn(ExtensionBootstrapper, 'bootstrapInject');
+  public bootstrapProperty = spyOn(ExtensionBootstrapper, 'bootstrapProperty');
+  public bootstrapTransclude = spyOn(ExtensionBootstrapper, 'bootstrapTransclude');
+  public bootstrapLink = spyOn(LinkBootstrapper, 'bootstrapLink');
+  public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
+
+  public unarm(...toUnarm: string[]) {
+    const hasAll = toUnarm.indexOf('all') !== -1;
+
+    if (toUnarm.indexOf('inject') !== -1 || hasAll) {
+      this.bootstrapInject.and.returnValue(null);
+    }
+
+    if (toUnarm.indexOf('property') !== -1 || hasAll) {
+      this.bootstrapProperty.and.returnValue(null);
+    }
+
+    if (toUnarm.indexOf('transclude') !== -1 || hasAll) {
+      this.bootstrapTransclude.and.returnValue(null);
+    }
+
+    if (toUnarm.indexOf('link') !== -1 || hasAll) {
+      this.bootstrapLink.and.returnValue(null);
+    }
+
+    if (toUnarm.indexOf('meta') !== -1 || hasAll) {
+      this.defineMetadata.and.returnValue(null);
+    }
+  }
+}
 
 describe('Function `bootstrapDirective`', () => {
   class TestDirective {
@@ -10,31 +43,15 @@ describe('Function `bootstrapDirective`', () => {
   }
   class MockService {}
 
-  const decorateDirective = (metadata: DirectiveMetadata) =>
+  const decorate = (metadata: DirectiveMetadata) =>
     Reflect.defineMetadata('ngms:directive', metadata, TestDirective.prototype);
 
-  const unarmBootstrappers = (...fnToUnarm: string[]) => {
-    if (fnToUnarm.indexOf('inject') !== -1 || fnToUnarm.indexOf('all') !== -1) {
-      spyOn(ExtensionBootstrapper, 'bootstrapInject').and.returnValue(null);
-    }
-
-    if (fnToUnarm.indexOf('property') !== -1 || fnToUnarm.indexOf('all') !== -1) {
-      spyOn(ExtensionBootstrapper, 'bootstrapProperty').and.returnValue(null);
-    }
-
-    if (fnToUnarm.indexOf('transclude') !== -1 || fnToUnarm.indexOf('all') !== -1) {
-      spyOn(ExtensionBootstrapper, 'bootstrapTransclude').and.returnValue(null);
-    }
-
-    if (fnToUnarm.indexOf('link') !== -1 || fnToUnarm.indexOf('all') !== -1) {
-      spyOn(LinkBootstrapper, 'bootstrapLink').and.returnValue(null);
-    }
-  };
-
   let ngModule: angular.IModule;
+  let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
     ngModule = angular.module('testModule', []);
+    bootstrapper = new Bootstrapper();
   });
 
   afterEach(() => {
@@ -42,7 +59,7 @@ describe('Function `bootstrapDirective`', () => {
   });
 
   it('should generate a directive data fitting to the raw angular directive metadata', () => {
-    decorateDirective({
+    decorate({
       selector: '[test-attribute]',
       template: '<div></div>'
     });
@@ -58,7 +75,7 @@ describe('Function `bootstrapDirective`', () => {
       });
     });
 
-    unarmBootstrappers('all');
+    bootstrapper.unarm('all');
 
     bootstrapDirective(ngModule, TestDirective);
 
@@ -69,7 +86,7 @@ describe('Function `bootstrapDirective`', () => {
   });
 
   it('should allow using `templateUrl` metadata', () => {
-    decorateDirective({
+    decorate({
       selector: '[test-attribute]',
       templateUrl: 'test.component.html'
     });
@@ -84,13 +101,13 @@ describe('Function `bootstrapDirective`', () => {
       });
     });
 
-    unarmBootstrappers('all');
+    bootstrapper.unarm('all');
 
     bootstrapDirective(ngModule, TestDirective);
   });
 
   it('should allow using `controllerAs` metadata', () => {
-    decorateDirective({
+    decorate({
       selector: '[test-attribute]',
       controllerAs: 'vm'
     });
@@ -104,15 +121,15 @@ describe('Function `bootstrapDirective`', () => {
       });
     });
 
-    unarmBootstrappers('all');
+    bootstrapper.unarm('all');
 
     bootstrapDirective(ngModule, TestDirective);
   });
 
   it('should add common injections defined with @Inject to directive data', () => {
-    decorateDirective({selector: '[test-attribute]'});
+    decorate({selector: '[test-attribute]'});
 
-    spyOn(ExtensionBootstrapper, 'bootstrapInject').and.returnValue({
+    bootstrapper.bootstrapInject.and.returnValue({
       hasCommon: true,
       hasProperties: false,
       injectCommon: (declaration: any) => {
@@ -120,7 +137,7 @@ describe('Function `bootstrapDirective`', () => {
       }
     });
 
-    unarmBootstrappers('property', 'transclude', 'link');
+    bootstrapper.unarm('property', 'transclude', 'link', 'meta');
 
     spyOn(ngModule, 'directive').and.callFake((name: string, data: angular.IDirectiveFactory) => {
       expect((<any> data().controller).$inject).toEqual(['$http', '$q']);
@@ -130,9 +147,9 @@ describe('Function `bootstrapDirective`', () => {
   });
 
   it('should add property injections (properties marked with @Inject) to directive data', () => {
-    decorateDirective({selector: '[test-attribute]'});
+    decorate({selector: '[test-attribute]'});
 
-    spyOn(ExtensionBootstrapper, 'bootstrapInject').and.returnValue({
+    bootstrapper.bootstrapInject.and.returnValue({
       hasCommon: false,
       hasProperties: true,
       injectProperties: (declaration: any) => {
@@ -141,7 +158,7 @@ describe('Function `bootstrapDirective`', () => {
       }
     });
 
-    unarmBootstrappers('property', 'transclude', 'link');
+    bootstrapper.unarm('property', 'transclude', 'link', 'meta');
 
     spyOn(ngModule, 'directive').and.callFake((name: string, data: angular.IDirectiveFactory) => {
       expect((<any> data().controller).mockService).toEqual(jasmine.any(MockService));
@@ -151,15 +168,15 @@ describe('Function `bootstrapDirective`', () => {
   });
 
   it('should add properties marked with @Property to directive data', () => {
-    decorateDirective({selector: '[test-attribute]'});
+    decorate({selector: '[test-attribute]'});
 
-    spyOn(ExtensionBootstrapper, 'bootstrapProperty').and.returnValue({
+    bootstrapper.bootstrapProperty.and.returnValue({
       someObject: '=',
       someString: '@',
       someExpr: '&'
     });
 
-    unarmBootstrappers('inject', 'transclude', 'link');
+    bootstrapper.unarm('inject', 'transclude', 'link', 'meta');
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IDirectiveFactory) => {
       expect(data()).toEqual({
@@ -179,10 +196,10 @@ describe('Function `bootstrapDirective`', () => {
   });
 
   it('should add transclude defined with @Transclude to directive data', () => {
-    decorateDirective({selector: '[test-attribute]'});
+    decorate({selector: '[test-attribute]'});
 
-    unarmBootstrappers('inject', 'property', 'link');
-    spyOn(ExtensionBootstrapper, 'bootstrapTransclude').and.returnValue({slot: 'testSlot'});
+    bootstrapper.unarm('inject', 'property', 'link', 'meta');
+    bootstrapper.bootstrapTransclude.and.returnValue({slot: 'testSlot'});
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IDirectiveFactory) => {
       expect(data()).toEqual({
@@ -198,10 +215,10 @@ describe('Function `bootstrapDirective`', () => {
   });
 
   it('should add link function defined with @Link to directive data', () => {
-    decorateDirective({selector: '[test-attribute]'});
+    decorate({selector: '[test-attribute]'});
 
-    unarmBootstrappers('inject', 'property', 'transclude');
-    spyOn(LinkBootstrapper, 'bootstrapLink').and.returnValue('link');
+    bootstrapper.unarm('inject', 'property', 'transclude');
+    bootstrapper.bootstrapLink.and.returnValue('link');
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IDirectiveFactory) => {
       expect(data()).toEqual({
@@ -214,5 +231,35 @@ describe('Function `bootstrapDirective`', () => {
     });
 
     bootstrapDirective(ngModule, TestDirective);
+
+    expect(bootstrapper.bootstrapLink).toHaveBeenCalled();
+  });
+
+  it('should define a permanent metadata for a declaration', () => {
+    const metadata = {
+      selector: '[test-attribute]',
+      template: '<div></div>'
+    };
+
+    decorate(metadata);
+    bootstrapper.unarm('inject', 'property', 'transclude');
+
+    bootstrapper.defineMetadata.and.callFake(
+      (declaration: any, type: string, data: angular.IDirective) => {
+        expect(declaration).toEqual(TestDirective);
+        expect(type).toEqual('directive');
+        expect(data).toEqual({
+          name: 'testAttribute',
+          restrict: 'A',
+          template: '<div></div>',
+          controller: TestDirective,
+          controllerAs: '$ctrl',
+          scope: true
+        });
+      });
+
+    bootstrapDirective(ngModule, TestDirective);
+
+    expect(bootstrapper.defineMetadata).toHaveBeenCalled();
   });
 });

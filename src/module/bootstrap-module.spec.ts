@@ -1,5 +1,5 @@
 import * as angular from 'angular';
-import {moduleList} from '../core';
+import {NgmsReflect} from '../core';
 import * as ComponentBootstrapper from '../component/bootstrap';
 import * as DirectiveBootstrapper from '../directive/bootstrap';
 import * as FilterBootstrapper from '../filter/bootstrap';
@@ -66,7 +66,7 @@ describe('Function `bootstrapModule`', () => {
     bootstrapModule(TestModule);
 
     expect(angular.module).toHaveBeenCalled();
-    expect(moduleList.has('TestModule')).toBeTruthy();
+    expect(NgmsReflect.modules.has('TestModule')).toBeTruthy();
   });
 
   it('should throw an error if module declaration does not have a @Module mark', () => {

@@ -1,47 +1,53 @@
 import * as angular from 'angular';
 import * as camelCase from 'camelcase';
+import {NgmsReflect} from '../core';
 import {bootstrapInject, bootstrapProperty, bootstrapTransclude} from '../extensions/bootstrap';
 import {ComponentMetadata} from './component-metadata';
 
-export function bootstrapComponent(ngModule: angular.IModule, component: any) {
-  const metadata: ComponentMetadata = Reflect.getMetadata('ngms:component', component.prototype);
+export function bootstrapComponent(ngModule: angular.IModule, declaration: any) {
+  const metadata: ComponentMetadata = Reflect.getMetadata('ngms:component', declaration.prototype);
 
-  const componentData: angular.IComponentOptions = {
-    controller: component
+  const data: angular.IComponentOptions = {
+    controller: declaration
   };
 
   if (metadata.template) {
-    componentData.template = metadata.template;
+    data.template = metadata.template;
   } else if (metadata.templateUrl) {
-    componentData.templateUrl = metadata.templateUrl;
+    data.templateUrl = metadata.templateUrl;
   }
 
   if (metadata.controllerAs) {
-    componentData.controllerAs = metadata.controllerAs;
+    data.controllerAs = metadata.controllerAs;
   }
 
-  const injector = bootstrapInject(component);
-  const properties = bootstrapProperty(component);
-  const transclude = bootstrapTransclude(component);
+  const injector = bootstrapInject(declaration);
+  const properties = bootstrapProperty(declaration);
+  const transclude = bootstrapTransclude(declaration);
 
   if (injector) {
     if (injector.hasCommon) {
-      injector.injectCommon(component);
+      injector.injectCommon(declaration);
     }
 
     if (injector.hasProperties) {
-      injector.injectProperties(component);
+      injector.injectProperties(declaration);
     }
   }
 
   if (properties) {
-    componentData.bindings = properties;
+    data.bindings = properties;
   }
 
   if (transclude) {
-    componentData.transclude = transclude;
+    data.transclude = transclude;
   }
 
   const name = camelCase(metadata.selector);
-  ngModule.component(name, componentData);
+  ngModule.component(name, data);
+
+  NgmsReflect.defineMetadata(declaration, 'component', Object.assign({
+    name,
+    controllerAs: '$ctrl'
+  }, data));
 }

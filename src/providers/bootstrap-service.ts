@@ -1,18 +1,24 @@
 import * as angular from 'angular';
 import {bootstrapInject} from '../extensions/bootstrap';
+import {NgmsReflect} from '../core';
 
-export function bootstrapService(ngModule: angular.IModule, service: any) {
-  const inject = bootstrapInject(service);
+export function bootstrapService(ngModule: angular.IModule, declaration: any) {
+  const inject = bootstrapInject(declaration);
 
   if (inject) {
     if (inject.hasCommon) {
-      inject.injectCommon(service);
+      inject.injectCommon(declaration);
     }
 
     if (inject.hasProperties) {
-      inject.injectProperties(service);
+      inject.injectProperties(declaration);
     }
   }
 
-  ngModule.service(service.name, service);
+  ngModule.service(declaration.name, declaration);
+
+  NgmsReflect.defineMetadata(declaration, 'service', {
+    name: declaration.name,
+    instance: declaration
+  });
 }
