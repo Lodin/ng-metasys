@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A decorator framework for AngularJS that makes easy using Angular meta-info with ES2015 modules",
   "scripts": {
-    "build": "tsc -p src && del 'dist/**/*.spec.js' 'dist/**/*.spec.js.map'",
+    "build": "tsc -p src && rimraf \"dist/**/*.spec.js\" \"dist/**/*.spec.js.map\" \"dist/**/*.spec.d.ts\"",
     "prepublish": "npm run build",
     "test": "karma start config/karma.conf.js"
   },
@@ -29,7 +29,6 @@
     "@types/jasmine": "^2.2.32",
     "@types/reflect-metadata": "0.0.2",
     "awesome-typescript-loader": "^2.2.1",
-    "del-cli": "^0.2.0",
     "jasmine-core": "^2.4.1",
     "karma": "^1.2.0",
     "karma-chrome-launcher": "^2.0.0",
@@ -38,6 +37,7 @@
     "karma-remap-istanbul": "^0.2.1",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^1.8.0",
+    "rimraf": "^2.5.4",
     "source-map-loader": "^0.1.5",
     "sourcemap-istanbul-instrumenter-loader": "^0.2.0",
     "tslint": "^3.14.0",
