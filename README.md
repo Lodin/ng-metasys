@@ -28,7 +28,7 @@ function bootstrap(module: any, element: HTMLElement = document.body) {}
 
 Your application entry point can look like this.
 ```javascript
-import {bootstrap} from 'ng-metasys/core';
+import {bootstrap} from 'ng-metasys/extensions';
 import {AppModule} from './app/app.module.js';
 
 bootstrap(AppModule);
@@ -52,14 +52,14 @@ More about [Angular Module](https://docs.angularjs.org/guide/module)
 ```typescript
 interface ModuleMetadata {
   imports: any[], // All modules this module depends on
-  declarations: any[] // Components and directives declarations of this module
+  declarations: any[] // Components, directives and filters declarations of this module
   providers: any[] // Fabrics, services and other providers belongs to this module
 }
 ```
 
 Your `app.module.js` can look like following:
 ```javascript
-import {Inject} from 'ng-metasys/core';
+import {Inject} from 'ng-metasys/extensions';
 import {Module, Config, Run, Value, Constant} from 'ng-metasys/module';
 import {Submodule} from './app/submodule/submodule.module';
 import {AppComponent} from './app/app.component';
@@ -71,15 +71,15 @@ import {AppService} from './app/app.service';
   providers: [AppService]
 })
 export class AppModule {
-  @Value value = 1;
-  @Constant constant = 'two';
+  @Value static value = 1;
+  @Constant static constant = 'two';
   
   @Config
   @Inject('$q')
-  config($q) {}
+  static config($q) {}
 
   @Run
-  run() {}
+  static run() {}
 }
 ```
 This code is equivalent to the following:
@@ -102,17 +102,18 @@ More about [Angular Component](https://docs.angularjs.org/guide/component).
 `@Component` signature is simple:
 ```typescript
 interface ComponentMetadata {
-  selector: string, // should be just a name of tag, not class or id selector
-  template?: string,
-  templateUrl?: string 
+  selector: string; // should be just a name of tag, not class or id selector
+  template?: string;
+  templateUrl?: string;
+  controllerAs?: string;
 }
 ```
 `@Component` can be expanded by additional functional like `ng-transclude`
-using the core decorators from `ng-metasys/core`.
+using the core decorators from `ng-metasys/extensions`.
 
 Your `app.component.js` can look like following:
 ```javascript
-import {Inject, Transclude, Property} from 'ng-metasys/core';
+import {Inject, Transclude, Property} from 'ng-metasys/extensions';
 import {Component} from 'ng-metasys/component';
 
 @Component({
@@ -161,7 +162,7 @@ interface DirectiveMetadata {
   selector: string; // should be class, attribute or comment
   template?: string;
   templateUrl?: string;
-  controllerAs?: string;
+  controllerAs?: string; // default will be `$ctrl`
 }
 ```
 If directive should be applied to the element with attribute, it
@@ -189,7 +190,7 @@ to control HTML elements directly.
 
 Your `some.directive.js` can look like following:
 ```javascript
-import {Inject, Property} from 'ng-metasys/core';
+import {Inject, Property} from 'ng-metasys/extensions';
 import {Directive, Link} from 'ng-metasys/directive';
 
 @Directive({
@@ -234,7 +235,7 @@ the class to make it Angular Service.
 
 Your `some.service.js` can look like following.
 ```javascript
-import {Inject} from 'ng-metasys/core';
+import {Inject} from 'ng-metasys/extensions';
 import {Service} from 'ng-metasys/providers';
 
 @Service
@@ -260,7 +261,7 @@ More: [Angular Factory](https://docs.angularjs.org/guide/providers)
  
 Your file `some.factory.js` can look like following:
 ```javascript
-import {Inject} from 'ng-metasys/core';
+import {Inject} from 'ng-metasys/extensions';
 import {Factory} from 'ng-metasys/providers';
 
 @Factory
@@ -282,7 +283,7 @@ you should create a class with the method `$get`.
 
 Your file `some.provider.js` can look like following:
 ```javascript
-import {Inject} from 'ng-metasys/core';
+import {Inject} from 'ng-metasys/extensions';
 import {Provider} from 'ng-metasys/providers';
 
 @Provider
@@ -307,7 +308,7 @@ class with static method `execute`.
 
 Your `some.filter.js` can look like following:
 ```javascript
-import {Inject} from 'ng-metasys/core';
+import {Inject} from 'ng-metasys/extensions';
 import {Filter} from 'ng-metasys/filter';
 
 @Filter
@@ -327,37 +328,41 @@ angular.module('AppModule')
   }]);
 ```
 
-## Core metadata
-Core metadata is the set of decorators that can be used in different 
-AngularJS elements.
+## Extensions metadata
+Extensions metadata is the set of decorators that can be used in 
+different AngularJS elements.
 
 ### @Inject
 `@Inject` allows to inject various providers into components, directives,
 other providers etc. `@Inject` can be used in following ways:
 
-* Inject into the class field:
+* Inject into class property:
 ```javascript
-import {Inject} from 'ng-metasys/core';
+import {Inject} from 'ng-metasys/extensions';
 import {Service} from 'ng-metasys/providers';
 import {SomeService} from './app/some.service';
 
 @Service
 export class SomeService {
   @Inject('$http') $http;
+  
+  constructor() {
+    this.$http.get('https://github.com');
+  }
 }
 ```
-It is mean that after `constructor` `SomeService` can use `$http` service
-in it's methods. Equivalent code:
+Equivalent code:
 ```javascript
 angular.module('AppModule')
   .service('someService', ['$http', function SomeService($http) {
     this.$http = $http;
+    this.$http.get('https://github.com');
   }]);
 ```
 
 * Inject into constructor:
 ```javascript
-import {Inject} from 'ng-metasys/core';
+import {Inject} from 'ng-metasys/extensions';
 import {Service} from 'ng-metasys/providers';
 import {SomeService} from './app/some.service';
 
@@ -375,7 +380,7 @@ angular.module('AppModule')
 
 * Inject into methods:
 ```javascript
-import {Inject} from 'ng-metasys/core';
+import {Inject} from 'ng-metasys/extensions';
 import {Module, Config} from 'ng-metasys/module';
 
 @Module()
@@ -395,7 +400,7 @@ angular.module('AppModule', [])
 
 ### @Property
 Property is used in components and directives as elements of `bindings`
-and `scope` sections respectively. So, if you have following code:
+and `bindToController` sections respectively. So, if you have following code:
 ```javascript
 @Component({
   selector: 'my-some',
@@ -416,8 +421,8 @@ angular.module('AppModule')
     }
   });
 ```
-For the `scope` block rules are equal considering the difference between
-`scope` and `bindings`.
+For the `bindToController` block rules are equal considering the difference between
+`bindToController` and `bindings`.
 
 ### @Transclude
 Transclude allows including HTML code inside the component/directive host
@@ -468,5 +473,57 @@ angular.module('AppModule')
   });
 ```
 
+## How to get original AngularJS metadata from decorated declaration
+When you need to use something like `angular-ui-bootstrap` and it's
+service `$uibModal`, or `angular-ui-router` of version less than
+`1.0.0`, you need to get original AngularJS metadata from decorated
+declarations.
+
+To accomplish this goal `ng-metasys` has a `NgmsReflect` class. 
+It contains two main resources: 
+  1. `modules` property that gets you access to a module list where
+  you can find out the AngularJS module existence or get an 
+  instance of the module you need. `modules` property is a simple
+  ES2015 `Map` object with module names as keys and module 
+  instances as values. 
+  2. Static `getMetadata` method. To get an AngularJS metadata just send 
+  specified declaration to `NgmsReflect#getMetadata`. It has 
+  following signature. 
+  ```typescript
+  function getMetadata(declaration: any) {}
+  ```
+  
+So, for the simple component:
+```javascript
+import {Transclude, Property} from 'ng-metasys/extensions';
+import {Component} from 'ng-metasys/component';
+
+@Component({
+  selector: 'my-app',
+  template: `<div></div>`
+})
+@Transclude()
+export class AppComponent {
+  @Property('<') $router;
+  @Property('&') onClick;
+}
+```
+You can get following metadata:
+```javascript
+import {NgmsReflect} from 'ng-metasys/core';
+
+expect(NgmsReflect.getMetadata(AppComponent)).toEqual({
+  name: 'myApp',
+  template: '<div></div>',
+  controller: AppComponent,
+  componentAs: '$ctrl',
+  transclude: true,
+  bindings: {
+    $router: '<',
+    onClick: '&'
+  }
+});
+```
+
 ## License
-Information about license you can found [here](./LICENSE).
+Information about license can be found [here](./LICENSE).
