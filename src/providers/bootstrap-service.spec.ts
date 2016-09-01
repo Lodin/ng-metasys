@@ -76,7 +76,7 @@ describe('Function `bootstrapService`', () => {
       injectProperties: (declaration: any) => {
         const service = new MockInjectService();
 
-        Object.defineProperty(declaration.prototype, 'mockInjectService', {
+        Object.defineProperty(declaration, 'mockInjectService', {
           configurable: false,
           enumerable: true,
           get: () => service

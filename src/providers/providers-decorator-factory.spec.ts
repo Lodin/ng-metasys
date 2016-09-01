@@ -9,6 +9,6 @@ describe('Function `providersDecoratorFactory`', () => {
       public $get() {}
     }
 
-    expect(Reflect.hasMetadata('ngms:providers:provider', TestProvider)).toBeTruthy();
+    expect(Reflect.hasMetadata('ngms:providers:provider', TestProvider.prototype)).toBeTruthy();
   });
 });

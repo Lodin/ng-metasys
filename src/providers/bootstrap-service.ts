@@ -11,7 +11,7 @@ export function bootstrapService(ngModule: angular.IModule, declaration: any) {
     }
 
     if (inject.hasProperties) {
-      inject.injectProperties(declaration);
+      inject.injectProperties(declaration.prototype, ngModule);
     }
   }
 

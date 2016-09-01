@@ -154,7 +154,7 @@ describe('Function `bootstrapComponent`', () => {
         controller: TestComponent
       });
 
-      expect((<any> data.controller).mockService).toEqual(jasmine.any(MockService));
+      expect((<any> data.controller).prototype.mockService).toEqual(jasmine.any(MockService));
     });
 
     bootstrapComponent(ngModule, TestComponent);

@@ -1,6 +1,7 @@
 import {bootstrapInject} from '../extensions/bootstrap';
 
-export function bootstrapModuleConfig(declaration: any, type: string): any[] {
+export function bootstrapModuleConfig(declaration: any,
+                                      type: string): any[] {
   const properties = Reflect.getMetadata(`ngms:module:${type}`, declaration);
 
   for (const property of properties) {

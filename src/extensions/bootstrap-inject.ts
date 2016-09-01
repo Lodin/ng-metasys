@@ -35,16 +35,18 @@ export class DeclarationInjector {
     declaration[methodName].$inject = this._methods[methodName];
   }
 
-  public injectProperties(declaration: any) {
-    for (const property in this._properties) {
-      const service = angular.injector().get(this._properties[property]);
+  public injectProperties(declaration: any, ngModule: angular.IModule) {
+    ngModule.run(['$injector', ($injector: angular.auto.IInjectorService) => {
+      for (const property in this._properties) {
+        const service = $injector.get(this._properties[property]);
 
-      Object.defineProperty(declaration, property, {
-        configurable: false,
-        enumerable: true,
-        get: () => service
-      });
-    }
+        Object.defineProperty(declaration, property, {
+          configurable: false,
+          enumerable: true,
+          get: () => service
+        });
+      }
+    }]);
   }
 }
 

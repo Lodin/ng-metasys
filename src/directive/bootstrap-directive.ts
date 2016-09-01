@@ -36,7 +36,7 @@ export function bootstrapDirective(ngModule: angular.IModule, declaration: any) 
     }
 
     if (injector.hasProperties) {
-      injector.injectProperties(declaration);
+      injector.injectProperties(declaration.prototype, ngModule);
     }
   }
 

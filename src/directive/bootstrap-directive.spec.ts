@@ -161,7 +161,7 @@ describe('Function `bootstrapDirective`', () => {
     bootstrapper.unarm('property', 'transclude', 'link', 'meta');
 
     spyOn(ngModule, 'directive').and.callFake((name: string, data: angular.IDirectiveFactory) => {
-      expect((<any> data().controller).mockService).toEqual(jasmine.any(MockService));
+      expect((<any> data().controller).prototype.mockService).toEqual(jasmine.any(MockService));
     });
 
     bootstrapDirective(ngModule, TestDirective);

@@ -52,8 +52,8 @@ describe('Function `bootstrapInject`', () => {
   });
 
   it('should create DeclarationInjector instance with property injections', () => {
-    spyOn(angular, 'injector').and.returnValue({
-      get: () => new MockService()
+    spyOn(ngModule, 'run').and.callFake(([, runFn]: any[]) => {
+      runFn({get: () => new MockService()});
     });
 
     Reflect.defineMetadata('ngms:inject:property', {
@@ -67,12 +67,12 @@ describe('Function `bootstrapInject`', () => {
     expect(injector.hasMethods).not.toBeTruthy();
     expect(injector.hasProperties).toBeTruthy();
 
-    injector.injectProperties(TestDeclaration.prototype);
+    injector.injectProperties(TestDeclaration.prototype, ngModule);
 
     expect((<any> TestDeclaration.prototype).$http).toEqual(jasmine.any(MockService));
     expect((<any> TestDeclaration.prototype).mockInjectDeclaration)
       .toEqual(jasmine.any(MockService));
 
-    expect(angular.injector).toHaveBeenCalled();
+    expect(ngModule.run).toHaveBeenCalled();
   });
 });
