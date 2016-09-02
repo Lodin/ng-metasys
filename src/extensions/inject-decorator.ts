@@ -1,5 +1,5 @@
 export function Inject(...injections: any[]): Function {
-  return (target: any, property?: string) => {
+  return (target: any, property?: string, decorator?: any) => {
     if (property && target[property] && typeof target !== 'function') {
       throw new Error(`Method for injection in declaration ${target.name} should be static`);
     }
@@ -7,7 +7,7 @@ export function Inject(...injections: any[]): Function {
     if (property && target[property]) {
       MethodInject(injections, target, property);
     } else if (property && !target[property]) {
-      PropertyInject(injections, target, property);
+      PropertyInject(injections, target, property, decorator);
     } else {
       CommonInject(injections, target);
     }
@@ -27,9 +27,22 @@ function MethodInject(injections: any[], target: any, property: string) {
   Reflect.getMetadata('ngms:inject:method', target)[property] = injections;
 }
 
-function PropertyInject(injections: any[], target: any, property: string) {
+function PropertyInject(injections: any[], target: any, property: string, decorator?: any) {
   if (injections.length > 1) {
     throw new Error('Only one injection can be added to a property');
+  }
+
+  if (decorator) {
+    delete decorator.writable;
+    delete decorator.initializer;
+    decorator.configurable = false;
+    decorator.get = () => Reflect.getMetadata('ngms:inject:property:get', target, property);
+  } else {
+    Object.defineProperty(target, property, {
+      configurable: false,
+      enumerable: true,
+      get: () => Reflect.getMetadata('ngms:inject:property:get', target, property)
+    });
   }
 
   const [injection] = injections;

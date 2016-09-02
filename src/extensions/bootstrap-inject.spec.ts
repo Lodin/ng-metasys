@@ -69,8 +69,13 @@ describe('Function `bootstrapInject`', () => {
 
     injector.injectProperties(TestDeclaration.prototype, ngModule);
 
-    expect((<any> TestDeclaration.prototype).$http).toEqual(jasmine.any(MockService));
-    expect((<any> TestDeclaration.prototype).mockInjectDeclaration)
+    expect(Reflect.getMetadata('ngms:inject:property:get', TestDeclaration.prototype, '$http'))
+      .toEqual(jasmine.any(MockService));
+    expect(Reflect.getMetadata(
+      'ngms:inject:property:get',
+      TestDeclaration.prototype,
+      'mockInjectDeclaration'
+    ))
       .toEqual(jasmine.any(MockService));
 
     expect(ngModule.run).toHaveBeenCalled();

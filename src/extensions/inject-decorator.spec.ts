@@ -52,4 +52,47 @@ describe('Decorator `@Inject`', () => {
       }
     }).toThrow();
   });
+
+  it('should create a getter on a decorated property that returns injection', () => {
+    class TestDeclaration {
+      @Inject('$http') public $http: any;
+    }
+
+    const data = new MockInject();
+    Reflect.defineMetadata('ngms:inject:property:get', data, TestDeclaration.prototype, '$http');
+
+    expect(new TestDeclaration().$http).toEqual(data);
+  });
+
+  it('should create a getter on a descriptor of decorated property (Babel hook)', () => {
+    class TestDeclaration {
+      public $http: any;
+    }
+
+    const data = new MockInject();
+    Reflect.defineMetadata('ngms:inject:property:get', data, TestDeclaration.prototype, '$http');
+
+    const descriptor: {
+      configurable?: boolean,
+      writable?: boolean,
+      enumerable?: boolean,
+      initializer?: Function,
+      get?: Function
+    } = {
+      configurable: true,
+      writable: true,
+      enumerable: true,
+      initializer: null
+    };
+
+    Inject([data])(TestDeclaration.prototype, '$http', descriptor);
+
+    expect(descriptor).toEqual({
+      configurable: false,
+      enumerable: true,
+      get: jasmine.any(Function)
+    });
+
+    expect(descriptor.get()).toEqual(data);
+  });
 });

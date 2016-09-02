@@ -39,12 +39,7 @@ export class DeclarationInjector {
     ngModule.run(['$injector', ($injector: angular.auto.IInjectorService) => {
       for (const property in this._properties) {
         const service = $injector.get(this._properties[property]);
-
-        Object.defineProperty(declaration, property, {
-          configurable: false,
-          enumerable: true,
-          get: () => service
-        });
+        Reflect.defineMetadata('ngms:inject:property:get', service, declaration, property);
       }
     }]);
   }
