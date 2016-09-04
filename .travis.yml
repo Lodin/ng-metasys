@@ -8,6 +8,7 @@ cache:
   directories:
   - $HOME/.npm
 before_install: npm -g install npm@latest
+before_script: npm install angular core-js ts-helpers
 script: npm test -- --timeout 15000
 after_success:
 - cat coverage/lcov/lcov.info | ./node_modules/.bin/codecov
