@@ -1,4 +1,11 @@
 # ng-metasys
+
+[![Latest Stable Version](https://img.shields.io/npm/v/ng-metasys.svg)](https://www.npmjs.com/package/ng-metasys)
+[![License](https://img.shields.io/npm/l/ng-metasys.svg)](./LICENSE)
+[![Build Status](https://img.shields.io/travis/Lodin/ng-metasys/master.svg)](https://travis-ci.org/Lodin/ng-metasys)
+
+[![Test Coverage](https://img.shields.io/codecov/c/github/Lodin/ng-metasys/master.svg)](https://codecov.io/gh/Lodin/ng-metasys)
+
 A metadata framework for AngularJS 1.5.x that makes default angular
 metadata system working clearly with ES2015/Typescript module system.
 
@@ -28,7 +35,7 @@ function bootstrap(module: any, element: HTMLElement = document.body) {}
 
 Your application entry point can look like this.
 ```javascript
-import {bootstrap} from 'ng-metasys/extensions';
+import {bootstrap} from 'ng-metasys';
 import {AppModule} from './app/app.module.js';
 
 bootstrap(AppModule);
@@ -59,8 +66,7 @@ interface ModuleMetadata {
 
 Your `app.module.js` can look like following:
 ```javascript
-import {Inject} from 'ng-metasys/extensions';
-import {Module, Config, Run, Value, Constant} from 'ng-metasys/module';
+import {Module, Config, Run, Value, Constant, Inject} from 'ng-metasys';
 import {Submodule} from './app/submodule/submodule.module';
 import {AppComponent} from './app/app.component';
 import {AppService} from './app/app.service';
@@ -109,12 +115,11 @@ interface ComponentMetadata {
 }
 ```
 `@Component` can be expanded by additional functional like `ng-transclude`
-using the core decorators from `ng-metasys/extensions`.
+using the extension decorators like `Transclude`.
 
 Your `app.component.js` can look like following:
 ```javascript
-import {Inject, Transclude, Property} from 'ng-metasys/extensions';
-import {Component} from 'ng-metasys/component';
+import {Component, Inject, Transclude, Property} from 'ng-metasys';
 
 @Component({
   selector: 'my-app',
@@ -190,8 +195,7 @@ to control HTML elements directly.
 
 Your `some.directive.js` can look like following:
 ```javascript
-import {Inject, Property} from 'ng-metasys/extensions';
-import {Directive, Link} from 'ng-metasys/directive';
+import {Directive, Link, Inject, Property} from 'ng-metasys';
 
 @Directive({
   selector: '[some-directive]',
@@ -235,8 +239,7 @@ the class to make it Angular Service.
 
 Your `some.service.js` can look like following.
 ```javascript
-import {Inject} from 'ng-metasys/extensions';
-import {Service} from 'ng-metasys/providers';
+import {Service, Inject} from 'ng-metasys';
 
 @Service
 export class SomeService {
@@ -261,8 +264,7 @@ More: [Angular Factory](https://docs.angularjs.org/guide/providers)
  
 Your file `some.factory.js` can look like following:
 ```javascript
-import {Inject} from 'ng-metasys/extensions';
-import {Factory} from 'ng-metasys/providers';
+import {Factory, Inject} from 'ng-metasys';
 
 @Factory
 export class SomeFactory {
@@ -283,8 +285,7 @@ you should create a class with the method `$get`.
 
 Your file `some.provider.js` can look like following:
 ```javascript
-import {Inject} from 'ng-metasys/extensions';
-import {Provider} from 'ng-metasys/providers';
+import {Provider, Inject} from 'ng-metasys';
 
 @Provider
 export class SomeProvider {
@@ -308,8 +309,7 @@ class with static method `execute`.
 
 Your `some.filter.js` can look like following:
 ```javascript
-import {Inject} from 'ng-metasys/extensions';
-import {Filter} from 'ng-metasys/filter';
+import {Filter, Inject} from 'ng-metasys';
 
 @Filter
 export class SomeFilter {
@@ -338,8 +338,7 @@ other providers etc. `@Inject` can be used in following ways:
 
 * Inject into class property:
 ```javascript
-import {Inject} from 'ng-metasys/extensions';
-import {Service} from 'ng-metasys/providers';
+import {Service, Inject} from 'ng-metasys';
 import {SomeService} from './app/some.service';
 
 @Service
@@ -362,8 +361,7 @@ angular.module('AppModule')
 
 * Inject into constructor:
 ```javascript
-import {Inject} from 'ng-metasys/extensions';
-import {Service} from 'ng-metasys/providers';
+import {Service, Inject} from 'ng-metasys';
 import {SomeService} from './app/some.service';
 
 @Service
@@ -380,8 +378,7 @@ angular.module('AppModule')
 
 * Inject into methods:
 ```javascript
-import {Inject} from 'ng-metasys/extensions';
-import {Module, Config} from 'ng-metasys/module';
+import {Module, Config, Inject} from 'ng-metasys';
 
 @Module()
 export class AppModule {
@@ -402,6 +399,8 @@ angular.module('AppModule', [])
 Property is used in components and directives as elements of `bindings`
 and `bindToController` sections respectively. So, if you have following code:
 ```javascript
+import {Component, Property} from 'ng-metasys';
+
 @Component({
   selector: 'my-some',
   template: '<div></div>'
@@ -432,6 +431,7 @@ an object with transclusion rules described in
 [Angular NgTransclude](https://docs.angularjs.org/api/ng/directive/ngTransclude)
 article.
 ```javascript
+import {Component, Transclude} from 'ng-metasys';
 @Component({
   selector: 'my-some',
   template: `
@@ -495,8 +495,7 @@ It contains two main resources:
   
 So, for the simple component:
 ```javascript
-import {Transclude, Property} from 'ng-metasys/extensions';
-import {Component} from 'ng-metasys/component';
+import {Component, Transclude, Property} from 'ng-metasys';
 
 @Component({
   selector: 'my-app',
@@ -510,7 +509,7 @@ export class AppComponent {
 ```
 You can get following metadata:
 ```javascript
-import {NgmsReflect} from 'ng-metasys/core';
+import {NgmsReflect} from 'ng-metasys';
 
 expect(NgmsReflect.getMetadata(AppComponent)).toEqual({
   name: 'myApp',
