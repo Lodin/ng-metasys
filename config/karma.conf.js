@@ -27,7 +27,8 @@ module.exports = function (config) {
     },
     remapIstanbulReporter: {
       reports: {
-        html: 'coverage'
+        lcovonly: 'coverage/lcov/lcov.info',
+        html: 'coverage/html'
       }
     },
     reporters: ['mocha', 'karma-remap-istanbul'],
