@@ -31,11 +31,8 @@ describe('Function `bootstrapModule`', () => {
     public static value = 1;
     public static constant = 3;
 
-    public static config() {
-    }
-
-    public static run() {
-    }
+    public static config() {}
+    public static run() {}
   }
 
   let bootstrapper: Bootstrapper;
@@ -48,6 +45,7 @@ describe('Function `bootstrapModule`', () => {
 
   afterEach(() => {
     Reflect.deleteMetadata('ngms:module', TestModule.prototype);
+    (<any> NgmsReflect)._modules = new Map();
   });
 
   it('should create bare module and write it to the `moduleList`', () => {
@@ -67,6 +65,19 @@ describe('Function `bootstrapModule`', () => {
 
     expect(angular.module).toHaveBeenCalled();
     expect(NgmsReflect.modules.has('TestModule')).toBeTruthy();
+  });
+
+  it('should do nothing if module is already bootstrapped', () => {
+    Reflect.defineMetadata('ngms:module', {}, TestModule.prototype);
+
+    bootstrapper.unarm();
+
+    spyOn(angular, 'module').and.returnValue(fakeModule);
+
+    bootstrapModule(TestModule);
+    bootstrapModule(TestModule);
+
+    expect((<any> angular.module).calls.count()).toEqual(1);
   });
 
   it('should throw an error if module declaration does not have a @Module mark', () => {
@@ -166,7 +177,6 @@ describe('Function `bootstrapModule`', () => {
   });
 
   describe('at module configuration', () => {
-
     const spyFn = (type: string) => {
       spyOn(fakeModule, type).and.callFake((fn: Function) => {
         expect(fn).toEqual((<any> TestModule)[type]);
@@ -219,6 +229,33 @@ describe('Function `bootstrapModule`', () => {
     it('should initialize `constant`', () => {
       spyValue('constant');
       testModuleConfig('constant');
+    });
+  });
+
+  describe('at checking metadata for broken elements', () => {
+    it('should check metadata imports', () => {
+      Reflect.defineMetadata('ngms:module', {imports: [undefined]}, TestModule.prototype);
+
+      expect(() => {
+        bootstrapModule(TestModule);
+      }).toThrowError('Module TestModule has broken import (one or more imports is undefined)');
+    });
+
+    it('should check metadata declarations', () => {
+      Reflect.defineMetadata('ngms:module', {declarations: [undefined]}, TestModule.prototype);
+
+      expect(() => {
+        bootstrapModule(TestModule);
+      }).toThrowError('Module TestModule has broken declaration (one or more declarations is ' +
+        'undefined)');
+    });
+
+    it('should check metadata providers', () => {
+      Reflect.defineMetadata('ngms:module', {providers: [undefined]}, TestModule.prototype);
+
+      expect(() => {
+        bootstrapModule(TestModule);
+      }).toThrowError('Module TestModule has broken provider (one or more providers is undefined)');
     });
   });
 });

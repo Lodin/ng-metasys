@@ -10,11 +10,16 @@ import {bootstrapModuleConfig} from './bootstrap-module-config';
 const moduleConfigTypes = ['value', 'constant', 'config', 'run'];
 
 export function bootstrapModule(declaration: any): string {
+  if (NgmsReflect.modules.has(declaration.name)) {
+    return declaration.name;
+  }
+
   if (!Reflect.hasMetadata('ngms:module', declaration.prototype)) {
     throw new Error(`${declaration.name} is not marked with @Module decorator`);
   }
 
   const metadata: ModuleMetadata = Reflect.getMetadata('ngms:module', declaration.prototype);
+  checkMetadata(declaration.name, metadata);
 
   const imports = metadata.imports ? initImports(metadata.imports) : [];
 
@@ -25,13 +30,13 @@ export function bootstrapModule(declaration: any): string {
     initDeclarations(ngModule, metadata.declarations);
   }
 
-  initConfig(ngModule, declaration);
-
   if (metadata.providers) {
     for (const provider of metadata.providers) {
       bootstrapProviders(ngModule, provider);
     }
   }
+
+  initConfig(ngModule, declaration);
 
   return ngModule.name;
 }
@@ -84,5 +89,21 @@ function initConfig(ngModule: angular.IModule, declaration: any) {
           break;
       }
     }
+  }
+}
+
+function checkMetadata(name: string, metadata: ModuleMetadata) {
+  let part: string;
+
+  if (metadata.imports && metadata.imports.indexOf(undefined) !== -1) {
+    part = 'import';
+  } else if (metadata.declarations && metadata.declarations.indexOf(undefined) !== -1) {
+    part = 'declaration';
+  } else if (metadata.providers && metadata.providers.indexOf(undefined) !== -1) {
+    part = 'provider';
+  }
+
+  if (part) {
+    throw new Error(`Module ${name} has broken ${part} (one or more ${part}s is undefined)`);
   }
 }
