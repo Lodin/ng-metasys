@@ -6,7 +6,7 @@ describe('Function `bootstrapProperty`', () => {
   it('should get the property metadata of decorated class', () => {
     const metadata = {$http: '$http'};
 
-    Reflect.defineMetadata('ngms:property', metadata, TestDeclaration);
+    Reflect.defineMetadata('ngms:property', metadata, TestDeclaration.prototype);
 
     const data = bootstrapProperty(TestDeclaration);
 
