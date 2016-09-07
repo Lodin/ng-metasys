@@ -6,7 +6,6 @@
     "noEmitHelpers": true,
     "noImplicitAny": true,
     "lib": ["es6", "dom"],
-    "mapRoot": "./",
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "../dist",
