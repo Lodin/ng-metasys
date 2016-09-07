@@ -358,6 +358,12 @@ angular.module('AppModule')
     this.$http.get('https://github.com');
   }]);
 ```
+**Note:** Technically this property injector is initialized at `run` section of Angular 
+module through the property getter. 
+**Note:** Not all injection are the same. If you use some sort of `resolve`,
+or the injection is created using the instance context, like `$scope`, `$transclude` 
+or `$uibModalInstance` from `angular-ui-bootstrap`, you should use "Inject into constructor" 
+variant. 
 
 * Inject into constructor:
 ```javascript
