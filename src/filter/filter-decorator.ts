@@ -7,5 +7,5 @@ export function Filter(target: any) {
     throw new Error(`Filter ${target.name} name should end with 'Filter' part`);
   }
 
-  Reflect.defineMetadata('ngms:filter', null, target);
+  Reflect.defineMetadata('ngms:filter', null, target.prototype);
 }

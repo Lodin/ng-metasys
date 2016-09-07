@@ -7,7 +7,7 @@ describe('Decorator `@Filter`', () => {
       public static execute() {}
     }
 
-    expect(Reflect.hasMetadata('ngms:filter', TestFilter)).toBeTruthy();
+    expect(Reflect.hasMetadata('ngms:filter', TestFilter.prototype)).toBeTruthy();
   });
 
   it('should throw an error if declaration does not have an static `execute` method', () => {
