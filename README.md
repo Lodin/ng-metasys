@@ -336,16 +336,15 @@ different AngularJS elements.
 `@Inject` allows to inject various providers into components, directives,
 other providers etc. `@Inject` can be used in following ways:
 
-* Inject into class property:
+* Inject into constructor parameter:
 ```javascript
 import {Service, Inject} from 'ng-metasys';
 import {SomeService} from './app/some.service';
 
 @Service
 export class SomeService {
-  @Inject('$http') $http;
-  
-  constructor() {
+  constructor(@Inject('$http') $http) {
+    this.$http = $http;
     this.$http.get('https://github.com');
   }
 }
@@ -358,12 +357,6 @@ angular.module('AppModule')
     this.$http.get('https://github.com');
   }]);
 ```
-**Note:** Technically this property injector is initialized at `run` section of Angular 
-module through the property getter. 
-**Note:** Not all injection are the same. If you use some sort of `resolve`,
-or the injection is created using the instance context, like `$scope`, `$transclude` 
-or `$uibModalInstance` from `angular-ui-bootstrap`, you should use "Inject into constructor" 
-variant. 
 
 * Inject into constructor:
 ```javascript

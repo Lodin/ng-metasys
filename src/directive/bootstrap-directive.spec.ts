@@ -146,27 +146,6 @@ describe('Function `bootstrapDirective`', () => {
     bootstrapDirective(ngModule, TestDirective);
   });
 
-  it('should add property injections (properties marked with @Inject) to directive data', () => {
-    decorate({selector: '[test-attribute]'});
-
-    bootstrapper.bootstrapInject.and.returnValue({
-      hasCommon: false,
-      hasProperties: true,
-      injectProperties: (declaration: any) => {
-        const service = new MockService();
-        Object.defineProperty(declaration, 'mockService', {get: () => service});
-      }
-    });
-
-    bootstrapper.unarm('property', 'transclude', 'link', 'meta');
-
-    spyOn(ngModule, 'directive').and.callFake((name: string, data: angular.IDirectiveFactory) => {
-      expect((<any> data().controller).prototype.mockService).toEqual(jasmine.any(MockService));
-    });
-
-    bootstrapDirective(ngModule, TestDirective);
-  });
-
   it('should add properties marked with @Property to directive data', () => {
     decorate({selector: '[test-attribute]'});
 

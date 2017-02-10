@@ -135,31 +135,6 @@ describe('Function `bootstrapComponent`', () => {
     bootstrapComponent(ngModule, TestComponent);
   });
 
-  it('should add property injections (properties marked with @Inject) to component data', () => {
-    decorate({selector: 'app-test'});
-
-    bootstrapper.bootstrapInject.and.returnValue({
-      hasCommon: false,
-      hasProperties: true,
-      injectProperties: (declaration: any) => {
-        const service = new MockService();
-        Object.defineProperty(declaration, 'mockService', {get: () => service});
-      }
-    });
-
-    bootstrapper.unarm('property', 'transclude', 'meta');
-
-    spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
-      expect(data).toEqual({
-        controller: TestComponent
-      });
-
-      expect((<any> data.controller).prototype.mockService).toEqual(jasmine.any(MockService));
-    });
-
-    bootstrapComponent(ngModule, TestComponent);
-  });
-
   it('should add properties marked with @Property to component data', () => {
     decorate({selector: 'app-test'});
 

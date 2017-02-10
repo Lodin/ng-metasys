@@ -3,7 +3,6 @@ import {bootstrapInject} from './bootstrap-inject';
 
 describe('Function `bootstrapInject`', () => {
   class MockInjectDeclaration {}
-  class MockService {}
   class TestDeclaration {
     public static config() {}
   }
@@ -29,10 +28,9 @@ describe('Function `bootstrapInject`', () => {
     const injector = bootstrapInject(TestDeclaration);
     expect(injector.hasCommon).toBeTruthy();
     expect(injector.hasMethods).not.toBeTruthy();
-    expect(injector.hasProperties).not.toBeTruthy();
 
     injector.injectCommon(TestDeclaration);
-    expect(TestDeclaration.$inject).toEqual(['$http', 'MockInjectDeclaration']);
+    expect((<any> TestDeclaration).$inject).toEqual(['$http', 'MockInjectDeclaration']);
   });
 
   it('should create DeclarationInjector instance with method injections', () => {
@@ -44,40 +42,23 @@ describe('Function `bootstrapInject`', () => {
 
     expect(injector.hasCommon).not.toBeTruthy();
     expect(injector.hasMethods).toBeTruthy();
-    expect(injector.hasProperties).not.toBeTruthy();
 
     injector.injectMethods(TestDeclaration, 'config');
 
-    expect(TestDeclaration.config.$inject).toEqual(['$http', 'MockInjectDeclaration']);
+    expect((TestDeclaration.config as any).$inject).toEqual(['$http', 'MockInjectDeclaration']);
   });
 
-  it('should create DeclarationInjector instance with property injections', () => {
-    spyOn(ngModule, 'run').and.callFake(([, runFn]: any[]) => {
-      runFn({get: () => new MockService()});
-    });
-
-    Reflect.defineMetadata('ngms:inject:property', {
-      $http: '$http',
-      mockInjectDeclaration: MockInjectDeclaration
-    }, TestDeclaration.prototype);
+  it('should create DeclarationInjector instance with constructor parameter injections', () => {
+    Reflect.defineMetadata('ngms:inject:param', [
+      '$http',
+      MockInjectDeclaration
+    ], TestDeclaration.prototype);
 
     const injector = bootstrapInject(TestDeclaration);
-
-    expect(injector.hasCommon).not.toBeTruthy();
+    expect(injector.hasCommon).toBeTruthy();
     expect(injector.hasMethods).not.toBeTruthy();
-    expect(injector.hasProperties).toBeTruthy();
 
-    injector.injectProperties(TestDeclaration.prototype, ngModule);
-
-    expect(Reflect.getMetadata('ngms:inject:property:get', TestDeclaration.prototype, '$http'))
-      .toEqual(jasmine.any(MockService));
-    expect(Reflect.getMetadata(
-      'ngms:inject:property:get',
-      TestDeclaration.prototype,
-      'mockInjectDeclaration'
-    ))
-      .toEqual(jasmine.any(MockService));
-
-    expect(ngModule.run).toHaveBeenCalled();
+    injector.injectCommon(TestDeclaration);
+    expect((TestDeclaration as any).$inject).toEqual(['$http', 'MockInjectDeclaration']);
   });
 });

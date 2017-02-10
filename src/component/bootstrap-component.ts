@@ -25,14 +25,8 @@ export function bootstrapComponent(ngModule: angular.IModule, declaration: any) 
   const properties = bootstrapProperty(declaration);
   const transclude = bootstrapTransclude(declaration);
 
-  if (injector) {
-    if (injector.hasCommon) {
-      injector.injectCommon(declaration);
-    }
-
-    if (injector.hasProperties) {
-      injector.injectProperties(declaration.prototype, ngModule);
-    }
+  if (injector && injector.hasCommon) {
+    injector.injectCommon(declaration);
   }
 
   if (properties) {

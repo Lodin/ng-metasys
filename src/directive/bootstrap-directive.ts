@@ -30,14 +30,8 @@ export function bootstrapDirective(ngModule: angular.IModule, declaration: any) 
   const transclude = bootstrapTransclude(declaration);
   const link = bootstrapLink(declaration);
 
-  if (injector) {
-    if (injector.hasCommon) {
-      injector.injectCommon(declaration);
-    }
-
-    if (injector.hasProperties) {
-      injector.injectProperties(declaration.prototype, ngModule);
-    }
+  if (injector && injector.hasCommon) {
+    injector.injectCommon(declaration);
   }
 
   if (properties) {

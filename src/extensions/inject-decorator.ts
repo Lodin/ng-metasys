@@ -1,13 +1,13 @@
 export function Inject(...injections: any[]): Function {
-  return (target: any, property?: string, decorator?: any) => {
+  return (target: any, property?: string, index?: number) => {
     if (property && target[property] && typeof target !== 'function') {
       throw new Error(`Method for injection in declaration ${target.name} should be static`);
     }
 
-    if (property && target[property]) {
+    if (index !== undefined && typeof index === 'number') {
+      ParamInject(injections, target);
+    } else if (property && target[property]) {
       MethodInject(injections, target, property);
-    } else if (property && !target[property]) {
-      PropertyInject(injections, target, property, decorator);
     } else {
       CommonInject(injections, target);
     }
@@ -27,30 +27,15 @@ function MethodInject(injections: any[], target: any, property: string) {
   Reflect.getMetadata('ngms:inject:method', target)[property] = injections;
 }
 
-function PropertyInject(injections: any[], target: any, property: string, decorator?: any) {
+function ParamInject(injections: any[], target: any) {
   if (injections.length > 1) {
-    throw new Error('Only one injection can be added to a property');
+    throw new Error('Only one injectable can be injected to the constructor parameter');
   }
 
-  if (decorator) {
-    delete decorator.writable;
-    delete decorator.initializer;
-    decorator.configurable = false;
-    decorator.get = () => Reflect.getMetadata('ngms:inject:property:get', target, property);
-  } else {
-    Object.defineProperty(target, property, {
-      configurable: false,
-      enumerable: true,
-      get: () => Reflect.getMetadata('ngms:inject:property:get', target, property)
-    });
-  }
-
-  const [injection] = injections;
-
-  if (!Reflect.hasMetadata('ngms:inject:property', target)) {
-    Reflect.defineMetadata('ngms:inject:property', {[property]: injection}, target);
+  if (!Reflect.hasMetadata('ngms:inject:param', target.prototype)) {
+    Reflect.defineMetadata('ngms:inject:param', injections, target.prototype);
     return;
   }
 
-  Reflect.getMetadata('ngms:inject:property', target)[property] = injection;
+  Reflect.getMetadata('ngms:inject:param', target.prototype).unshift(...injections);
 }

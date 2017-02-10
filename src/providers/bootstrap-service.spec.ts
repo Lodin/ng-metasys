@@ -65,32 +65,6 @@ describe('Function `bootstrapService`', () => {
     bootstrapService(ngModule, TestService);
   });
 
-  it('should add property injections to the service', () => {
-    class MockInjectService {
-    }
-
-    bootstrapper.unarm('meta');
-
-    bootstrapper.bootstrapInject.and.returnValue({
-      hasProperties: true,
-      injectProperties: (declaration: any) => {
-        const service = new MockInjectService();
-
-        Object.defineProperty(declaration, 'mockInjectService', {
-          configurable: false,
-          enumerable: true,
-          get: () => service
-        });
-      }
-    });
-
-    spyOn(ngModule, 'service').and.callFake((name: string, declaration: any) => {
-      expect(declaration.prototype.mockInjectService).toEqual(jasmine.any(MockInjectService));
-    });
-
-    bootstrapService(ngModule, TestService);
-  });
-
   it('should define a permanent metadata for a declaration', () => {
     bootstrapper.unarm('inject');
 
