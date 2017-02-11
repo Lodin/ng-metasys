@@ -55,7 +55,7 @@ describe('Function `bootstrapFilter`', () => {
     });
 
     spyOn(ngModule, 'filter').and.callFake((name: string, execute: Function) => {
-      expect(execute.$inject).toEqual(['$http', '$q']);
+      expect((execute as any).$inject).toEqual(['$http', '$q']);
     });
 
     bootstrapFilter(ngModule, TestFilter);

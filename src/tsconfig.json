@@ -1,15 +1,18 @@
 {
   "compilerOptions": {
+    "alwaysStrict": true,
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "importHelpers": true,
     "noEmitHelpers": true,
     "noImplicitAny": true,
-    "lib": ["es6", "dom"],
+    "lib": ["es6", "dom", "es2016.array.include"],
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "../dist",
     "sourceMap": true,
+    "strictNullChecks": true,
     "target": "es5",
     "typeRoots": [
       "../node_modules/@types"

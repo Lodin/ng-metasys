@@ -1,5 +1,5 @@
 export interface ModuleMetadata {
-  imports?: string[] | any[];
+  imports?: any[];
   declarations?: any[];
   providers?: any[];
 }

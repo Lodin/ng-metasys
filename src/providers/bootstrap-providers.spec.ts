@@ -15,7 +15,7 @@ class Bootstrapper {
     this.bootstrapService.and.returnValue(null);
   }
 
-  public getByType(type: string): Function {
+  public getByType(type: string): Function|null {
     switch (type) {
       case 'factory':
         return this.bootstrapFactory;

@@ -27,34 +27,36 @@
   },
   "homepage": "https://github.com/Lodin/ng-metasys#readme",
   "devDependencies": {
-    "@types/angular": "^1.5.12",
-    "@types/camelcase": "0.0.29",
-    "@types/jasmine": "^2.2.32",
-    "@types/reflect-metadata": "0.0.2",
-    "awesome-typescript-loader": "^2.2.1",
+    "@types/angular": "^1.5.7",
+    "@types/camelcase": "0.0.30",
+    "@types/jasmine": "^2.5.41",
+    "@types/reflect-metadata": "0.0.5",
+    "awesome-typescript-loader": "^3.0.4-rc.0",
     "codecov": "^1.0.1",
-    "jasmine-core": "^2.4.1",
-    "karma": "^1.2.0",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.4.1",
     "karma-chrome-launcher": "^2.0.0",
-    "karma-jasmine": "^1.0.2",
-    "karma-mocha-reporter": "^2.1.0",
-    "karma-remap-istanbul": "^0.2.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-mocha-reporter": "^2.2.2",
+    "karma-remap-istanbul": "^0.6.0",
     "karma-sourcemap-loader": "^0.3.7",
-    "karma-webpack": "^1.8.0",
+    "karma-webpack": "^2.0.2",
     "rimraf": "^2.5.4",
-    "source-map-loader": "^0.1.5",
+    "source-map-loader": "^0.1.6",
     "sourcemap-istanbul-instrumenter-loader": "^0.2.0",
-    "tslint": "^3.14.0",
-    "tslint-loader": "^2.1.5",
-    "typescript": "2.0.0",
-    "webpack": "^2.1.0-beta.21"
+    "tslint": "^4.4.2",
+    "tslint-loader": "^3.3.0",
+    "typescript": "^2.2.0-dev.20170210",
+    "webpack": "^2.2.1"
+  },
+  "optionalDependencies": {
+    "core-js": "^2.4.1"
   },
   "peerDependencies": {
     "angular": "^1.5.0",
-    "core-js": "^2.4.1",
-    "ts-helpers": "^1.1.1"
+    "tslib": "^1.5.0"
   },
   "dependencies": {
-    "camelcase": "^3.0.0"
+    "camelcase": "^4.0.0"
   }
 }

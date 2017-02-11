@@ -82,10 +82,10 @@ function initConfig(ngModule: angular.IModule, declaration: any) {
       switch (type) {
         case 'config':
         case 'run':
-          (<any> ngModule)[type](declaration[property]);
+          (ngModule as any)[type](declaration[property]);
           break;
         default:
-          (<any> ngModule)[type](property, declaration[property]);
+          (ngModule as any)[type](property, declaration[property]);
           break;
       }
     }
@@ -93,13 +93,13 @@ function initConfig(ngModule: angular.IModule, declaration: any) {
 }
 
 function checkMetadata(name: string, metadata: ModuleMetadata) {
-  let part: string;
+  let part: string|null = null;
 
-  if (metadata.imports && metadata.imports.indexOf(undefined) !== -1) {
+  if (metadata.imports && metadata.imports.includes(undefined)) {
     part = 'import';
-  } else if (metadata.declarations && metadata.declarations.indexOf(undefined) !== -1) {
+  } else if (metadata.declarations && metadata.declarations.includes(undefined)) {
     part = 'declaration';
-  } else if (metadata.providers && metadata.providers.indexOf(undefined) !== -1) {
+  } else if (metadata.providers && metadata.providers.includes(undefined)) {
     part = 'provider';
   }
 

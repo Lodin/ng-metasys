@@ -31,7 +31,7 @@ describe('Function `boostrapModuleConfig`', () => {
     });
 
     bootstrapModuleConfig(TestModule, 'config');
-    expect(TestModule.config1.$inject).toEqual(injections);
-    expect(TestModule.config2.$inject).toEqual(injections);
+    expect((TestModule.config1 as any).$inject).toEqual(injections);
+    expect((TestModule.config2 as any).$inject).toEqual(injections);
   });
 });

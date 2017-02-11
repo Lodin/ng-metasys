@@ -1,6 +1,6 @@
-var WebpackTestConfig = require('./webpack-test.conf');
+const WebpackTestConfig = require('./webpack-test.conf');
 
-module.exports = function (config) {
+module.exports = (config) => {
   config.set({
     basePath: '..',
     frameworks: ['jasmine'],
@@ -9,8 +9,7 @@ module.exports = function (config) {
       require('karma-chrome-launcher'),
       require('karma-remap-istanbul'),
       require('karma-webpack'),
-      require('karma-sourcemap-loader'),
-      require('karma-mocha-reporter')
+      require('karma-sourcemap-loader')
     ],
     customLaunchers: {
       Chrome_travis_ci: {
@@ -31,13 +30,13 @@ module.exports = function (config) {
         html: 'coverage/html'
       }
     },
-    reporters: ['mocha', 'karma-remap-istanbul'],
+    reporters: ['progress', 'karma-remap-istanbul'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: false,
+    autoWatch: true,
     browsers: ['Chrome'],
-    singleRun: true,
+    singleRun: false,
     concurrency: Infinity,
 
     noResolve: false,
@@ -62,6 +61,10 @@ module.exports = function (config) {
       mocha: {
         bail: true
       }
+    },
+
+    mime: {
+      'text/x-typescript': ['ts','tsx']
     }
   });
 };

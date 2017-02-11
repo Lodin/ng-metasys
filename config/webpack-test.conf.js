@@ -1,15 +1,14 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+const webpack = require('webpack');
 
-var projectRoot = path.resolve(__dirname, '..');
-var srcRoot = path.resolve(projectRoot, 'src');
+const projectRoot = path.resolve(__dirname, '..');
+const srcRoot = path.resolve(projectRoot, 'src');
 
 module.exports = {
   devtool: 'inline-source-map',
   context: srcRoot,
   resolve: {
-    extensions: ['', '.ts', '.js'],
-    root: srcRoot
+    extensions: ['.ts', '.js'],
   },
   entry: {
     test: './test.ts'
@@ -19,47 +18,41 @@ module.exports = {
     filename: '[name].bundle.js'
   },
   module: {
-    preLoaders: [
+    rules: [
       {
-        test: /\.ts$/,
+        test: /\.(ts|tsx)$/,
         loader: 'tslint-loader',
+        include: srcRoot,
         exclude: [
-          path.resolve(projectRoot, 'node_modules')
-        ]
+          /\.spec\.(ts|tsx)$/
+        ],
+        enforce: 'pre'
       },
       {
         test: /\.js$/,
+        enforce: 'pre',
         loader: 'source-map-loader',
         exclude: [
-          path.resolve(projectRoot, 'node_modules/angular')
+          /node_modules/
         ]
-      }
-    ],
-    loaders: [
+      },
       {
-        test: /\.ts$/,
-        loaders: [
-          {
-            loader: 'awesome-typescript-loader',
-            query: {
-              tsconfig: path.resolve(srcRoot, 'tsconfig.json'),
-              module: 'commonjs',
-              target: 'es5',
-              useForkChecker: true
-            }
-          }
-        ],
-        exclude: [/\.e2e\.ts$/]
-      }
-    ],
-    postLoaders: [
-      {
-        test: /\.(js|ts)$/, loader: 'sourcemap-istanbul-instrumenter-loader',
+        test: /\.(js|ts|tsx)$/, loader: 'sourcemap-istanbul-instrumenter-loader',
+        enforce: 'post',
         exclude: [
-          /\.(e2e|spec)\.ts$/,
+          /\.spec\.(ts|tsx)$/,
           /node_modules/
         ],
-        query: { 'force-sourcemap': true }
+        options: {'force-sourcemap': true}
+      },
+      {
+        test: /\.(ts|tsx)$/,
+        include: srcRoot,
+        loader: 'awesome-typescript-loader',
+        options: {
+          configFileName: path.resolve(srcRoot, 'tsconfig.json'),
+          forkChecker: true
+        }
       }
     ]
   },
@@ -67,18 +60,28 @@ module.exports = {
     new webpack.SourceMapDevToolPlugin({
       filename: null,
       test: /\.(ts|js)($|\?)/i
+    }),
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        context: srcRoot,
+        output: {
+          path: path.resolve(srcRoot, 'dist.test')
+        },
+        tslint: {
+          emitErrors: false,
+          failOnHint: false,
+          resourcePath: srcRoot
+        }
+      }
     })
   ],
-  tslint: {
-    emitErrors: false,
-    failOnHint: false,
-    resourcePath: srcRoot
-  },
   node: {
     fs: 'empty',
-    global: 'window',
-    process: false,
+    global: true,
     crypto: 'empty',
+    tls: 'empty',
+    net: 'empty',
+    process: true,
     module: false,
     clearImmediate: false,
     setImmediate: false

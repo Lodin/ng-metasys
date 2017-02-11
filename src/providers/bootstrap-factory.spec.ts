@@ -67,7 +67,7 @@ describe('Function `bootstrapFactory`', () => {
     });
 
     spyOn(ngModule, 'factory').and.callFake((name: string, fn: Function) => {
-      expect(fn.$inject).toEqual(metadata);
+      expect((fn as any).$inject).toEqual(metadata);
     });
 
     bootstrapFactory(ngModule, TestFactory);

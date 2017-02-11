@@ -1,6 +1,6 @@
 export class DeclarationInjector {
-  private _common: string[];
-  private _methods: {[method: string]: string[]};
+  private _common?: string[];
+  private _methods?: {[method: string]: string[]};
 
   constructor({common, methods}: {
     common?: string[],
@@ -19,11 +19,11 @@ export class DeclarationInjector {
   }
 
   public injectCommon(declaration: any) {
-    declaration.$inject = this._common;
+    declaration.$inject = this._common ? this._common : [];
   }
 
   public injectMethods(declaration: any, methodName: string) {
-    declaration[methodName].$inject = this._methods[methodName];
+    declaration[methodName].$inject = this._methods ? this._methods[methodName] : [];
   }
 }
 

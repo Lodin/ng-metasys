@@ -9,11 +9,11 @@ export function parseSelector(selector: string): string[] {
 
   switch (true) {
     case attributePattern.test(selector):
-      [, name] = attributePattern.exec(selector);
+      [, name] = attributePattern.exec(selector) as string[];
       restrict = 'A';
       break;
     case commentPattern.test(selector):
-      [, name] = commentPattern.exec(selector);
+      [, name] = commentPattern.exec(selector) as string[];
       restrict = 'M';
       break;
     case selector.charAt(0) === '.':
