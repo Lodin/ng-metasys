@@ -24,7 +24,8 @@ module.exports = {
         loader: 'tslint-loader',
         include: srcRoot,
         exclude: [
-          /\.spec\.(ts|tsx)$/
+          /\.spec\.(ts|tsx)$/,
+          /test.ts$/
         ],
         enforce: 'pre'
       },

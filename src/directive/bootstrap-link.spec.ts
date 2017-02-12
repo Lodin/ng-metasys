@@ -1,4 +1,4 @@
-import {bootstrapLink} from './bootstrap-link';
+import bootstrapLink from './bootstrap-link';
 
 describe('Function `bootstrapLink`', () => {
   class TestDirective {}

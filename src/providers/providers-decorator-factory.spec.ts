@@ -1,4 +1,4 @@
-import {providersDecoratorFactory} from './providers-decorator-factory';
+import providersDecoratorFactory from './providers-decorator-factory';
 
 describe('Function `providersDecoratorFactory`', () => {
   it('should define a provider metadata for decorated declaration', () => {

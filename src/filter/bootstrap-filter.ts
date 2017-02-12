@@ -1,23 +1,29 @@
 import * as angular from 'angular';
 import {NgmsReflect} from '../core';
-import {bootstrapInject} from '../extensions/bootstrap';
+import bootstrapInject from '../extensions/bootstrap-inject';
 
-export function bootstrapFilter(ngModule: angular.IModule, declaration: any) {
-  const inject = bootstrapInject(declaration);
+type ReduceName = (filterName: string) => string;
+const reduceName: ReduceName =
+  name =>
+    name.slice(0, name.indexOf('Filter'));
 
-  if (inject && inject.hasMethods) {
-    inject.injectMethods(declaration, 'execute');
-  }
+type BootstrapFilter = (ngModule: angular.IModule, declaration: any) => void;
+const bootstrapFilter: BootstrapFilter =
+  (ngModule, declaration) => {
+    const inject = bootstrapInject(declaration);
 
-  const name = reduceName(declaration.name);
-  ngModule.filter(name.toLowerCase(), declaration.execute);
+    if (inject && inject.hasMethods) {
+      inject.injectMethods(declaration, 'execute');
+    }
 
-  NgmsReflect.defineMetadata(declaration, 'filter', {
-    name,
-    instance: declaration.execute
-  });
-}
+    const name = reduceName(declaration.name);
+    ngModule.filter(name.toLowerCase(), declaration.execute);
 
-function reduceName(filterName: string) {
-  return filterName.slice(0, filterName.indexOf('Filter'));
-}
+    NgmsReflect.defineMetadata(declaration, 'filter', {
+      name,
+      instance: declaration.execute
+    });
+  };
+
+export {BootstrapFilter};
+export default bootstrapFilter;

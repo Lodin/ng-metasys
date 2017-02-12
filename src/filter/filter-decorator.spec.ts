@@ -1,4 +1,4 @@
-import {Filter} from './filter-decorator';
+import Filter from './filter-decorator';
 
 describe('Decorator `@Filter`', () => {
   it('should define filter metadata for a decorated declaration', () => {

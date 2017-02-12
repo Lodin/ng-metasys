@@ -1,20 +1,20 @@
 import * as angular from 'angular';
-import * as ExtensionBootstrapper from '../extensions/bootstrap';
-import {bootstrapService} from './bootstrap-service';
+import * as bootstrapInject from '../extensions/bootstrap-inject';
+import bootstrapService from './bootstrap-service';
 import {NgmsReflect} from '../core';
 
 class Bootstrapper {
-  public bootstrapInject = spyOn(ExtensionBootstrapper, 'bootstrapInject');
+  public bootstrapInject = spyOn(bootstrapInject, 'default');
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
   public unarm(...toUnarm: string[]) {
-    const hasAll = toUnarm.indexOf('all') !== -1;
+    const hasAll = toUnarm.includes('all');
 
-    if (toUnarm.indexOf('inject') !== -1 || hasAll) {
+    if (toUnarm.includes('inject') || hasAll) {
       this.bootstrapInject.and.returnValue(null);
     }
 
-    if (toUnarm.indexOf('meta') !== -1 || hasAll) {
+    if (toUnarm.includes('meta') || hasAll) {
       this.defineMetadata.and.returnValue(null);
     }
   }
@@ -42,7 +42,7 @@ describe('Function `bootstrapService`', () => {
 
     bootstrapService(ngModule, TestService);
 
-    expect(ExtensionBootstrapper.bootstrapInject).toHaveBeenCalled();
+    expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
     expect(ngModule.service).toHaveBeenCalled();
   });
 

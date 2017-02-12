@@ -1,18 +1,18 @@
 import * as angular from 'angular';
 import {NgmsReflect} from '../core';
-import * as ComponentBootstrapper from '../component/bootstrap';
-import * as DirectiveBootstrapper from '../directive/bootstrap';
-import * as FilterBootstrapper from '../filter/bootstrap';
-import * as ProviderBootstrapper from '../providers/bootstrap';
-import * as ModuleConfigBootstrapper from './bootstrap-module-config';
-import {bootstrapModule} from './bootstrap-module';
+import * as bootstrapComponent from '../component/bootstrap-component';
+import * as bootstrapDirective from '../directive/bootstrap-directive';
+import * as bootstrapFilter from '../filter/bootstrap-filter';
+import * as bootstrapProviders from '../providers/bootstrap-providers';
+import * as bootstrapModuleConfig from './bootstrap-module-config';
+import bootstrapModule from './bootstrap-module';
 
 class Bootstrapper {
-  public bootstrapComponent = spyOn(ComponentBootstrapper, 'bootstrapComponent');
-  public bootstrapDirective = spyOn(DirectiveBootstrapper, 'bootstrapDirective');
-  public bootstrapFilter = spyOn(FilterBootstrapper, 'bootstrapFilter');
-  public bootstrapProviders = spyOn(ProviderBootstrapper, 'bootstrapProviders');
-  public bootstrapModuleConfig = spyOn(ModuleConfigBootstrapper, 'bootstrapModuleConfig');
+  public bootstrapComponent = spyOn(bootstrapComponent, 'default');
+  public bootstrapDirective = spyOn(bootstrapDirective, 'default');
+  public bootstrapFilter = spyOn(bootstrapFilter, 'default');
+  public bootstrapProviders = spyOn(bootstrapProviders, 'default');
+  public bootstrapModuleConfig = spyOn(bootstrapModuleConfig, 'default');
 
   constructor() {
     this.bootstrapComponent.and.returnValue(null);

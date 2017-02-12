@@ -1,5 +1,5 @@
 import * as angular from 'angular';
-import {bootstrapInject} from './bootstrap-inject';
+import bootstrapInject from './bootstrap-inject';
 
 describe('Function `bootstrapInject`', () => {
   class MockInjectDeclaration {}
@@ -30,7 +30,7 @@ describe('Function `bootstrapInject`', () => {
     expect(injector.hasMethods).not.toBeTruthy();
 
     injector.injectCommon(TestDeclaration);
-    expect((<any> TestDeclaration).$inject).toEqual(['$http', 'MockInjectDeclaration']);
+    expect((TestDeclaration as any).$inject).toEqual(['$http', 'MockInjectDeclaration']);
   });
 
   it('should create DeclarationInjector instance with method injections', () => {

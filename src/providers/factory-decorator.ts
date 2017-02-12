@@ -1,3 +1,5 @@
-import {providersDecoratorFactory} from './providers-decorator-factory';
+import providersDecoratorFactory from './providers-decorator-factory';
 
-export const Factory = providersDecoratorFactory('factory');
+const Factory = providersDecoratorFactory('factory');
+
+export default Factory;

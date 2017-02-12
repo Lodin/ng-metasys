@@ -1,11 +1,16 @@
-export function Filter(target: any) {
-  if (!target.execute || typeof target !== 'function') {
-    throw new Error(`Filter ${target.name} should have static method 'execute'`);
-  }
+type FilterDecorator = (target: any) => void;
+const Filter: FilterDecorator =
+  target => {
+    if (!target.execute || typeof target !== 'function') {
+      throw new Error(`Filter ${target.name} should have static method 'execute'`);
+    }
 
-  if (target.name.slice(-6) !== 'Filter') {
-    throw new Error(`Filter ${target.name} name should end with 'Filter' part`);
-  }
+    if (target.name.slice(-6) !== 'Filter') {
+      throw new Error(`Filter ${target.name} name should end with 'Filter' part`);
+    }
 
-  Reflect.defineMetadata('ngms:filter', null, target.prototype);
-}
+    Reflect.defineMetadata('ngms:filter', null, target.prototype);
+  };
+
+export {FilterDecorator};
+export default Filter;

@@ -1,4 +1,4 @@
-import {parseSelector} from './parse-selector';
+import parseSelector from './parse-selector';
 
 describe('Function `parseSelector`', () => {
   it('should parse attribute selector', () => {

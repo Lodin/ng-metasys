@@ -1,15 +1,17 @@
 import * as angular from 'angular';
 import {NgmsReflect} from '../core';
-import * as ExtensionBootstrapper from '../extensions/bootstrap';
-import * as LinkBootstrapper from './bootstrap-link';
-import {bootstrapDirective} from './bootstrap-directive';
+import * as bootstrapInject from '../extensions/bootstrap-inject';
+import * as bootstrapProperty from '../extensions/bootstrap-property';
+import * as bootstrapTransclude from '../extensions/bootstrap-transclude';
+import * as bootstrapLink from './bootstrap-link';
+import bootstrapDirective from './bootstrap-directive';
 import {DirectiveMetadata} from './directive-metadata';
 
 class Bootstrapper {
-  public bootstrapInject = spyOn(ExtensionBootstrapper, 'bootstrapInject');
-  public bootstrapProperty = spyOn(ExtensionBootstrapper, 'bootstrapProperty');
-  public bootstrapTransclude = spyOn(ExtensionBootstrapper, 'bootstrapTransclude');
-  public bootstrapLink = spyOn(LinkBootstrapper, 'bootstrapLink');
+  public bootstrapInject = spyOn(bootstrapInject, 'default');
+  public bootstrapProperty = spyOn(bootstrapProperty, 'default');
+  public bootstrapTransclude = spyOn(bootstrapTransclude, 'default');
+  public bootstrapLink = spyOn(bootstrapLink, 'default');
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
   public unarm(...toUnarm: string[]) {
@@ -79,10 +81,10 @@ describe('Function `bootstrapDirective`', () => {
 
     bootstrapDirective(ngModule, TestDirective);
 
-    expect(ExtensionBootstrapper.bootstrapInject).toHaveBeenCalled();
-    expect(ExtensionBootstrapper.bootstrapProperty).toHaveBeenCalled();
-    expect(ExtensionBootstrapper.bootstrapTransclude).toHaveBeenCalled();
-    expect(LinkBootstrapper.bootstrapLink).toHaveBeenCalled();
+    expect(bootstrapInject.default).toHaveBeenCalled();
+    expect(bootstrapProperty.default).toHaveBeenCalled();
+    expect(bootstrapTransclude.default).toHaveBeenCalled();
+    expect(bootstrapLink.default).toHaveBeenCalled();
   });
 
   it('should allow using `templateUrl` metadata', () => {

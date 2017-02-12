@@ -1,4 +1,4 @@
-import {moduleConfigDecoratorFactory} from './module-config-decorator-factory';
+import moduleConfigDecoratorFactory from './module-config-decorator-factory';
 
 const Config = moduleConfigDecoratorFactory('config');
 

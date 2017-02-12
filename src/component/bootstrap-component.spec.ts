@@ -1,13 +1,15 @@
 import * as angular from 'angular';
 import {NgmsReflect} from '../core';
-import * as ExtensionBootstrapper from '../extensions/bootstrap';
-import {bootstrapComponent} from './bootstrap-component';
+import * as bootstrapInject from '../extensions/bootstrap-inject';
+import * as bootstrapProperty from '../extensions/bootstrap-property';
+import * as bootstrapTransclude from '../extensions/bootstrap-transclude';
+import bootstrapComponent from './bootstrap-component';
 import {ComponentMetadata} from './component-metadata';
 
 class Bootstrapper {
-  public bootstrapInject = spyOn(ExtensionBootstrapper, 'bootstrapInject');
-  public bootstrapProperty = spyOn(ExtensionBootstrapper, 'bootstrapProperty');
-  public bootstrapTransclude = spyOn(ExtensionBootstrapper, 'bootstrapTransclude');
+  public bootstrapInject = spyOn(bootstrapInject, 'default');
+  public bootstrapProperty = spyOn(bootstrapProperty, 'default');
+  public bootstrapTransclude = spyOn(bootstrapTransclude, 'default');
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
   public unarm(...toUnarm: string[]) {
@@ -70,9 +72,9 @@ describe('Function `bootstrapComponent`', () => {
 
     bootstrapComponent(ngModule, TestComponent);
 
-    expect(ExtensionBootstrapper.bootstrapInject).toHaveBeenCalled();
-    expect(ExtensionBootstrapper.bootstrapProperty).toHaveBeenCalled();
-    expect(ExtensionBootstrapper.bootstrapTransclude).toHaveBeenCalled();
+    expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
+    expect(bootstrapper.bootstrapProperty).toHaveBeenCalled();
+    expect(bootstrapper.bootstrapTransclude).toHaveBeenCalled();
   });
 
   it('should allow using `templateUrl` metadata', () => {

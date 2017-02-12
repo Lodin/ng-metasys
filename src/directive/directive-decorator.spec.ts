@@ -1,4 +1,4 @@
-import {Directive} from './directive-decorator';
+import Directive from './directive-decorator';
 import {DirectiveMetadata} from './directive-metadata';
 
 describe('Decorator `@Directive`', () => {

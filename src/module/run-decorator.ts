@@ -1,3 +1,5 @@
-import {moduleConfigDecoratorFactory} from './module-config-decorator-factory';
+import moduleConfigDecoratorFactory from './module-config-decorator-factory';
 
-export const Run = moduleConfigDecoratorFactory('run');
+const Run = moduleConfigDecoratorFactory('run');
+
+export default Run;

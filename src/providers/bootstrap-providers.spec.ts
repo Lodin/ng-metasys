@@ -1,13 +1,13 @@
 import * as angular from 'angular';
-import * as FactoryBoottrapper from './bootstrap-factory';
-import * as ProviderBootstrapper from './bootstrap-provider';
-import * as ServiceBootstrapper from './bootstrap-service';
-import {bootstrapProviders} from './bootstrap-providers';
+import * as bootstrapFactory from './bootstrap-factory';
+import * as bootstrapProvider from './bootstrap-provider';
+import * as bootstrapService from './bootstrap-service';
+import bootstrapProviders from './bootstrap-providers';
 
 class Bootstrapper {
-  public bootstrapFactory = spyOn(FactoryBoottrapper, 'bootstrapFactory');
-  public bootstrapProvider = spyOn(ProviderBootstrapper, 'bootstrapProvider');
-  public bootstrapService = spyOn(ServiceBootstrapper, 'bootstrapService');
+  public bootstrapFactory = spyOn(bootstrapFactory, 'default');
+  public bootstrapProvider = spyOn(bootstrapProvider, 'default');
+  public bootstrapService = spyOn(bootstrapService, 'default');
 
   constructor() {
     this.bootstrapFactory.and.returnValue(null);

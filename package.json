@@ -4,11 +4,13 @@
   "description": "A decorator framework for AngularJS that makes easy using Angular meta-info with ES2015 modules",
   "main": "dist/index.js",
   "scripts": {
-    "build": "npm run tsc && npm run remove:specs",
-    "tsc": "tsc -p src ",
-    "remove:specs": "rimraf \"dist/**/*.spec.js\" \"dist/**/*.spec.js.map\" \"dist/**/*.spec.d.ts\"",
+    "build": "npm run rm:dist && npm run tsc && npm run copy:dts",
+    "copy:dts": "cd src && copyfiles **/*.d.ts ../dist",
+    "lint": "tslint -c src/tslint.json src/**/*.ts -e src/**/*.spec.ts -e src/test.ts",
     "prepublish": "npm run build",
-    "test": "karma start config/karma.conf.js"
+    "rm:dist": "rimraf dist",
+    "test": "karma start config/karma.conf.js",
+    "tsc": "tsc -p src"
   },
   "repository": {
     "type": "git",
@@ -33,6 +35,7 @@
     "@types/reflect-metadata": "0.0.5",
     "awesome-typescript-loader": "^3.0.4-rc.0",
     "codecov": "^1.0.1",
+    "copyfiles": "^1.2.0",
     "jasmine-core": "^2.5.2",
     "karma": "^1.4.1",
     "karma-chrome-launcher": "^2.0.0",
@@ -45,6 +48,7 @@
     "source-map-loader": "^0.1.6",
     "sourcemap-istanbul-instrumenter-loader": "^0.2.0",
     "tslint": "^4.4.2",
+    "tslint-eslint-rules": "^3.3.0",
     "tslint-loader": "^3.3.0",
     "typescript": "^2.2.0-dev.20170210",
     "webpack": "^2.2.1"

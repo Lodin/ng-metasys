@@ -1,5 +1,13 @@
-import * as ExtensionBootstrapper from '../extensions/bootstrap';
-import {bootstrapModuleConfig} from './bootstrap-module-config';
+import * as bootstrapInject from '../extensions/bootstrap-inject';
+import bootstrapModuleConfig from './bootstrap-module-config';
+
+class Bootstrapper {
+  public bootstrapInject = spyOn(bootstrapInject, 'default');
+
+  public unarm(): void {
+    this.bootstrapInject.and.returnValue(null);
+  }
+}
 
 describe('Function `boostrapModuleConfig`', () => {
   class TestModule {
@@ -7,30 +15,31 @@ describe('Function `boostrapModuleConfig`', () => {
     public static config2() {}
   }
 
-  const metadata = ['config1', 'config2'];
+  let bootstrapper: Bootstrapper;
 
-  const unarmInject = () => spyOn(ExtensionBootstrapper, 'bootstrapInject').and.returnValue(null);
+  const metadata = ['config1', 'config2'];
 
   beforeEach(() => {
     Reflect.defineMetadata('ngms:module:config', metadata, TestModule);
+    bootstrapper = new Bootstrapper();
   });
 
   it('should get the module config metadata of decorated declaration', () => {
-    unarmInject();
-    expect(bootstrapModuleConfig(TestModule, 'config')).toEqual(metadata);
+    bootstrapper.unarm();
+    expect(bootstrapModuleConfig(TestModule, 'ngms:module:config')).toEqual(metadata);
   });
 
   it('should add injections to config functions', () => {
     const injections = ['$http', '$q'];
 
-    spyOn(ExtensionBootstrapper, 'bootstrapInject').and.returnValue({
+    bootstrapper.bootstrapInject.and.returnValue({
       hasMethods: true,
       injectMethods: (declaration: any, methodName: string) => {
         declaration[methodName].$inject = injections;
       }
     });
 
-    bootstrapModuleConfig(TestModule, 'config');
+    bootstrapModuleConfig(TestModule, 'ngms:module:config');
     expect((TestModule.config1 as any).$inject).toEqual(injections);
     expect((TestModule.config2 as any).$inject).toEqual(injections);
   });

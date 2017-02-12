@@ -1,3 +1,5 @@
-import {moduleConfigDecoratorFactory} from './module-config-decorator-factory';
+import moduleConfigDecoratorFactory from './module-config-decorator-factory';
 
-export const Config = moduleConfigDecoratorFactory('config');
+const Config = moduleConfigDecoratorFactory('config');
+
+export default Config;

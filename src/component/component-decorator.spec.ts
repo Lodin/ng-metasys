@@ -1,4 +1,4 @@
-import {Component} from './component-decorator';
+import Component from './component-decorator';
 import {ComponentMetadata} from './component-metadata';
 
 describe('Decorator `@Component`', () => {

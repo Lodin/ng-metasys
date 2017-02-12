@@ -3,28 +3,33 @@ import * as camelCase from 'camelcase';
 const attributePattern = /\[(.+?)\]/;
 const commentPattern = /\/\/(.+)/;
 
-export function parseSelector(selector: string): string[] {
-  let name: string;
-  let restrict: string;
+type ParseSelector = (selector: string) => string[];
+const parseSelector: ParseSelector =
+  selector => {
+    let name: string;
+    let restrict: string;
 
-  switch (true) {
-    case attributePattern.test(selector):
-      [, name] = attributePattern.exec(selector) as string[];
-      restrict = 'A';
-      break;
-    case commentPattern.test(selector):
-      [, name] = commentPattern.exec(selector) as string[];
-      restrict = 'M';
-      break;
-    case selector.charAt(0) === '.':
-      name = selector.slice(1);
-      restrict = 'C';
-      break;
-    default:
-      name = selector;
-      restrict = 'E';
-      break;
-  }
+    switch (true) {
+      case attributePattern.test(selector):
+        [, name] = attributePattern.exec(selector) as string[];
+        restrict = 'A';
+        break;
+      case commentPattern.test(selector):
+        [, name] = commentPattern.exec(selector) as string[];
+        restrict = 'M';
+        break;
+      case selector.charAt(0) === '.':
+        name = selector.slice(1);
+        restrict = 'C';
+        break;
+      default:
+        name = selector;
+        restrict = 'E';
+        break;
+    }
 
-  return [camelCase(name), restrict];
-}
+    return [camelCase(name), restrict];
+  };
+
+export {ParseSelector};
+export default parseSelector;

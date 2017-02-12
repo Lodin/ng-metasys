@@ -1,4 +1,4 @@
-import {bootstrapTransclude} from './bootstrap-transclude';
+import bootstrapTransclude from './bootstrap-transclude';
 
 describe('Function `bootstrapTransclude`', () => {
   class TestDeclaration {}

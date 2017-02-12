@@ -1,4 +1,4 @@
-import {Inject} from './inject-decorator';
+import Inject from './inject-decorator';
 
 describe('Decorator `@Inject`', () => {
   class MockInject {

@@ -1,4 +1,4 @@
-import {bootstrapProperty} from './bootstrap-property';
+import bootstrapProperty from './bootstrap-property';
 
 describe('Function `bootstrapProperty`', () => {
   class TestDeclaration {}

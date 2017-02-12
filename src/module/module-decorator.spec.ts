@@ -1,4 +1,4 @@
-import {Module} from './module-decorator';
+import Module from './module-decorator';
 import {ModuleMetadata} from './module-metadata';
 
 describe('Decorator `Module`', () => {

@@ -1,10 +1,10 @@
 import * as angular from 'angular';
 import {NgmsReflect} from '../core';
-import * as ExtensionBootstrapper from '../extensions/bootstrap';
-import {bootstrapProvider} from './bootstrap-provider';
+import * as bootstrapInject from '../extensions/bootstrap-inject';
+import bootstrapProvider from './bootstrap-provider';
 
 class Bootstrapper {
-  public bootstrapInject = spyOn(ExtensionBootstrapper, 'bootstrapInject');
+  public bootstrapInject = spyOn(bootstrapInject, 'default');
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
   public unarm(...toUnarm: string[]) {
@@ -43,7 +43,7 @@ describe('Function `bootstrapProvider`', () => {
 
     bootstrapProvider(ngModule, TestProvider);
 
-    expect(ExtensionBootstrapper.bootstrapInject).toHaveBeenCalled();
+    expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
     expect(ngModule.provider).toHaveBeenCalled();
   });
 

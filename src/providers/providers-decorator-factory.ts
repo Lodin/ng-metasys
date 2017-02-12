@@ -1,6 +1,10 @@
 import {Decorator} from '../core/decorator';
 
-export function providersDecoratorFactory(type: string): Decorator {
-  return (declaration: any) =>
-    Reflect.defineMetadata(`ngms:providers:${type}`, null, declaration.prototype);
-}
+type ProvidersDecoratorFactory = (type: string) => Decorator;
+const providersDecoratorFactory: ProvidersDecoratorFactory =
+  type =>
+    declaration =>
+      Reflect.defineMetadata(`ngms:providers:${type}`, null, declaration.prototype);
+
+export {ProvidersDecoratorFactory};
+export default providersDecoratorFactory;

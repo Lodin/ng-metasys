@@ -1,3 +1,9 @@
-export function bootstrapTransclude(declaration: any): boolean|{[slot: string]: string} {
-  return Reflect.getMetadata('ngms:transclude', declaration.prototype);
-}
+import {SlotCollection} from './slot-collection';
+
+type BootstrapTransclude = (declaration: any) => boolean|SlotCollection;
+const bootstrapTransclude: BootstrapTransclude =
+  declaration =>
+    Reflect.getMetadata('ngms:transclude', declaration.prototype);
+
+export {BootstrapTransclude};
+export default bootstrapTransclude;

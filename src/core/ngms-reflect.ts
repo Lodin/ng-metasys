@@ -1,9 +1,11 @@
 import * as angular from 'angular';
 
-const types = ['component', 'directive', 'filter', 'service', 'factory', 'provider'];
+const types =
+  ['component', 'directive', 'filter', 'service', 'factory', 'provider']
+    .map(type => `ngms:permanent:${type}`);
 
 export class NgmsReflect {
-  private static  _modules = new Map<string, angular.IModule>();
+  private static _modules = new Map<string, angular.IModule>();
 
   public static get modules() {
     return this._modules;
@@ -15,10 +17,8 @@ export class NgmsReflect {
 
   public static getMetadata(declaration: any) {
     for (const type of types) {
-      const namespace = `ngms:permanent:${type}`;
-
-      if (Reflect.hasMetadata(namespace, declaration.prototype)) {
-        return Reflect.getMetadata(namespace, declaration.prototype);
+      if (Reflect.hasMetadata(type, declaration.prototype)) {
+        return Reflect.getMetadata(type, declaration.prototype);
       }
     }
   }

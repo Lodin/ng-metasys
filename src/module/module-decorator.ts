@@ -1,7 +1,11 @@
 import {ModuleMetadata} from './module-metadata';
+import metadata = Reflect.metadata;
 
-export function Module(metadata: ModuleMetadata): Function {
-  return (target: any) => {
-    Reflect.defineMetadata('ngms:module', metadata, target.prototype);
-  };
-}
+type ModuleDecorator = (metadata: ModuleMetadata) => (target: any) => void;
+const Module: ModuleDecorator =
+  metadata =>
+    target =>
+      Reflect.defineMetadata('ngms:module', metadata, target.prototype);
+
+export {ModuleDecorator};
+export default Module;

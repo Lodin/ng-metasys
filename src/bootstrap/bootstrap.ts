@@ -1,7 +1,10 @@
 import * as angular from 'angular';
-import {bootstrapModule} from '../module/bootstrap';
+import bootstrapModule from '../module/bootstrap-module';
 
-export function bootstrap(module: any, element: Element|JQuery|Document = document) {
-  const moduleName = bootstrapModule(module);
-  angular.bootstrap(element, [moduleName]);
-}
+type Bootstrap = (module: any, element?: Element|JQuery|Document) => angular.auto.IInjectorService;
+const bootstrap: Bootstrap =
+  (module, element = document) =>
+    angular.bootstrap(element as Element|JQuery|Document, [bootstrapModule(module)]);
+
+export {Bootstrap};
+export default bootstrap;
