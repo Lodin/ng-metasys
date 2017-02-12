@@ -119,7 +119,7 @@ using the extension decorators like `Transclude`.
 
 Your `app.component.js` can look like following:
 ```javascript
-import {Component, Inject, Transclude, Property} from 'ng-metasys';
+import {Component, Inject, Transclude, Bind} from 'ng-metasys';
 
 @Component({
   selector: 'my-app',
@@ -134,8 +134,8 @@ export class AppComponent {
   @Inject('$http') $http;
   @Inject('$q') $q;
   
-  @Property('<') $router;
-  @Property('&') onClick;
+  @Bind('<') $router;
+  @Bind('&') onClick;
 }
 ```
 Which is an equivalent to the following code:
@@ -195,7 +195,7 @@ to control HTML elements directly.
 
 Your `some.directive.js` can look like following:
 ```javascript
-import {Directive, Link, Inject, Property} from 'ng-metasys';
+import {Directive, Link, Inject, Bind} from 'ng-metasys';
 
 @Directive({
   selector: '[some-directive]',
@@ -204,7 +204,7 @@ import {Directive, Link, Inject, Property} from 'ng-metasys';
 export class SomeDirective {
   @Inject('$q') $q;
   
-  @Property('&') close;
+  @Bind('&') close;
   
   @Link
   static link(scope, element, attrs, controllers) {}
@@ -394,18 +394,18 @@ angular.module('AppModule', [])
   .config(['$q', function config($q) {}])
 ```
 
-### @Property
-Property is used in components and directives as elements of `bindings`
-and `bindToController` sections respectively. So, if you have following code:
+### @Bind
+`Bind` is used in components and directives as elements of `bindings` and 
+`bindToController` sections respectively. So, if you have following code:
 ```javascript
-import {Component, Property} from 'ng-metasys';
+import {Component, Bind} from 'ng-metasys';
 
 @Component({
   selector: 'my-some',
   template: '<div></div>'
 })
 export class SomeComponent {
-  @Property('<') myProperty;
+  @Bind('<') myBindingProperty;
 }
 ```
 It is an equivalent to the following construction:
@@ -415,7 +415,7 @@ angular.module('AppModule')
     template: '<div></div>',
     controller: function SomeComponent() {},
     bindings: {
-      myProperty: '<'
+      myBindingProperty: '<'
     }
   });
 ```
@@ -465,9 +465,6 @@ angular.module('AppModule')
       title: '?paneTitle',
       body: 'paneBody',
       footer: '?paneFooter'
-    },
-    bindings: {
-      myProperty: '<'
     }
   });
 ```
@@ -494,7 +491,7 @@ It contains two main resources:
   
 So, for the simple component:
 ```javascript
-import {Component, Transclude, Property} from 'ng-metasys';
+import {Component, Transclude, Bind} from 'ng-metasys';
 
 @Component({
   selector: 'my-app',
@@ -502,8 +499,8 @@ import {Component, Transclude, Property} from 'ng-metasys';
 })
 @Transclude()
 export class AppComponent {
-  @Property('<') $router;
-  @Property('&') onClick;
+  @Bind('<') $router;
+  @Bind('&') onClick;
 }
 ```
 You can get following metadata:

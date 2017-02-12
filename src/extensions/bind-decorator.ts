@@ -1,6 +1,6 @@
-type PropertyDecorator =
+type BindDecorator =
   (type: string) => (target: any, property: string, descriptor?: PropertyDescriptor) => void;
-const Property: PropertyDecorator =
+const Bind: BindDecorator =
   type =>
     (target, property, descriptor) => {
       if (descriptor) {
@@ -9,13 +9,13 @@ const Property: PropertyDecorator =
         descriptor.enumerable = true;
       }
 
-      if (!Reflect.hasMetadata('ngms:property', target)) {
-        Reflect.defineMetadata('ngms:property', {[property]: type}, target);
+      if (!Reflect.hasMetadata('ngms:binding', target)) {
+        Reflect.defineMetadata('ngms:binding', {[property]: type}, target);
         return;
       }
 
-      Reflect.getMetadata('ngms:property', target)[property] = type;
+      Reflect.getMetadata('ngms:binding', target)[property] = type;
     };
 
-export {PropertyDecorator};
-export default Property;
+export {BindDecorator};
+export default Bind;

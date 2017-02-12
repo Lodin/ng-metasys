@@ -1,14 +1,14 @@
 import * as angular from 'angular';
 import {NgmsReflect} from '../core';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
-import * as bootstrapProperty from '../extensions/bootstrap-property';
+import * as bootstrapBind from '../extensions/bootstrap-bind';
 import * as bootstrapTransclude from '../extensions/bootstrap-transclude';
 import bootstrapComponent from './bootstrap-component';
 import {ComponentMetadata} from './component-metadata';
 
 class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapInject, 'default');
-  public bootstrapProperty = spyOn(bootstrapProperty, 'default');
+  public bootstrapBind = spyOn(bootstrapBind, 'default');
   public bootstrapTransclude = spyOn(bootstrapTransclude, 'default');
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
@@ -19,8 +19,8 @@ class Bootstrapper {
       this.bootstrapInject.and.returnValue(null);
     }
 
-    if (toUnarm.indexOf('property') !== -1 || hasAll) {
-      this.bootstrapProperty.and.returnValue(null);
+    if (toUnarm.indexOf('bind') !== -1 || hasAll) {
+      this.bootstrapBind.and.returnValue(null);
     }
 
     if (toUnarm.indexOf('transclude') !== -1 || hasAll) {
@@ -73,7 +73,7 @@ describe('Function `bootstrapComponent`', () => {
     bootstrapComponent(ngModule, TestComponent);
 
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
-    expect(bootstrapper.bootstrapProperty).toHaveBeenCalled();
+    expect(bootstrapper.bootstrapBind).toHaveBeenCalled();
     expect(bootstrapper.bootstrapTransclude).toHaveBeenCalled();
   });
 
@@ -124,7 +124,7 @@ describe('Function `bootstrapComponent`', () => {
       }
     });
 
-    bootstrapper.unarm('property', 'transclude', 'meta');
+    bootstrapper.unarm('bind', 'transclude', 'meta');
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
       expect(data).toEqual({
@@ -140,7 +140,7 @@ describe('Function `bootstrapComponent`', () => {
   it('should add properties marked with @Property to component data', () => {
     decorate({selector: 'app-test'});
 
-    bootstrapper.bootstrapProperty.and.returnValue({
+    bootstrapper.bootstrapBind.and.returnValue({
       someObject: '<',
       someString: '@',
       someExpr: '&'
@@ -165,7 +165,7 @@ describe('Function `bootstrapComponent`', () => {
   it('should add transclude defined with @Transclude to component data', () => {
     decorate({selector: 'app-test'});
 
-    bootstrapper.unarm('inject', 'property', 'meta');
+    bootstrapper.unarm('inject', 'bind', 'meta');
     bootstrapper.bootstrapTransclude.and.returnValue({slot: 'testSlot'});
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
@@ -185,7 +185,7 @@ describe('Function `bootstrapComponent`', () => {
     };
 
     decorate(metadata);
-    bootstrapper.unarm('inject', 'property', 'transclude');
+    bootstrapper.unarm('inject', 'bind', 'transclude');
 
     bootstrapper.defineMetadata.and.callFake(
       (declaration: any, type: string, data: angular.IComponentOptions) => {

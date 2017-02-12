@@ -4,7 +4,7 @@ export {NgmsReflect} from './core/ngms-reflect';
 export {default as Directive} from './directive/directive-decorator';
 export {default as Link} from './directive/link-decorator';
 export {default as Inject} from './extensions/inject-decorator';
-export {default as Property} from './extensions/property-decorator';
+export {default as Bind} from './extensions/bind-decorator';
 export {default as Transclude} from './extensions/transclude-decorator';
 export {default as Filter} from './filter/filter-decorator';
 export {default as Module} from './module/module-decorator';

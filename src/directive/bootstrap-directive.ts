@@ -1,7 +1,7 @@
 import * as angular from 'angular';
 import {NgmsReflect} from '../core';
 import bootstrapInject from '../extensions/bootstrap-inject';
-import bootstrapProperty from '../extensions/bootstrap-property';
+import bootstrapBind from '../extensions/bootstrap-bind';
 import bootstrapTransclude from '../extensions/bootstrap-transclude';
 import {DirectiveMetadata} from './directive-metadata';
 import bootstrapLink from './bootstrap-link';
@@ -31,7 +31,7 @@ const bootstrapDirective: BootstrapDirective =
     }
 
     const injector = bootstrapInject(declaration);
-    const properties = bootstrapProperty(declaration);
+    const properties = bootstrapBind(declaration);
     const transclude = bootstrapTransclude(declaration);
     const link = bootstrapLink(declaration);
 

@@ -1,7 +1,7 @@
 import * as angular from 'angular';
 import {NgmsReflect} from '../core';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
-import * as bootstrapProperty from '../extensions/bootstrap-property';
+import * as bootstrapBind from '../extensions/bootstrap-bind';
 import * as bootstrapTransclude from '../extensions/bootstrap-transclude';
 import * as bootstrapLink from './bootstrap-link';
 import bootstrapDirective from './bootstrap-directive';
@@ -9,7 +9,7 @@ import {DirectiveMetadata} from './directive-metadata';
 
 class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapInject, 'default');
-  public bootstrapProperty = spyOn(bootstrapProperty, 'default');
+  public bootstrapProperty = spyOn(bootstrapBind, 'default');
   public bootstrapTransclude = spyOn(bootstrapTransclude, 'default');
   public bootstrapLink = spyOn(bootstrapLink, 'default');
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
@@ -21,7 +21,7 @@ class Bootstrapper {
       this.bootstrapInject.and.returnValue(null);
     }
 
-    if (toUnarm.indexOf('property') !== -1 || hasAll) {
+    if (toUnarm.indexOf('bind') !== -1 || hasAll) {
       this.bootstrapProperty.and.returnValue(null);
     }
 
@@ -82,7 +82,7 @@ describe('Function `bootstrapDirective`', () => {
     bootstrapDirective(ngModule, TestDirective);
 
     expect(bootstrapInject.default).toHaveBeenCalled();
-    expect(bootstrapProperty.default).toHaveBeenCalled();
+    expect(bootstrapBind.default).toHaveBeenCalled();
     expect(bootstrapTransclude.default).toHaveBeenCalled();
     expect(bootstrapLink.default).toHaveBeenCalled();
   });
@@ -139,7 +139,7 @@ describe('Function `bootstrapDirective`', () => {
       }
     });
 
-    bootstrapper.unarm('property', 'transclude', 'link', 'meta');
+    bootstrapper.unarm('bind', 'transclude', 'link', 'meta');
 
     spyOn(ngModule, 'directive').and.callFake((name: string, data: angular.IDirectiveFactory) => {
       expect((<any> data().controller).$inject).toEqual(['$http', '$q']);
@@ -179,7 +179,7 @@ describe('Function `bootstrapDirective`', () => {
   it('should add transclude defined with @Transclude to directive data', () => {
     decorate({selector: '[test-attribute]'});
 
-    bootstrapper.unarm('inject', 'property', 'link', 'meta');
+    bootstrapper.unarm('inject', 'bind', 'link', 'meta');
     bootstrapper.bootstrapTransclude.and.returnValue({slot: 'testSlot'});
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IDirectiveFactory) => {
@@ -198,7 +198,7 @@ describe('Function `bootstrapDirective`', () => {
   it('should add link function defined with @Link to directive data', () => {
     decorate({selector: '[test-attribute]'});
 
-    bootstrapper.unarm('inject', 'property', 'transclude');
+    bootstrapper.unarm('inject', 'bind', 'transclude');
     bootstrapper.bootstrapLink.and.returnValue('link');
 
     spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IDirectiveFactory) => {
@@ -223,7 +223,7 @@ describe('Function `bootstrapDirective`', () => {
     };
 
     decorate(metadata);
-    bootstrapper.unarm('inject', 'property', 'transclude');
+    bootstrapper.unarm('inject', 'bind', 'transclude');
 
     bootstrapper.defineMetadata.and.callFake(
       (declaration: any, type: string, data: angular.IDirective) => {

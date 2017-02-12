@@ -2,7 +2,7 @@ import * as angular from 'angular';
 import * as camelCase from 'camelcase';
 import {NgmsReflect} from '../core';
 import bootstrapInject from '../extensions/bootstrap-inject';
-import bootstrapProperty from '../extensions/bootstrap-property';
+import bootstrapBind from '../extensions/bootstrap-bind';
 import bootstrapTransclude from '../extensions/bootstrap-transclude';
 import {ComponentMetadata} from './component-metadata';
 
@@ -27,7 +27,7 @@ const bootstrapComponent: BootstrapComponent =
     }
 
     const injector = bootstrapInject(declaration);
-    const properties = bootstrapProperty(declaration);
+    const properties = bootstrapBind(declaration);
     const transclude = bootstrapTransclude(declaration);
 
     if (injector && injector.hasCommon) {
