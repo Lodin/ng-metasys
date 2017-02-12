@@ -17,7 +17,7 @@ before_install:
   - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
   - sudo dpkg -i google-chrome*.deb
   - npm -g install npm@latest
-before_script: npm install angular core-js tslib
+  - npm install angular core-js tslib
 script: npm test -- --timeout 15000
 after_success:
   - cat coverage/lcov/lcov.info | ./node_modules/.bin/codecov
