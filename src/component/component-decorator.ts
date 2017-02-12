@@ -1,3 +1,4 @@
+import * as tokens from '../core/tokens';
 import {ComponentMetadata} from './component-metadata';
 
 type ComponentDecorator = (metadata: ComponentMetadata) => (target: any) => void;
@@ -8,7 +9,7 @@ const Component: ComponentDecorator =
         throw new Error(`Component ${target.name} should have a selector`);
       }
 
-      Reflect.defineMetadata('ngms:component', metadata, target.prototype);
+      Reflect.defineMetadata(tokens.component, metadata, target.prototype);
     };
 
 export {ComponentDecorator};

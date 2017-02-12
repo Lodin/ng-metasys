@@ -1,3 +1,4 @@
+import * as tokens from '../core/tokens';
 import Module from './module-decorator';
 import {ModuleMetadata} from './module-metadata';
 
@@ -10,6 +11,6 @@ describe('Decorator `Module`', () => {
     @Module(metadata)
     class TestModule {}
 
-    expect(Reflect.getMetadata('ngms:module', TestModule.prototype)).toEqual(metadata);
+    expect(Reflect.getMetadata(tokens.module.self, TestModule.prototype)).toEqual(metadata);
   });
 });

@@ -1,4 +1,5 @@
 import * as angular from 'angular';
+import * as tokens from '../core/tokens';
 import {NgmsReflect} from '../core/ngms-reflect';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
 import * as bootstrapBind from '../extensions/bootstrap-bind';
@@ -40,7 +41,7 @@ describe('Function `bootstrapComponent`', () => {
   }
 
   const decorate = (metadata: ComponentMetadata) =>
-    Reflect.defineMetadata('ngms:component', metadata, TestComponent.prototype);
+    Reflect.defineMetadata(tokens.component, metadata, TestComponent.prototype);
 
   let ngModule: angular.IModule;
   let bootstrapper: Bootstrapper;
@@ -51,7 +52,7 @@ describe('Function `bootstrapComponent`', () => {
   });
 
   afterEach(() => {
-    Reflect.deleteMetadata('ngms:component', TestComponent.prototype);
+    Reflect.deleteMetadata(tokens.component, TestComponent.prototype);
   });
 
   it('should generate a component data fitting to the raw angular component metadata', () => {
@@ -188,9 +189,9 @@ describe('Function `bootstrapComponent`', () => {
     bootstrapper.unarm('inject', 'bind', 'transclude');
 
     bootstrapper.defineMetadata.and.callFake(
-      (declaration: any, type: string, data: angular.IComponentOptions) => {
+      (declaration: any, type: symbol, data: angular.IComponentOptions) => {
         expect(declaration).toEqual(TestComponent);
-        expect(type).toEqual('component');
+        expect(type).toEqual(tokens.permanent.component);
         expect(data).toEqual({
           name: 'appTest',
           template: '<div></div>',

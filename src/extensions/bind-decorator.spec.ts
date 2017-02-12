@@ -1,3 +1,4 @@
+import * as tokens from '../core/tokens';
 import Bind from './bind-decorator';
 
 describe('Decorator `@Bind`', () => {
@@ -7,7 +8,7 @@ describe('Decorator `@Bind`', () => {
       @Bind('&') public expr: any;
     }
 
-    const metadata = Reflect.getMetadata('ngms:binding', TestDeclaration.prototype);
+    const metadata = Reflect.getMetadata(tokens.binding, TestDeclaration.prototype);
     expect(metadata).toEqual({
       obj: '<',
       expr: '&'

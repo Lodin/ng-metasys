@@ -1,3 +1,4 @@
+import * as tokens from '../core/tokens';
 import Inject from './inject-decorator';
 
 describe('Decorator `@Inject`', () => {
@@ -9,7 +10,7 @@ describe('Decorator `@Inject`', () => {
     class TestDeclaration {
     }
 
-    const metadata = Reflect.getMetadata('ngms:inject', TestDeclaration.prototype);
+    const metadata = Reflect.getMetadata(tokens.inject.self, TestDeclaration.prototype);
     expect(metadata).toEqual(['$http', MockInject]);
   });
 
@@ -24,7 +25,7 @@ describe('Decorator `@Inject`', () => {
       }
     }
 
-    const metadata = Reflect.getMetadata('ngms:inject:method', TestDeclaration);
+    const metadata = Reflect.getMetadata(tokens.inject.method, TestDeclaration);
     expect(metadata).toEqual({config: ['$http'], run: [MockInject]});
   });
 
@@ -44,7 +45,7 @@ describe('Decorator `@Inject`', () => {
       }
     }
 
-    const metadata = Reflect.getMetadata('ngms:inject:param', TestDeclaration.prototype);
+    const metadata = Reflect.getMetadata(tokens.inject.param, TestDeclaration.prototype);
     expect(metadata).toEqual(['$http', MockInject]);
   });
 

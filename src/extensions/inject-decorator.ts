@@ -1,17 +1,19 @@
+import * as tokens from '../core/tokens';
+
 type CommonInject = (injections: any[], target: any) => void;
 const commonInject: CommonInject =
   (injections, target) =>
-    Reflect.defineMetadata('ngms:inject', injections, target.prototype);
+    Reflect.defineMetadata(tokens.inject.self, injections, target.prototype);
 
 type MethodInject = (injections: any[], target: any, property: string) => void;
 const methodInject: MethodInject =
   (injections, target, property) => {
-    if (!Reflect.hasMetadata('ngms:inject:method', target)) {
-      Reflect.defineMetadata('ngms:inject:method', {[property]: injections}, target);
+    if (!Reflect.hasMetadata(tokens.inject.method, target)) {
+      Reflect.defineMetadata(tokens.inject.method, {[property]: injections}, target);
       return;
     }
 
-    Reflect.getMetadata('ngms:inject:method', target)[property] = injections;
+    Reflect.getMetadata(tokens.inject.method, target)[property] = injections;
   };
 
 type ParamInject = (injections: any[], target: any) => void;
@@ -21,12 +23,12 @@ const paramInject: ParamInject =
       throw new Error('Only one injectable can be injected to the constructor parameter');
     }
 
-    if (!Reflect.hasMetadata('ngms:inject:param', target.prototype)) {
-      Reflect.defineMetadata('ngms:inject:param', injections, target.prototype);
+    if (!Reflect.hasMetadata(tokens.inject.param, target.prototype)) {
+      Reflect.defineMetadata(tokens.inject.param, injections, target.prototype);
       return;
     }
 
-    Reflect.getMetadata('ngms:inject:param', target.prototype).unshift(...injections);
+    Reflect.getMetadata(tokens.inject.param, target.prototype).unshift(...injections);
   };
 
 type InjectDecorator =

@@ -1,3 +1,5 @@
+import * as tokens from '../core/tokens';
+
 type LinkDecorator = (target: any, property: string, descriptor?: PropertyDescriptor) => void;
 const Link: LinkDecorator =
   (target, property, descriptor) => {
@@ -5,7 +7,7 @@ const Link: LinkDecorator =
       throw new Error('@Link have to be applied to the static method');
     }
 
-    Reflect.defineMetadata('ngms:directive:link', property, target);
+    Reflect.defineMetadata(tokens.directive.link, property, target);
   };
 
 export {LinkDecorator};

@@ -1,4 +1,5 @@
 import * as angular from 'angular';
+import * as tokens from '../core/tokens';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapService from './bootstrap-service';
 import {NgmsReflect} from '../core/ngms-reflect';
@@ -69,9 +70,9 @@ describe('Function `bootstrapService`', () => {
     bootstrapper.unarm('inject');
 
     bootstrapper.defineMetadata.and.callFake(
-      (declaration: any, type: string, data: any) => {
+      (declaration: any, type: symbol, data: any) => {
         expect(declaration).toEqual(TestService);
-        expect(type).toEqual('service');
+        expect(type).toEqual(tokens.permanent.service);
         expect(data).toEqual({
           name: 'TestService',
           instance: TestService

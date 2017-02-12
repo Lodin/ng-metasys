@@ -1,4 +1,5 @@
 import {NgmsReflect} from './ngms-reflect';
+import * as tokens from './tokens';
 
 describe('Class `NgmsReflect`', () => {
   it('should get access to a module list', () => {
@@ -10,16 +11,16 @@ describe('Class `NgmsReflect`', () => {
 
     const data = {name: 'TestDeclaration', instance: TestDeclaration};
 
-    NgmsReflect.defineMetadata(TestDeclaration, 'service', data);
+    NgmsReflect.defineMetadata(TestDeclaration, tokens.permanent.service, data);
 
-    expect(Reflect.getMetadata('ngms:permanent:service', TestDeclaration.prototype)).toEqual(data);
+    expect(Reflect.getMetadata(tokens.permanent.service, TestDeclaration.prototype)).toEqual(data);
   });
 
   it('should get metadata for declaration', () => {
     class TestDeclaration {}
 
     const data = {name: 'TestDeclaration', instance: TestDeclaration};
-    Reflect.defineMetadata('ngms:permanent:service', data, TestDeclaration.prototype);
+    Reflect.defineMetadata(tokens.permanent.service, data, TestDeclaration.prototype);
 
     expect(NgmsReflect.getMetadata(TestDeclaration)).toEqual(data);
   });

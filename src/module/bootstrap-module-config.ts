@@ -1,6 +1,6 @@
 import bootstrapInject from '../extensions/bootstrap-inject';
 
-type BootstrapModuleConfig = (declaration: any, type: string) => any[];
+type BootstrapModuleConfig = (declaration: any, type: symbol) => any[];
 const bootstrapModuleConfig: BootstrapModuleConfig =
   (declaration, type) => {
     const properties = Reflect.getMetadata(type, declaration);

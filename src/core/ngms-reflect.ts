@@ -1,8 +1,5 @@
 import * as angular from 'angular';
-
-const types =
-  ['component', 'directive', 'filter', 'service', 'factory', 'provider']
-    .map(type => `ngms:permanent:${type}`);
+import {permanentList} from './token-lists';
 
 export class NgmsReflect {
   private static _modules = new Map<string, angular.IModule>();
@@ -11,14 +8,14 @@ export class NgmsReflect {
     return this._modules;
   }
 
-  public static defineMetadata(declaration: any, type: string, data: any) {
-    Reflect.defineMetadata(`ngms:permanent:${type}`, data, declaration.prototype);
+  public static defineMetadata(declaration: any, type: symbol, data: any) {
+    Reflect.defineMetadata(type, data, declaration.prototype);
   }
 
   public static getMetadata(declaration: any) {
-    for (const type of types) {
-      if (Reflect.hasMetadata(type, declaration.prototype)) {
-        return Reflect.getMetadata(type, declaration.prototype);
+    for (const token of permanentList) {
+      if (Reflect.hasMetadata(token, declaration.prototype)) {
+        return Reflect.getMetadata(token, declaration.prototype);
       }
     }
   }

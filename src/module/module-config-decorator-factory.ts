@@ -1,20 +1,19 @@
 import {Decorator} from '../core/decorator';
 
-type ModuleConfigDecoratorFactory = (type: string) => Decorator;
+type ModuleConfigDecoratorFactory = (token: symbol) => Decorator;
 const moduleConfigDecoratorFactory: ModuleConfigDecoratorFactory =
-  type =>
+  token =>
     (declaration, property) => {
       if (typeof declaration !== 'function') {
         throw new Error(`${property} of module ${declaration.name} should be static`);
       }
 
-      const namespace = `ngms:module:${type}`;
-      if (!Reflect.hasMetadata(namespace, declaration)) {
-        Reflect.defineMetadata(namespace, [property], declaration);
+      if (!Reflect.hasMetadata(token, declaration)) {
+        Reflect.defineMetadata(token, [property], declaration);
         return;
       }
 
-      Reflect.getMetadata(namespace, declaration).push(property);
+      Reflect.getMetadata(token, declaration).push(property);
     };
 
 export {ModuleConfigDecoratorFactory};

@@ -1,3 +1,4 @@
+import * as tokens from '../core/tokens';
 import Filter from './filter-decorator';
 
 describe('Decorator `@Filter`', () => {
@@ -7,7 +8,7 @@ describe('Decorator `@Filter`', () => {
       public static execute() {}
     }
 
-    expect(Reflect.hasMetadata('ngms:filter', TestFilter.prototype)).toBeTruthy();
+    expect(Reflect.hasMetadata(tokens.filter, TestFilter.prototype)).toBeTruthy();
   });
 
   it('should throw an error if declaration does not have an static `execute` method', () => {

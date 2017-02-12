@@ -1,3 +1,5 @@
+import * as tokens from '../core/tokens';
+
 type MethodCollection = {[method: string]: any[]};
 type MethodNameCollection = {[method: string]: string[]};
 
@@ -77,20 +79,20 @@ const bootstrapInject: BootstrapInject =
     } = {};
 
     const hasCommonInject =
-      declaration.prototype && Reflect.hasMetadata('ngms:inject', declaration.prototype);
+      declaration.prototype && Reflect.hasMetadata(tokens.inject.self, declaration.prototype);
     const hasParamsInject =
-      declaration.prototype && Reflect.hasMetadata('ngms:inject:param', declaration.prototype);
+      declaration.prototype && Reflect.hasMetadata(tokens.inject.param, declaration.prototype);
 
     if (hasCommonInject || hasParamsInject) {
-      const token = hasCommonInject ? 'ngms:inject' : 'ngms:inject:param';
+      const token = hasCommonInject ? tokens.inject.self : tokens.inject.param;
 
       injections.common
         = initCommon(Reflect.getMetadata(token, declaration.prototype));
     }
 
-    if (Reflect.hasMetadata('ngms:inject:method', declaration)) {
+    if (Reflect.hasMetadata(tokens.inject.method, declaration)) {
       injections.methods
-        = initMethods(Reflect.getMetadata('ngms:inject:method', declaration));
+        = initMethods(Reflect.getMetadata(tokens.inject.method, declaration));
     }
 
     return new DeclarationInjector(injections);

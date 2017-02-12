@@ -1,3 +1,4 @@
+import * as tokens from '../core/tokens';
 import Link from './link-decorator';
 
 describe('Decorator `@Link`', () => {
@@ -7,7 +8,7 @@ describe('Decorator `@Link`', () => {
       public static link() {}
     }
 
-    const metadata = Reflect.getMetadata('ngms:directive:link', TestDirective);
+    const metadata = Reflect.getMetadata(tokens.directive.link, TestDirective);
     expect(metadata).toEqual('link');
   });
 

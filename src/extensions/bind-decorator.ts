@@ -1,3 +1,5 @@
+import * as tokens from '../core/tokens';
+
 type BindDecorator =
   (type: string) => (target: any, property: string, descriptor?: PropertyDescriptor) => void;
 const Bind: BindDecorator =
@@ -9,12 +11,12 @@ const Bind: BindDecorator =
         descriptor.enumerable = true;
       }
 
-      if (!Reflect.hasMetadata('ngms:binding', target)) {
-        Reflect.defineMetadata('ngms:binding', {[property]: type}, target);
+      if (!Reflect.hasMetadata(tokens.binding, target)) {
+        Reflect.defineMetadata(tokens.binding, {[property]: type}, target);
         return;
       }
 
-      Reflect.getMetadata('ngms:binding', target)[property] = type;
+      Reflect.getMetadata(tokens.binding, target)[property] = type;
     };
 
 export {BindDecorator};

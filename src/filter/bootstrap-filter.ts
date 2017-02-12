@@ -1,5 +1,6 @@
 import * as angular from 'angular';
 import {NgmsReflect} from '../core/ngms-reflect';
+import * as tokens from '../core/tokens';
 import bootstrapInject from '../extensions/bootstrap-inject';
 
 type ReduceName = (filterName: string) => string;
@@ -19,7 +20,7 @@ const bootstrapFilter: BootstrapFilter =
     const name = reduceName(declaration.name);
     ngModule.filter(name.toLowerCase(), declaration.execute);
 
-    NgmsReflect.defineMetadata(declaration, 'filter', {
+    NgmsReflect.defineMetadata(declaration, tokens.permanent.filter, {
       name,
       instance: declaration.execute
     });

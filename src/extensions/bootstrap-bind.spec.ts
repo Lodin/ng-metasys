@@ -1,3 +1,4 @@
+import * as tokens from '../core/tokens';
 import bootstrapBind from './bootstrap-bind';
 
 describe('Function `bootstrapBind`', () => {
@@ -6,7 +7,7 @@ describe('Function `bootstrapBind`', () => {
   it('should get the property metadata of decorated class', () => {
     const metadata = {$http: '$http'};
 
-    Reflect.defineMetadata('ngms:binding', metadata, TestDeclaration.prototype);
+    Reflect.defineMetadata(tokens.binding, metadata, TestDeclaration.prototype);
 
     const data = bootstrapBind(TestDeclaration);
 

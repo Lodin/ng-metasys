@@ -1,3 +1,5 @@
+import * as tokens from '../core/tokens';
+
 type FilterDecorator = (target: any) => void;
 const Filter: FilterDecorator =
   target => {
@@ -9,7 +11,7 @@ const Filter: FilterDecorator =
       throw new Error(`Filter ${target.name} name should end with 'Filter' part`);
     }
 
-    Reflect.defineMetadata('ngms:filter', null, target.prototype);
+    Reflect.defineMetadata(tokens.filter, null, target.prototype);
   };
 
 export {FilterDecorator};

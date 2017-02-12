@@ -1,6 +1,7 @@
+import * as tokens from '../core/tokens';
 import moduleConfigDecoratorFactory from './module-config-decorator-factory';
 
-const Config = moduleConfigDecoratorFactory('config');
+const Config = moduleConfigDecoratorFactory(tokens.module.config);
 
 describe('Function `moduleConfigDecoratorFactory`', () => {
   it('should add module config metadata to decorated declaration', () => {
@@ -12,7 +13,7 @@ describe('Function `moduleConfigDecoratorFactory`', () => {
       public static config2() {}
     }
 
-    const metadata = Reflect.getMetadata('ngms:module:config', TestModule);
+    const metadata = Reflect.getMetadata(tokens.module.config, TestModule);
     expect(metadata).toEqual(['config', 'config2']);
   });
 

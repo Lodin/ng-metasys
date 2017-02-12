@@ -1,3 +1,4 @@
+import * as tokens from '../core/tokens';
 import {DirectiveMetadata} from './directive-metadata';
 
 type DirectiveDecorator = (metadata: DirectiveMetadata) => (target: any) => void;
@@ -8,7 +9,7 @@ const Directive: DirectiveDecorator =
         throw new Error(`Directive ${target.name} should have a selector`);
       }
 
-      Reflect.defineMetadata('ngms:directive', metadata, target.prototype);
+      Reflect.defineMetadata(tokens.directive.self, metadata, target.prototype);
     };
 
 export {DirectiveDecorator};

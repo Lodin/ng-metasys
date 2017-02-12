@@ -1,3 +1,4 @@
+import * as tokens from '../core/tokens';
 import bootstrapTransclude from './bootstrap-transclude';
 
 describe('Function `bootstrapTransclude`', () => {
@@ -6,7 +7,7 @@ describe('Function `bootstrapTransclude`', () => {
   it('should get the transclude metadata of decorated class', () => {
     const metadata = {slot: 'testSlot'};
 
-    Reflect.defineMetadata('ngms:transclude', metadata, TestDeclaration.prototype);
+    Reflect.defineMetadata(tokens.transclude, metadata, TestDeclaration.prototype);
 
     const data = bootstrapTransclude(TestDeclaration);
 

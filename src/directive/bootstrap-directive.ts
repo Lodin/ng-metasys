@@ -1,5 +1,6 @@
 import * as angular from 'angular';
 import {NgmsReflect} from '../core/ngms-reflect';
+import * as tokens from '../core/tokens';
 import bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapBind from '../extensions/bootstrap-bind';
 import bootstrapTransclude from '../extensions/bootstrap-transclude';
@@ -11,7 +12,7 @@ type BootstrapDirective = (ngModule: angular.IModule, declaration: any) => void;
 const bootstrapDirective: BootstrapDirective =
   (ngModule, declaration) => {
     const metadata: DirectiveMetadata =
-      Reflect.getMetadata('ngms:directive', declaration.prototype);
+      Reflect.getMetadata(tokens.directive.self, declaration.prototype);
 
     const data: angular.IDirective = {
       controller: declaration,
@@ -56,7 +57,10 @@ const bootstrapDirective: BootstrapDirective =
 
     ngModule.directive(name, () => data);
 
-    NgmsReflect.defineMetadata(declaration, 'directive', Object.assign({name}, data));
+    NgmsReflect.defineMetadata(declaration, tokens.permanent.directive, {
+      name,
+      ...data
+    });
   };
 
 export {BootstrapDirective};

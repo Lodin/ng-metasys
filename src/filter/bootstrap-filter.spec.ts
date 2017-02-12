@@ -1,4 +1,5 @@
 import * as angular from 'angular';
+import * as tokens from '../core/tokens';
 import {NgmsReflect} from '../core/ngms-reflect';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapFilter from './bootstrap-filter';
@@ -67,7 +68,7 @@ describe('Function `bootstrapFilter`', () => {
     bootstrapper.defineMetadata.and.callFake(
       (declaration: any, type: string, data: any) => {
         expect(declaration).toEqual(TestFilter);
-        expect(type).toEqual('filter');
+        expect(type).toEqual(tokens.permanent.filter);
         expect(data).toEqual({
           name: 'Test',
           instance: TestFilter.execute

@@ -1,5 +1,6 @@
 import * as angular from 'angular';
 import {NgmsReflect} from '../core/ngms-reflect';
+import * as tokens from '../core/tokens';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
 import * as bootstrapBind from '../extensions/bootstrap-bind';
 import * as bootstrapTransclude from '../extensions/bootstrap-transclude';
@@ -46,7 +47,7 @@ describe('Function `bootstrapDirective`', () => {
   class MockService {}
 
   const decorate = (metadata: DirectiveMetadata) =>
-    Reflect.defineMetadata('ngms:directive', metadata, TestDirective.prototype);
+    Reflect.defineMetadata(tokens.directive.self, metadata, TestDirective.prototype);
 
   let ngModule: angular.IModule;
   let bootstrapper: Bootstrapper;
@@ -57,7 +58,7 @@ describe('Function `bootstrapDirective`', () => {
   });
 
   afterEach(() => {
-    Reflect.deleteMetadata('ngms:directive', TestDirective.prototype);
+    Reflect.deleteMetadata(tokens.directive.self, TestDirective.prototype);
   });
 
   it('should generate a directive data fitting to the raw angular directive metadata', () => {
@@ -226,9 +227,9 @@ describe('Function `bootstrapDirective`', () => {
     bootstrapper.unarm('inject', 'bind', 'transclude');
 
     bootstrapper.defineMetadata.and.callFake(
-      (declaration: any, type: string, data: angular.IDirective) => {
+      (declaration: any, type: symbol, data: angular.IDirective) => {
         expect(declaration).toEqual(TestDirective);
-        expect(type).toEqual('directive');
+        expect(type).toEqual(tokens.permanent.directive);
         expect(data).toEqual({
           name: 'testAttribute',
           restrict: 'A',

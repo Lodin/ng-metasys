@@ -1,3 +1,4 @@
+import * as tokens from '../core/tokens';
 import Transclude from './transclude-decorator';
 
 describe('Decorator `@Transclude`', () => {
@@ -5,7 +6,7 @@ describe('Decorator `@Transclude`', () => {
     @Transclude()
     class TestDeclaration {}
 
-    const metadata = Reflect.getMetadata('ngms:transclude', TestDeclaration.prototype);
+    const metadata = Reflect.getMetadata(tokens.transclude, TestDeclaration.prototype);
 
     expect(metadata).toBeTruthy();
   });
@@ -16,7 +17,7 @@ describe('Decorator `@Transclude`', () => {
     @Transclude(transcludeMetadata)
     class TestDeclaration {}
 
-    const metadata = Reflect.getMetadata('ngms:transclude', TestDeclaration.prototype);
+    const metadata = Reflect.getMetadata(tokens.transclude, TestDeclaration.prototype);
 
     expect(metadata).toEqual(transcludeMetadata);
   });

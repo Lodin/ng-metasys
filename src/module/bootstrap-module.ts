@@ -1,4 +1,6 @@
 import * as angular from 'angular';
+import * as tokens from '../core/tokens';
+import {moduleList} from '../core/token-lists';
 import {NgmsReflect} from '../core/ngms-reflect';
 import bootstrapComponent from '../component/bootstrap-component';
 import bootstrapDirective from '../directive/bootstrap-directive';
@@ -6,10 +8,6 @@ import bootstrapFilter from '../filter/bootstrap-filter';
 import bootstrapProviders from '../providers/bootstrap-providers';
 import {ModuleMetadata} from './module-metadata';
 import bootstrapModuleConfig from './bootstrap-module-config';
-
-const types =
-  ['value', 'constant', 'config', 'run']
-    .map(type => `ngms:module:${type}`);
 
 type InitImports = (imports: any[]) => string[];
 const initImports: InitImports =
@@ -34,13 +32,13 @@ const initDeclarations: InitDeclarations =
   (ngModule, declarations) => {
     for (const declaration of declarations) {
       switch (true) {
-        case Reflect.hasMetadata('ngms:component', declaration.prototype):
+        case Reflect.hasMetadata(tokens.component, declaration.prototype):
           bootstrapComponent(ngModule, declaration);
           break;
-        case Reflect.hasMetadata('ngms:directive', declaration.prototype):
+        case Reflect.hasMetadata(tokens.directive, declaration.prototype):
           bootstrapDirective(ngModule, declaration);
           break;
-        case Reflect.hasMetadata('ngms:filter', declaration.prototype):
+        case Reflect.hasMetadata(tokens.filter, declaration.prototype):
           bootstrapFilter(ngModule, declaration);
           break;
         default:
@@ -52,7 +50,7 @@ const initDeclarations: InitDeclarations =
 type InitConfig = (ngModule: angular.IModule, declaration: any) => void;
 const initConfig: InitConfig =
   (ngModule, declaration) => {
-    for (const type of types) {
+    for (const type of moduleList) {
       if (!Reflect.hasMetadata(type, declaration)) {
         continue;
       }
@@ -61,13 +59,13 @@ const initConfig: InitConfig =
 
       for (const property of properties) {
         switch (type) {
-          case 'ngms:module:config':
+          case tokens.module.config:
             ngModule.config(declaration[property]);
             break;
-          case 'ngms:module:run':
+          case tokens.module.run:
             ngModule.run(declaration[property]);
             break;
-          case 'ngms:module:constant':
+          case tokens.module.constant:
             ngModule.constant(property, declaration[property]);
             break;
           default:
@@ -103,11 +101,11 @@ const bootstrapModule: BootstrapModule =
       return declaration.name;
     }
 
-    if (!Reflect.hasMetadata('ngms:module', declaration.prototype)) {
+    if (!Reflect.hasMetadata(tokens.module.self, declaration.prototype)) {
       throw new Error(`${declaration.name} is not marked with @Module decorator`);
     }
 
-    const metadata: ModuleMetadata = Reflect.getMetadata('ngms:module', declaration.prototype);
+    const metadata: ModuleMetadata = Reflect.getMetadata(tokens.module.self, declaration.prototype);
     checkMetadata(declaration.name, metadata);
 
     const imports = metadata.imports ? initImports(metadata.imports) : [];

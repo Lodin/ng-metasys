@@ -1,3 +1,4 @@
+import * as tokens from '../core/tokens';
 import Component from './component-decorator';
 import {ComponentMetadata} from './component-metadata';
 
@@ -11,7 +12,7 @@ describe('Decorator `@Component`', () => {
     @Component(metadata)
     class TestComponent {}
 
-    const reflectedMeta = Reflect.getMetadata('ngms:component', TestComponent.prototype);
+    const reflectedMeta = Reflect.getMetadata(tokens.component, TestComponent.prototype);
 
     expect(reflectedMeta).toEqual(metadata);
   });

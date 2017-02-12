@@ -1,3 +1,4 @@
+import * as tokens from '../core/tokens';
 import Directive from './directive-decorator';
 import {DirectiveMetadata} from './directive-metadata';
 
@@ -11,7 +12,7 @@ describe('Decorator `@Directive`', () => {
     @Directive(metadata)
     class TestDirective {}
 
-    const reflectedMeta = Reflect.getMetadata('ngms:directive', TestDirective.prototype);
+    const reflectedMeta = Reflect.getMetadata(tokens.directive.self, TestDirective.prototype);
 
     expect(reflectedMeta).toEqual(metadata);
   });

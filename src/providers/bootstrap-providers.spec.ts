@@ -1,4 +1,5 @@
 import * as angular from 'angular';
+import * as tokens from '../core/tokens';
 import * as bootstrapFactory from './bootstrap-factory';
 import * as bootstrapProvider from './bootstrap-provider';
 import * as bootstrapService from './bootstrap-service';
@@ -15,13 +16,13 @@ class Bootstrapper {
     this.bootstrapService.and.returnValue(null);
   }
 
-  public getByType(type: string): Function|null {
+  public getByType(type: symbol): Function|null {
     switch (type) {
-      case 'factory':
+      case tokens.providers.factory:
         return this.bootstrapFactory;
-      case 'provider':
+      case tokens.providers.provider:
         return this.bootstrapProvider;
-      case 'service':
+      case tokens.providers.service:
         return this.bootstrapService;
       default:
         return null;
@@ -35,8 +36,8 @@ describe('Function `bootstrapProviders`', () => {
   let ngModule: angular.IModule;
   let bootstrapper: Bootstrapper;
 
-  const testProviders = (type: string) => {
-    Reflect.defineMetadata(`ngms:providers:${type}`, null, TestProvider.prototype);
+  const testProviders = (type: symbol) => {
+    Reflect.defineMetadata(type, null, TestProvider.prototype);
 
     bootstrapProviders(ngModule, TestProvider);
 
@@ -49,21 +50,21 @@ describe('Function `bootstrapProviders`', () => {
   });
 
   afterEach(() => {
-    Reflect.deleteMetadata('ngms:providers:factory', TestProvider.prototype);
-    Reflect.deleteMetadata('ngms:providers:provider', TestProvider.prototype);
-    Reflect.deleteMetadata('ngms:providers:servide', TestProvider.prototype);
+    Reflect.deleteMetadata(tokens.providers.factory, TestProvider.prototype);
+    Reflect.deleteMetadata(tokens.providers.provider, TestProvider.prototype);
+    Reflect.deleteMetadata(tokens.providers.service, TestProvider.prototype);
   });
 
   it('should bootstrap factories', () => {
-    testProviders('factory');
+    testProviders(tokens.providers.factory);
   });
 
   it('should bootstrap factories', () => {
-    testProviders('provider');
+    testProviders(tokens.providers.provider);
   });
 
   it('should bootstrap factories', () => {
-    testProviders('service');
+    testProviders(tokens.providers.service);
   });
 
   it('should throw an error if provider does not have any metadata', () => {

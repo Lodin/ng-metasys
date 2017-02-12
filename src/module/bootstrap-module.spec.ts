@@ -1,4 +1,5 @@
 import * as angular from 'angular';
+import * as tokens from '../core/tokens';
 import {NgmsReflect} from '../core/ngms-reflect';
 import * as bootstrapComponent from '../component/bootstrap-component';
 import * as bootstrapDirective from '../directive/bootstrap-directive';
@@ -44,12 +45,12 @@ describe('Function `bootstrapModule`', () => {
   });
 
   afterEach(() => {
-    Reflect.deleteMetadata('ngms:module', TestModule.prototype);
+    Reflect.deleteMetadata(tokens.module.self, TestModule.prototype);
     (<any> NgmsReflect)._modules = new Map();
   });
 
   it('should create bare module and write it to the `moduleList`', () => {
-    Reflect.defineMetadata('ngms:module', {}, TestModule.prototype);
+    Reflect.defineMetadata(tokens.module.self, {}, TestModule.prototype);
 
     bootstrapper.unarm();
 
@@ -68,7 +69,7 @@ describe('Function `bootstrapModule`', () => {
   });
 
   it('should do nothing if module is already bootstrapped', () => {
-    Reflect.defineMetadata('ngms:module', {}, TestModule.prototype);
+    Reflect.defineMetadata(tokens.module.self, {}, TestModule.prototype);
 
     bootstrapper.unarm();
 
@@ -93,8 +94,8 @@ describe('Function `bootstrapModule`', () => {
 
     const imports = ['localStorageModule', 'ui.router', DependencyModule];
 
-    Reflect.defineMetadata('ngms:module', {imports}, TestModule.prototype);
-    Reflect.defineMetadata('ngms:module', {}, DependencyModule.prototype);
+    Reflect.defineMetadata(tokens.module.self, {imports}, TestModule.prototype);
+    Reflect.defineMetadata(tokens.module.self, {}, DependencyModule.prototype);
 
     bootstrapper.unarm();
 
@@ -119,13 +120,13 @@ describe('Function `bootstrapModule`', () => {
     class TestFilter {
     }
 
-    Reflect.defineMetadata('ngms:component', null, TestComponent.prototype);
-    Reflect.defineMetadata('ngms:directive', null, TestDirective.prototype);
-    Reflect.defineMetadata('ngms:filter', null, TestFilter.prototype);
+    Reflect.defineMetadata(tokens.component, null, TestComponent.prototype);
+    Reflect.defineMetadata(tokens.directive, null, TestDirective.prototype);
+    Reflect.defineMetadata(tokens.filter, null, TestFilter.prototype);
 
     const declarations = [TestComponent, TestDirective, TestFilter];
 
-    Reflect.defineMetadata('ngms:module', {declarations}, TestModule.prototype);
+    Reflect.defineMetadata(tokens.module.self, {declarations}, TestModule.prototype);
 
     bootstrapper.unarm();
 
@@ -137,9 +138,9 @@ describe('Function `bootstrapModule`', () => {
     expect(bootstrapper.bootstrapDirective).toHaveBeenCalled();
     expect(bootstrapper.bootstrapFilter).toHaveBeenCalled();
 
-    Reflect.deleteMetadata('ngms:component', TestComponent.prototype);
-    Reflect.deleteMetadata('ngms:directive', TestDirective.prototype);
-    Reflect.deleteMetadata('ngms:filter', TestFilter.prototype);
+    Reflect.deleteMetadata(tokens.component, TestComponent.prototype);
+    Reflect.deleteMetadata(tokens.directive, TestDirective.prototype);
+    Reflect.deleteMetadata(tokens.filter, TestFilter.prototype);
   });
 
   it('should throw an error if declaration does not have @Component, @Directive or @Filter mark',
@@ -147,7 +148,7 @@ describe('Function `bootstrapModule`', () => {
       class DeclarationWithoutMark {}
       const declarations = [DeclarationWithoutMark];
 
-      Reflect.defineMetadata('ngms:module', {declarations}, TestModule.prototype);
+      Reflect.defineMetadata(tokens.module.self, {declarations}, TestModule.prototype);
       bootstrapper.unarm();
 
       spyOn(angular, 'module').and.returnValue(fakeModule);
@@ -159,11 +160,11 @@ describe('Function `bootstrapModule`', () => {
     class TestProvider {
     }
 
-    Reflect.defineMetadata('ngms:provider', null, TestProvider.prototype);
+    Reflect.defineMetadata(tokens.providers.provider, null, TestProvider.prototype);
 
     const providers = [TestProvider];
 
-    Reflect.defineMetadata('ngms:module', {providers}, TestModule.prototype);
+    Reflect.defineMetadata(tokens.module.self, {providers}, TestModule.prototype);
 
     bootstrapper.unarm();
 
@@ -173,7 +174,7 @@ describe('Function `bootstrapModule`', () => {
 
     expect(bootstrapper.bootstrapProviders).toHaveBeenCalled();
 
-    Reflect.deleteMetadata('ngms:provider', TestProvider.prototype);
+    Reflect.deleteMetadata(tokens.providers.provider, TestProvider.prototype);
   });
 
   describe('at module configuration', () => {
@@ -190,8 +191,8 @@ describe('Function `bootstrapModule`', () => {
       });
     };
 
-    const testModuleConfig = (type: string) => {
-      Reflect.defineMetadata(`ngms:module:${type}`, type, TestModule);
+    const testModuleConfig = (token: symbol, type: string) => {
+      Reflect.defineMetadata(token, type, TestModule);
 
       bootstrapper.bootstrapModuleConfig.and.returnValue([type]);
 
@@ -203,38 +204,38 @@ describe('Function `bootstrapModule`', () => {
     };
 
     beforeEach(() => {
-      Reflect.defineMetadata('ngms:module', {}, TestModule.prototype);
+      Reflect.defineMetadata(tokens.module.self, {}, TestModule.prototype);
       spyOn(angular, 'module').and.returnValue(fakeModule);
     });
 
     afterEach(() => {
-      Reflect.deleteMetadata('ngms:module', TestModule.prototype);
+      Reflect.deleteMetadata(tokens.module.self, TestModule.prototype);
     });
 
     it('should initialize `config`', () => {
       spyFn('config');
-      testModuleConfig('config');
+      testModuleConfig(tokens.module.config, 'config');
     });
 
     it('should initialize `run`', () => {
       spyFn('run');
-      testModuleConfig('run');
+      testModuleConfig(tokens.module.run, 'run');
     });
 
     it('should initialize `value`', () => {
       spyValue('value');
-      testModuleConfig('value');
+      testModuleConfig(tokens.module.value, 'value');
     });
 
     it('should initialize `constant`', () => {
       spyValue('constant');
-      testModuleConfig('constant');
+      testModuleConfig(tokens.module.constant, 'constant');
     });
   });
 
   describe('at checking metadata for broken elements', () => {
     it('should check metadata imports', () => {
-      Reflect.defineMetadata('ngms:module', {imports: [undefined]}, TestModule.prototype);
+      Reflect.defineMetadata(tokens.module.self, {imports: [undefined]}, TestModule.prototype);
 
       expect(() => {
         bootstrapModule(TestModule);
@@ -242,7 +243,7 @@ describe('Function `bootstrapModule`', () => {
     });
 
     it('should check metadata declarations', () => {
-      Reflect.defineMetadata('ngms:module', {declarations: [undefined]}, TestModule.prototype);
+      Reflect.defineMetadata(tokens.module.self, {declarations: [undefined]}, TestModule.prototype);
 
       expect(() => {
         bootstrapModule(TestModule);
@@ -251,7 +252,7 @@ describe('Function `bootstrapModule`', () => {
     });
 
     it('should check metadata providers', () => {
-      Reflect.defineMetadata('ngms:module', {providers: [undefined]}, TestModule.prototype);
+      Reflect.defineMetadata(tokens.module.self, {providers: [undefined]}, TestModule.prototype);
 
       expect(() => {
         bootstrapModule(TestModule);

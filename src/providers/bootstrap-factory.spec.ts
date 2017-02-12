@@ -1,5 +1,6 @@
 import * as angular from 'angular';
 import {NgmsReflect} from '../core/ngms-reflect';
+import * as tokens from '../core/tokens';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapFactory from './bootstrap-factory';
 
@@ -79,7 +80,7 @@ describe('Function `bootstrapFactory`', () => {
     bootstrapper.defineMetadata.and.callFake(
       (declaration: any, type: string, data: any) => {
         expect(declaration).toEqual(TestFactory);
-        expect(type).toEqual('factory');
+        expect(type).toEqual(tokens.permanent.factory);
         expect(data).toEqual({
           name: 'TestFactory',
           instance: TestFactory.$get
