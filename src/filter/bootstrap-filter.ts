@@ -1,5 +1,5 @@
 import * as angular from 'angular';
-import {NgmsReflect} from '../core';
+import {NgmsReflect} from '../core/ngms-reflect';
 import bootstrapInject from '../extensions/bootstrap-inject';
 
 type ReduceName = (filterName: string) => string;

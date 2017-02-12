@@ -1,7 +1,7 @@
 import * as angular from 'angular';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapService from './bootstrap-service';
-import {NgmsReflect} from '../core';
+import {NgmsReflect} from '../core/ngms-reflect';
 
 class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapInject, 'default');

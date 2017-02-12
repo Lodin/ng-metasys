@@ -1,5 +1,5 @@
 import * as angular from 'angular';
-import {NgmsReflect} from '../core';
+import {NgmsReflect} from '../core/ngms-reflect';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
 import * as bootstrapBind from '../extensions/bootstrap-bind';
 import * as bootstrapTransclude from '../extensions/bootstrap-transclude';

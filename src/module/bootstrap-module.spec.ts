@@ -1,5 +1,5 @@
 import * as angular from 'angular';
-import {NgmsReflect} from '../core';
+import {NgmsReflect} from '../core/ngms-reflect';
 import * as bootstrapComponent from '../component/bootstrap-component';
 import * as bootstrapDirective from '../directive/bootstrap-directive';
 import * as bootstrapFilter from '../filter/bootstrap-filter';

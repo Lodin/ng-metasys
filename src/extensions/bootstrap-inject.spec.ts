@@ -16,7 +16,7 @@ describe('Function `bootstrapInject`', () => {
   afterEach(() => {
     Reflect.deleteMetadata('ngms:inject', TestDeclaration.prototype);
     Reflect.deleteMetadata('ngms:inject:method', TestDeclaration);
-    Reflect.deleteMetadata('ngms:inject:property', TestDeclaration);
+    Reflect.deleteMetadata('ngms:inject:param', TestDeclaration);
   });
 
   it('should create DeclarationInjector instance with common injections', () => {

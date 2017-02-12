@@ -1,6 +1,6 @@
 import * as angular from 'angular';
 import * as camelCase from 'camelcase';
-import {NgmsReflect} from '../core';
+import {NgmsReflect} from '../core/ngms-reflect';
 import bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapBind from '../extensions/bootstrap-bind';
 import bootstrapTransclude from '../extensions/bootstrap-transclude';

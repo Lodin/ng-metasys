@@ -1,6 +1,6 @@
 import * as angular from 'angular';
 import bootstrapInject from '../extensions/bootstrap-inject';
-import {NgmsReflect} from '../core';
+import {NgmsReflect} from '../core/ngms-reflect';
 
 type BootstrapService = (ngModule: angular.IModule, declaration: any) => void;
 const bootstrapService: BootstrapService =
