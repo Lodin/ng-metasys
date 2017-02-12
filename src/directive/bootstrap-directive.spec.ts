@@ -143,7 +143,7 @@ describe('Function `bootstrapDirective`', () => {
     bootstrapper.unarm('bind', 'transclude', 'link', 'meta');
 
     spyOn(ngModule, 'directive').and.callFake((name: string, data: angular.IDirectiveFactory) => {
-      expect((<any> data().controller).$inject).toEqual(['$http', '$q']);
+      expect((<any> (data() as angular.IDirective).controller).$inject).toEqual(['$http', '$q']);
     });
 
     bootstrapDirective(ngModule, TestDirective);

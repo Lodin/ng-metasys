@@ -178,13 +178,16 @@ describe('Function `bootstrapModule`', () => {
   });
 
   describe('at module configuration', () => {
-    const spyFn = (type: string) => {
+    type ModuleMethodsForValue = 'constant'|'value';
+    type ModuleMethodsForFn = 'config'|'run';
+
+    const spyFn = (type: ModuleMethodsForFn) => {
       spyOn(fakeModule, type).and.callFake((fn: Function) => {
         expect(fn).toEqual((<any> TestModule)[type]);
       });
     };
 
-    const spyValue = (type: string) => {
+    const spyValue = (type: ModuleMethodsForValue) => {
       spyOn(fakeModule, type).and.callFake((property: string, value: any) => {
         expect(property).toEqual(type);
         expect(value).toEqual((<any> TestModule)[type]);
