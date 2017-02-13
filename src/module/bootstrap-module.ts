@@ -1,7 +1,7 @@
 import * as angular from 'angular';
 import * as tokens from '../core/tokens';
 import {moduleList} from '../core/token-lists';
-import {NgmsReflect} from '../core/ngms-reflect';
+import {modules} from '../core/reflection';
 import bootstrapComponent from '../component/bootstrap-component';
 import bootstrapDirective from '../directive/bootstrap-directive';
 import bootstrapFilter from '../filter/bootstrap-filter';
@@ -97,7 +97,7 @@ const checkMetadata: CheckMetadata =
 type BootstrapModule = (declaration: any) => string;
 const bootstrapModule: BootstrapModule =
   declaration => {
-    if (NgmsReflect.modules.has(declaration.name)) {
+    if (modules.has(declaration.name)) {
       return declaration.name;
     }
 
@@ -111,7 +111,7 @@ const bootstrapModule: BootstrapModule =
     const imports = metadata.imports ? initImports(metadata.imports) : [];
 
     const ngModule = angular.module(declaration.name, imports);
-    NgmsReflect.modules.set(declaration.name, ngModule);
+    modules.set(declaration.name, ngModule);
 
     if (metadata.declarations) {
       initDeclarations(ngModule, metadata.declarations);

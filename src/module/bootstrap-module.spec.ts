@@ -1,6 +1,6 @@
 import * as angular from 'angular';
 import * as tokens from '../core/tokens';
-import {NgmsReflect} from '../core/ngms-reflect';
+import * as NgmsReflect from '../core/reflection';
 import * as bootstrapComponent from '../component/bootstrap-component';
 import * as bootstrapDirective from '../directive/bootstrap-directive';
 import * as bootstrapFilter from '../filter/bootstrap-filter';
@@ -46,7 +46,7 @@ describe('Function `bootstrapModule`', () => {
 
   afterEach(() => {
     Reflect.deleteMetadata(tokens.module.self, TestModule.prototype);
-    (<any> NgmsReflect)._modules = new Map();
+    (NgmsReflect as any).modules = new Map();
   });
 
   it('should create bare module and write it to the `moduleList`', () => {
@@ -78,7 +78,7 @@ describe('Function `bootstrapModule`', () => {
     bootstrapModule(TestModule);
     bootstrapModule(TestModule);
 
-    expect((<any> angular.module).calls.count()).toEqual(1);
+    expect((angular.module as any).calls.count()).toEqual(1);
   });
 
   it('should throw an error if module declaration does not have a @Module mark', () => {

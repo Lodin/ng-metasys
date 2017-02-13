@@ -1,7 +1,7 @@
 import * as angular from 'angular';
 import * as camelCase from 'camelcase';
 import * as tokens from '../core/tokens';
-import {NgmsReflect} from '../core/ngms-reflect';
+import {defineMetadata} from '../core/reflection';
 import bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapBind from '../extensions/bootstrap-bind';
 import bootstrapTransclude from '../extensions/bootstrap-transclude';
@@ -46,7 +46,7 @@ const bootstrapComponent: BootstrapComponent =
     const name = camelCase(metadata.selector);
     ngModule.component(name, data);
 
-    NgmsReflect.defineMetadata(declaration, tokens.permanent.component, {
+    defineMetadata(declaration, tokens.permanent.component, {
       name,
       controllerAs: '$ctrl',
       ...data

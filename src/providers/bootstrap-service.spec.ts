@@ -1,8 +1,8 @@
 import * as angular from 'angular';
+import * as NgmsReflect from '../core/reflection';
 import * as tokens from '../core/tokens';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapService from './bootstrap-service';
-import {NgmsReflect} from '../core/ngms-reflect';
 
 class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapInject, 'default');

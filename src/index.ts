@@ -1,6 +1,6 @@
 export {default as bootstrap} from './bootstrap/bootstrap';
 export {default as Component} from './component/component-decorator';
-export {NgmsReflect} from './core/ngms-reflect';
+export {modules, getMetadata} from './core/reflection';
 export {default as Directive} from './directive/directive-decorator';
 export {default as Link} from './directive/link-decorator';
 export {default as Inject} from './extensions/inject-decorator';

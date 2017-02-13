@@ -1,5 +1,5 @@
 import * as angular from 'angular';
-import {NgmsReflect} from '../core/ngms-reflect';
+import {defineMetadata} from '../core/reflection';
 import * as tokens from '../core/tokens';
 import bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapBind from '../extensions/bootstrap-bind';
@@ -57,7 +57,7 @@ const bootstrapDirective: BootstrapDirective =
 
     ngModule.directive(name, () => data);
 
-    NgmsReflect.defineMetadata(declaration, tokens.permanent.directive, {
+    defineMetadata(declaration, tokens.permanent.directive, {
       name,
       ...data
     });

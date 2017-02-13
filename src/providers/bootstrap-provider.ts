@@ -1,6 +1,6 @@
 import * as angular from 'angular';
 import * as tokens from '../core/tokens';
-import {NgmsReflect} from '../core/ngms-reflect';
+import {defineMetadata} from '../core/reflection';
 import bootstrapInject from '../extensions/bootstrap-inject';
 
 type BootstrapProvider = (ngModule: angular.IModule, declaration: any) => void;
@@ -18,7 +18,7 @@ const bootstrapProvider: BootstrapProvider =
 
     ngModule.provider(declaration.name, declaration);
 
-    NgmsReflect.defineMetadata(declaration, tokens.permanent.provider, {
+    defineMetadata(declaration, tokens.permanent.provider, {
       name: declaration.name,
       instance: declaration
     });

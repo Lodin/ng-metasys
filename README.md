@@ -475,16 +475,15 @@ service `$uibModal`, or `angular-ui-router` of version less than
 `1.0.0`, you need to get original AngularJS metadata from decorated
 declarations.
 
-To accomplish this goal `ng-metasys` has a `NgmsReflect` class. 
-It contains two main resources: 
-  1. `modules` property that gets you access to a module list where
-  you can find out the AngularJS module existence or get an 
-  instance of the module you need. `modules` property is a simple
-  ES2015 `Map` object with module names as keys and module 
+To accomplish this goal `ng-metasys` contains two main resources: 
+  1. `modules` - is a instance of `Map` that gets you access to 
+  a module list where you can find out the AngularJS module existence 
+  or get an instance of the module you need. `modules` property is 
+  a simple ES2015 `Map` object with module names as keys and module 
   instances as values. 
-  2. Static `getMetadata` method. To get an AngularJS metadata just send 
-  specified declaration to `NgmsReflect#getMetadata`. It has 
-  following signature. 
+  2. `getMetadata` - is a function that allows to get an AngularJS 
+  metadata. Just send specified declaration to `getMetadata` and you
+  will get all metadata it contains.
   ```typescript
   function getMetadata(declaration: any) {}
   ```
@@ -505,9 +504,9 @@ export class AppComponent {
 ```
 You can get following metadata:
 ```javascript
-import {NgmsReflect} from 'ng-metasys';
+import {getMetadata} from 'ng-metasys';
 
-expect(NgmsReflect.getMetadata(AppComponent)).toEqual({
+expect(getMetadata(AppComponent)).toEqual({
   name: 'myApp',
   template: '<div></div>',
   controller: AppComponent,

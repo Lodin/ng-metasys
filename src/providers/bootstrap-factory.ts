@@ -1,5 +1,5 @@
 import * as angular from 'angular';
-import {NgmsReflect} from '../core/ngms-reflect';
+import {defineMetadata} from '../core/reflection';
 import * as tokens from '../core/tokens';
 import bootstrapInject from '../extensions/bootstrap-inject';
 
@@ -18,7 +18,7 @@ const bootstrapFactory: BootstrapFactory =
 
     ngModule.factory(declaration.name, declaration.$get);
 
-    NgmsReflect.defineMetadata(declaration, tokens.permanent.factory, {
+    defineMetadata(declaration, tokens.permanent.factory, {
       name: declaration.name,
       instance: declaration.$get
     });
