@@ -14,108 +14,125 @@ class Bootstrapper {
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
   public unarm(...toUnarm: string[]) {
-    const hasAll = toUnarm.indexOf('all') !== -1;
+    const hasAll = toUnarm.includes('all');
 
-    if (toUnarm.indexOf('inject') !== -1 || hasAll) {
+    if (toUnarm.includes('inject') || hasAll) {
       this.bootstrapInject.and.returnValue(null);
     }
 
-    if (toUnarm.indexOf('bind') !== -1 || hasAll) {
+    if (toUnarm.includes('bind') || hasAll) {
       this.bootstrapBind.and.returnValue(null);
     }
 
-    if (toUnarm.indexOf('transclude') !== -1 || hasAll) {
+    if (toUnarm.includes('transclude') || hasAll) {
       this.bootstrapTransclude.and.returnValue(null);
     }
 
-    if (toUnarm.indexOf('meta') !== -1 || hasAll) {
+    if (toUnarm.includes('meta') || hasAll) {
       this.defineMetadata.and.returnValue(null);
     }
   }
 }
 
+class Spy {
+  public ngModule = {
+    component: jasmine.createSpy('angular.IModule#component')
+  };
+}
+
 describe('Function `bootstrapComponent`', () => {
-  class TestComponent {
-  }
   class MockService {
   }
 
-  const decorate = (metadata: ComponentMetadata) =>
-    Reflect.defineMetadata(tokens.component, metadata, TestComponent.prototype);
+  type Decorate = (declaration: any, metadata: ComponentMetadata) => void;
+  const decorate: Decorate =
+    (declaration, metadata) =>
+      Reflect.defineMetadata(tokens.component, metadata, declaration.prototype);
 
-  let ngModule: angular.IModule;
+  type Clear = (declaration: any) => void;
+  const clear: Clear =
+    declaration =>
+      Reflect.deleteMetadata(tokens.component, declaration.prototype);
+
+  let spy: Spy;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = angular.module('testModule', []);
+    spy = new Spy();
     bootstrapper = new Bootstrapper();
   });
 
-  afterEach(() => {
-    Reflect.deleteMetadata(tokens.component, TestComponent.prototype);
-  });
-
   it('should generate a component data fitting to the raw angular component metadata', () => {
-    decorate({
+    class TestComponent {
+    }
+
+    decorate(TestComponent, {
       selector: 'app-test',
       template: '<div></div>'
     });
 
-    spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
-      expect(name).toEqual('appTest');
-      expect(data).toEqual({
-        template: '<div></div>',
-        controller: TestComponent
-      });
-    });
-
     bootstrapper.unarm('all');
 
-    bootstrapComponent(ngModule, TestComponent);
+    bootstrapComponent(spy.ngModule as any, TestComponent);
 
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
     expect(bootstrapper.bootstrapBind).toHaveBeenCalled();
     expect(bootstrapper.bootstrapTransclude).toHaveBeenCalled();
+    expect(spy.ngModule.component).toHaveBeenCalledWith('appTest', {
+      template: '<div></div>',
+      controller: TestComponent
+    });
+
+    clear(TestComponent);
   });
 
   it('should allow using `templateUrl` metadata', () => {
-    decorate({
+    class TestComponent {
+    }
+
+    decorate(TestComponent, {
       selector: 'app-test',
       templateUrl: 'test.component.html'
     });
 
-    spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
-      expect(data).toEqual({
-        templateUrl: 'test.component.html',
-        controller: TestComponent
-      });
-    });
-
     bootstrapper.unarm('all');
 
-    bootstrapComponent(ngModule, TestComponent);
+    bootstrapComponent(spy.ngModule as any, TestComponent);
+
+    expect(spy.ngModule.component).toHaveBeenCalledWith('appTest', {
+      templateUrl: 'test.component.html',
+      controller: TestComponent
+    });
+
+    clear(TestComponent);
   });
 
   it('should allow using `controllerAs` metadata', () => {
-    decorate({
+    class TestComponent {
+    }
+
+    decorate(TestComponent, {
       selector: 'app-test',
       controllerAs: 'vm'
     });
 
-    spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
-      expect(data).toEqual(<angular.IComponentOptions> {
-        controller: TestComponent,
-        controllerAs: 'vm'
-      });
-    });
-
     bootstrapper.unarm('all');
 
-    bootstrapComponent(ngModule, TestComponent);
+    bootstrapComponent(spy.ngModule as any, TestComponent);
+
+    expect(spy.ngModule.component).toHaveBeenCalledWith('appTest', {
+      controller: TestComponent,
+      controllerAs: 'vm'
+    });
+
+    clear(TestComponent);
   });
 
   it('should add common injections defined with @Inject to component data', () => {
-    decorate({selector: 'app-test'});
+    class TestComponent {
+    }
+
+    decorate(TestComponent, {selector: 'app-test'});
 
     bootstrapper.bootstrapInject.and.returnValue({
       hasCommon: true,
@@ -127,19 +144,22 @@ describe('Function `bootstrapComponent`', () => {
 
     bootstrapper.unarm('bind', 'transclude', 'meta');
 
-    spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
-      expect(data).toEqual({
-        controller: TestComponent
-      });
+    bootstrapComponent(spy.ngModule as any, TestComponent);
 
-      expect((<any> data.controller).$inject).toEqual(['$http', '$q']);
+    expect(spy.ngModule.component).toHaveBeenCalledWith('appTest', {
+      controller: TestComponent
     });
 
-    bootstrapComponent(ngModule, TestComponent);
+    expect(TestComponent.$inject).toEqual(['$http', '$q']);
+
+    clear(TestComponent);
   });
 
   it('should add properties marked with @Property to component data', () => {
-    decorate({selector: 'app-test'});
+    class TestComponent {
+    }
+
+    decorate(TestComponent, {selector: 'app-test'});
 
     bootstrapper.bootstrapBind.and.returnValue({
       someObject: '<',
@@ -149,59 +169,64 @@ describe('Function `bootstrapComponent`', () => {
 
     bootstrapper.unarm('inject', 'transclude', 'meta');
 
-    spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
-      expect(data).toEqual({
-        controller: TestComponent,
-        bindings: {
-          someObject: '<',
-          someString: '@',
-          someExpr: '&'
-        }
-      });
+    bootstrapComponent(spy.ngModule as any, TestComponent);
+
+    expect(spy.ngModule.component).toHaveBeenCalledWith('appTest', {
+      controller: TestComponent,
+      bindings: {
+        someObject: '<',
+        someString: '@',
+        someExpr: '&'
+      }
     });
 
-    bootstrapComponent(ngModule, TestComponent);
+    clear(TestComponent);
   });
 
   it('should add transclude defined with @Transclude to component data', () => {
-    decorate({selector: 'app-test'});
+    class TestComponent {
+    }
+
+    decorate(TestComponent, {selector: 'app-test'});
 
     bootstrapper.unarm('inject', 'bind', 'meta');
     bootstrapper.bootstrapTransclude.and.returnValue({slot: 'testSlot'});
 
-    spyOn(ngModule, 'component').and.callFake((name: string, data: angular.IComponentOptions) => {
-      expect(data).toEqual({
-        controller: TestComponent,
-        transclude: {slot: 'testSlot'}
-      });
+    bootstrapComponent(spy.ngModule as any, TestComponent);
+
+    expect(spy.ngModule.component).toHaveBeenCalledWith('appTest', {
+      controller: TestComponent,
+      transclude: {slot: 'testSlot'}
     });
 
-    bootstrapComponent(ngModule, TestComponent);
+    clear(TestComponent);
   });
 
   it('should define a permanent metadata for a declaration', () => {
+    class TestComponent {
+    }
+
     const metadata = {
       selector: 'app-test',
       template: '<div></div>'
     };
 
-    decorate(metadata);
+    decorate(TestComponent, metadata);
     bootstrapper.unarm('inject', 'bind', 'transclude');
 
-    bootstrapper.defineMetadata.and.callFake(
-      (declaration: any, type: symbol, data: angular.IComponentOptions) => {
-        expect(declaration).toEqual(TestComponent);
-        expect(type).toEqual(tokens.permanent.component);
-        expect(data).toEqual({
-          name: 'appTest',
-          template: '<div></div>',
-          controller: TestComponent,
-          controllerAs: '$ctrl'
-        });
-      });
+    bootstrapComponent(spy.ngModule as any, TestComponent);
 
-    bootstrapComponent(ngModule, TestComponent);
+    expect(bootstrapper.defineMetadata).toHaveBeenCalledWith(
+      TestComponent,
+      tokens.permanent.component,
+      {
+        name: 'appTest',
+        template: '<div></div>',
+        controller: TestComponent,
+        controllerAs: '$ctrl'
+      }
+    );
 
-    expect(bootstrapper.defineMetadata).toHaveBeenCalled();
+    clear(TestComponent);
   });
 });

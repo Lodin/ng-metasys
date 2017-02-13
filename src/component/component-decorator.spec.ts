@@ -19,7 +19,7 @@ describe('Decorator `@Component`', () => {
 
   it('should throw an error if selector is not set', () => {
     expect(() => {
-      @Component(<ComponentMetadata> {})
+      @Component({} as ComponentMetadata)
       class TestComponent {}
     }).toThrow();
   });
