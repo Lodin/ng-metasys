@@ -131,11 +131,16 @@ import {Component, Inject, Transclude, Bind} from 'ng-metasys';
 })
 @Transclude()
 export class AppComponent {
-  @Inject('$http') $http;
-  @Inject('$q') $q;
-  
   @Bind('<') $router;
   @Bind('&') onClick;
+  
+  $http;
+  $q;
+  
+  constructor(@Inject('$http') $http, @Inject('$q') $q) {
+    this.$http = $http;
+    this.$q = $q;
+  }
 }
 ```
 Which is an equivalent to the following code:
@@ -202,12 +207,16 @@ import {Directive, Link, Inject, Bind} from 'ng-metasys';
   templateUrl: 'some.directive.html'
 })
 export class SomeDirective {
-  @Inject('$q') $q;
+  @Link
+  static link(scope, element, attrs, controllers) {}
   
   @Bind('&') close;
   
-  @Link
-  static link(scope, element, attrs, controllers) {}
+  $q;
+  
+  constructor(@Inject('$q') $q) {
+    this.$q = $q;
+  }
 }
 ```
 Which is equivalent to the following code:
@@ -243,9 +252,11 @@ import {Service, Inject} from 'ng-metasys';
 
 @Service
 export class SomeService {
-  @Inject('$http') $http;
+  $http;
   
-  constructor() {}
+  constructor(@Inject('$http') $http) {
+    this.$http = $http;
+  }
 }
 ```
 Which is equivalent to the following code:
