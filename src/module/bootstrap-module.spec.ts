@@ -32,16 +32,29 @@ describe('Function `bootstrapModule`', () => {
     public static value = 1;
     public static constant = 3;
 
-    public static config() {}
-    public static run() {}
+    public static config() {
+    }
+
+    public static run() {
+    }
   }
 
   let bootstrapper: Bootstrapper;
-  let fakeModule: angular.IModule;
+  let testModule: any;
+  let ngModuleFn: jasmine.Spy;
 
   beforeEach(() => {
     bootstrapper = new Bootstrapper();
-    fakeModule = angular.module('TestModule', []);
+    ngModuleFn = spyOn(angular, 'module');
+    testModule = {
+      name: 'TestModule',
+      config: jasmine.createSpy('angular.IModule#config'),
+      constant: jasmine.createSpy('angular.IModule#constant'),
+      run: jasmine.createSpy('angular.IModule#run'),
+      value: jasmine.createSpy('angular.IModule#value')
+    };
+
+    ngModuleFn.and.returnValue(testModule);
   });
 
   afterEach(() => {
@@ -54,17 +67,9 @@ describe('Function `bootstrapModule`', () => {
 
     bootstrapper.unarm();
 
-    spyOn(angular, 'module').and.callFake(
-      (name: string, dependencies: string[]): angular.IModule => {
-        expect(name).toEqual('TestModule');
-        expect(dependencies).toEqual([]);
-
-        return fakeModule;
-      });
-
     bootstrapModule(TestModule);
 
-    expect(angular.module).toHaveBeenCalled();
+    expect(ngModuleFn).toHaveBeenCalledWith('TestModule', []);
     expect(NgmsReflect.modules.has('TestModule')).toBeTruthy();
   });
 
@@ -73,24 +78,24 @@ describe('Function `bootstrapModule`', () => {
 
     bootstrapper.unarm();
 
-    spyOn(angular, 'module').and.returnValue(fakeModule);
-
     bootstrapModule(TestModule);
     bootstrapModule(TestModule);
 
-    expect((angular.module as any).calls.count()).toEqual(1);
+    expect(ngModuleFn.calls.count()).toEqual(1);
   });
 
   it('should throw an error if module declaration does not have a @Module mark', () => {
     expect(() => {
-      class TestModuleError {}
+      class TestModuleError {
+      }
       bootstrapModule(TestModuleError);
     }).toThrow();
   });
 
   it('should import dependency modules', () => {
-    class DependencyModule {}
-    const fakeDependencyModule = angular.module('DependencyModule', []);
+    class DependencyModule {
+    }
+    const dependencyModule = {name: 'DependencyModule'};
 
     const imports = ['localStorageModule', 'ui.router', DependencyModule];
 
@@ -99,14 +104,14 @@ describe('Function `bootstrapModule`', () => {
 
     bootstrapper.unarm();
 
-    spyOn(angular, 'module').and.callFake(
-      (name: string, dependencies: string[]): angular.IModule => {
+    ngModuleFn.and.callFake(
+      (name: string, dependencies: string[]): any => {
         if (name === 'DependencyModule') {
-          return fakeDependencyModule;
+          return dependencyModule;
         }
 
         expect(dependencies).toEqual(['localStorageModule', 'ui.router', 'DependencyModule']);
-        return fakeModule;
+        return testModule;
       });
 
     bootstrapModule(TestModule);
@@ -130,8 +135,6 @@ describe('Function `bootstrapModule`', () => {
 
     bootstrapper.unarm();
 
-    spyOn(angular, 'module').and.returnValue(fakeModule);
-
     bootstrapModule(TestModule);
 
     expect(bootstrapper.bootstrapComponent).toHaveBeenCalled();
@@ -145,13 +148,12 @@ describe('Function `bootstrapModule`', () => {
 
   it('should throw an error if declaration does not have @Component, @Directive or @Filter mark',
     () => {
-      class DeclarationWithoutMark {}
+      class DeclarationWithoutMark {
+      }
       const declarations = [DeclarationWithoutMark];
 
       Reflect.defineMetadata(tokens.module.self, {declarations}, TestModule.prototype);
       bootstrapper.unarm();
-
-      spyOn(angular, 'module').and.returnValue(fakeModule);
 
       expect(() => bootstrapModule(TestModule)).toThrow();
     });
@@ -168,8 +170,6 @@ describe('Function `bootstrapModule`', () => {
 
     bootstrapper.unarm();
 
-    spyOn(angular, 'module').and.returnValue(fakeModule);
-
     bootstrapModule(TestModule);
 
     expect(bootstrapper.bootstrapProviders).toHaveBeenCalled();
@@ -178,22 +178,6 @@ describe('Function `bootstrapModule`', () => {
   });
 
   describe('at module configuration', () => {
-    type ModuleMethodsForValue = 'constant'|'value';
-    type ModuleMethodsForFn = 'config'|'run';
-
-    const spyFn = (type: ModuleMethodsForFn) => {
-      spyOn(fakeModule, type).and.callFake((fn: Function) => {
-        expect(fn).toEqual((<any> TestModule)[type]);
-      });
-    };
-
-    const spyValue = (type: ModuleMethodsForValue) => {
-      spyOn(fakeModule, type).and.callFake((property: string, value: any) => {
-        expect(property).toEqual(type);
-        expect(value).toEqual((<any> TestModule)[type]);
-      });
-    };
-
     const testModuleConfig = (token: symbol, type: string) => {
       Reflect.defineMetadata(token, type, TestModule);
 
@@ -201,14 +185,13 @@ describe('Function `bootstrapModule`', () => {
 
       bootstrapModule(TestModule);
 
-      expect((<any> fakeModule)[type]).toHaveBeenCalled();
+      expect((testModule as any)[type]).toHaveBeenCalled();
       expect(bootstrapper.bootstrapModuleConfig).toHaveBeenCalled();
       expect(angular.module).toHaveBeenCalled();
     };
 
     beforeEach(() => {
       Reflect.defineMetadata(tokens.module.self, {}, TestModule.prototype);
-      spyOn(angular, 'module').and.returnValue(fakeModule);
     });
 
     afterEach(() => {
@@ -216,23 +199,23 @@ describe('Function `bootstrapModule`', () => {
     });
 
     it('should initialize `config`', () => {
-      spyFn('config');
       testModuleConfig(tokens.module.config, 'config');
+      expect(testModule.config).toHaveBeenCalledWith(TestModule.config);
     });
 
     it('should initialize `run`', () => {
-      spyFn('run');
       testModuleConfig(tokens.module.run, 'run');
+      expect(testModule.run).toHaveBeenCalledWith(TestModule.run);
     });
 
     it('should initialize `value`', () => {
-      spyValue('value');
       testModuleConfig(tokens.module.value, 'value');
+      expect(testModule.value).toHaveBeenCalledWith('value', TestModule.value);
     });
 
     it('should initialize `constant`', () => {
-      spyValue('constant');
       testModuleConfig(tokens.module.constant, 'constant');
+      expect(testModule.constant).toHaveBeenCalledWith('constant', TestModule.constant);
     });
   });
 
