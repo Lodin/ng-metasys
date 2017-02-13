@@ -6,38 +6,36 @@ class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapModule, 'default');
 }
 
+class Spy {
+  public bootstrap = spyOn(angular, 'bootstrap');
+}
+
 describe('Function `bootstrap`', () => {
   class TestModule {
   }
 
   let testModule: angular.IModule;
   let bootstrapper: Bootstrapper;
+  let spy: Spy;
 
   beforeEach(() => {
     testModule = angular.module('testModule', []);
     bootstrapper = new Bootstrapper();
     bootstrapper.bootstrapInject.and.returnValue(testModule);
+    spy = new Spy();
   });
 
   it('should create angular module from metadata and bootstrap it in angular', () => {
-    spyOn(angular, 'bootstrap').and.callFake(
-      (element: Element|JQuery|Document, modules: angular.IModule[]) => {
-        expect(element).toEqual(document);
-        expect(modules).toEqual([testModule]);
-      });
-
     bootstrap(TestModule);
 
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
-    expect(angular.bootstrap).toHaveBeenCalled();
+    expect(angular.bootstrap).toHaveBeenCalledWith(document, [testModule]);
   });
 
   it('should receive a html element and bootstrap module to it', () => {
-    spyOn(angular, 'bootstrap').and.callFake((element: Element|JQuery|Document) => {
-      expect(element).toEqual(document.body);
-    });
-
     bootstrap(TestModule, document.body);
+
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
+    expect(angular.bootstrap).toHaveBeenCalledWith(document.body, [testModule]);
   });
 });
