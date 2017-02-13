@@ -22,30 +22,35 @@ class Bootstrapper {
 }
 
 describe('Function `bootstrapFilter`', () => {
-  class TestFilter {
-    public static execute() {}
-  }
-
-  let ngModule: angular.IModule;
+  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = angular.module('TestModule', []);
+    ngModule = {
+      filter: jasmine.createSpy('angular.IModule#filter')
+    };
     bootstrapper = new Bootstrapper();
   });
 
   it('should define metadata for decorated class', () => {
+    class TestFilter {
+      public static execute() {
+      }
+    }
+
     bootstrapper.unarm('all');
 
-    spyOn(ngModule, 'filter').and.callFake((name: string, execute: Function) => {
-      expect(name).toEqual('test');
-      expect(execute).toEqual(TestFilter.execute);
-    });
-
     bootstrapFilter(ngModule, TestFilter);
+
+    expect(ngModule.filter).toHaveBeenCalledWith('test', TestFilter.execute);
   });
 
   it('should add injections to the `execute` function', () => {
+    class TestFilter {
+      public static execute() {
+      }
+    }
+
     bootstrapper.unarm('meta');
 
     bootstrapper.bootstrapInject.and.returnValue({
@@ -55,28 +60,28 @@ describe('Function `bootstrapFilter`', () => {
       }
     });
 
-    spyOn(ngModule, 'filter').and.callFake((name: string, execute: Function) => {
-      expect((execute as any).$inject).toEqual(['$http', '$q']);
-    });
-
     bootstrapFilter(ngModule, TestFilter);
+
+    expect(TestFilter.execute.$inject).toEqual(['$http', '$q']);
   });
 
   it('should define a permanent metadata for a declaration', () => {
-    bootstrapper.unarm('inject');
+    class TestFilter {
+      public static execute() {
+      }
+    }
 
-    bootstrapper.defineMetadata.and.callFake(
-      (declaration: any, type: string, data: any) => {
-        expect(declaration).toEqual(TestFilter);
-        expect(type).toEqual(tokens.permanent.filter);
-        expect(data).toEqual({
-          name: 'Test',
-          instance: TestFilter.execute
-        });
-      });
+    bootstrapper.unarm('inject');
 
     bootstrapFilter(ngModule, TestFilter);
 
-    expect(bootstrapper.defineMetadata).toHaveBeenCalled();
+    expect(bootstrapper.defineMetadata).toHaveBeenCalledWith(
+      TestFilter,
+      tokens.permanent.filter,
+      {
+        name: 'Test',
+        instance: TestFilter.execute
+      }
+    );
   });
 });
