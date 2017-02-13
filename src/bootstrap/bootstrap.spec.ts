@@ -6,36 +6,32 @@ class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapModule, 'default');
 }
 
-class Spy {
-  public bootstrap = spyOn(angular, 'bootstrap');
-}
-
 describe('Function `bootstrap`', () => {
   class TestModule {
   }
 
   let testModule: angular.IModule;
   let bootstrapper: Bootstrapper;
-  let spy: Spy;
+  let ngBootstrap: jasmine.Spy;
 
   beforeEach(() => {
     testModule = angular.module('testModule', []);
     bootstrapper = new Bootstrapper();
     bootstrapper.bootstrapInject.and.returnValue(testModule);
-    spy = new Spy();
+    ngBootstrap = spyOn(angular, 'bootstrap');
   });
 
   it('should create angular module from metadata and bootstrap it in angular', () => {
     bootstrap(TestModule);
 
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
-    expect(angular.bootstrap).toHaveBeenCalledWith(document, [testModule]);
+    expect(ngBootstrap).toHaveBeenCalledWith(document, [testModule]);
   });
 
   it('should receive a html element and bootstrap module to it', () => {
     bootstrap(TestModule, document.body);
 
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
-    expect(angular.bootstrap).toHaveBeenCalledWith(document.body, [testModule]);
+    expect(ngBootstrap).toHaveBeenCalledWith(document.body, [testModule]);
   });
 });
