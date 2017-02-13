@@ -1,7 +1,7 @@
 import * as camelCase from 'camelcase';
 
 const attributePattern = /\[(.+?)\]/;
-const commentPattern = /\/\/(.+)/;
+const commentPattern = /\/\/(.+)|\/\*\s*(.+)\s*\*\//m;
 
 type ParseSelector = (selector: string) => string[];
 const parseSelector: ParseSelector =
@@ -15,7 +15,8 @@ const parseSelector: ParseSelector =
         restrict = 'A';
         break;
       case commentPattern.test(selector):
-        [, name] = commentPattern.exec(selector) as string[];
+        const [, str1, str2] = commentPattern.exec(selector) as string[];
+        name = str1 || str2;
         restrict = 'M';
         break;
       case selector.charAt(0) === '.':

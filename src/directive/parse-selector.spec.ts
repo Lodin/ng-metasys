@@ -11,6 +11,10 @@ describe('Function `parseSelector`', () => {
 
   it('should parse comment selector', () => {
     expect(parseSelector('//test-comment')).toEqual(['testComment', 'M']);
+    expect(parseSelector('/* test-comment */')).toEqual(['testComment', 'M']);
+    expect(parseSelector(`/*
+      test-comment
+    */`)).toEqual(['testComment', 'M']);
   });
 
   it('should parse everything else as a element selector', () => {
