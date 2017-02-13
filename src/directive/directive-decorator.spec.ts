@@ -19,7 +19,7 @@ describe('Decorator `@Directive`', () => {
 
   it('should throw an error if selector is not set', () => {
     expect(() => {
-      @Directive(<DirectiveMetadata> {})
+      @Directive({} as DirectiveMetadata)
       class TestDirective {}
     }).toThrow();
   });
