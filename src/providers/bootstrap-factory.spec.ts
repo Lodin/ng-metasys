@@ -9,43 +9,40 @@ class Bootstrapper {
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
   public unarm(...toUnarm: string[]) {
-    const hasAll = toUnarm.indexOf('all') !== -1;
+    const hasAll = toUnarm.includes('all');
 
-    if (toUnarm.indexOf('inject') !== -1 || hasAll) {
+    if (toUnarm.includes('inject') || hasAll) {
       this.bootstrapInject.and.returnValue(null);
     }
 
-    if (toUnarm.indexOf('meta') !== -1 || hasAll) {
+    if (toUnarm.includes('meta') || hasAll) {
       this.defineMetadata.and.returnValue(null);
     }
   }
 }
 
 describe('Function `bootstrapFactory`', () => {
-  class TestFactory {
-    public static $get() {}
-  }
-
-  let ngModule: angular.IModule;
+  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = angular.module('TestModule', []);
+    ngModule = {
+      factory: jasmine.createSpy('angular.IModule#factory')
+    };
     bootstrapper = new Bootstrapper();
   });
 
   it('should create a factory', () => {
-    bootstrapper.unarm('all');
+    class TestFactory {
+      public static $get() {}
+    }
 
-    spyOn(ngModule, 'factory').and.callFake((name: string, fn: Function) => {
-      expect(name).toEqual('TestFactory');
-      expect(fn).toEqual(TestFactory.$get);
-    });
+    bootstrapper.unarm('all');
 
     bootstrapFactory(ngModule, TestFactory);
 
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
-    expect(ngModule.factory).toHaveBeenCalled();
+    expect(ngModule.factory).toHaveBeenCalledWith('TestFactory', TestFactory.$get);
   });
 
   it('should throw an error if declaration does not have static method $get', () => {
@@ -56,6 +53,10 @@ describe('Function `bootstrapFactory`', () => {
   });
 
   it('should add injections to the factory $get method', () => {
+    class TestFactory {
+      public static $get() {}
+    }
+
     bootstrapper.unarm('meta');
 
     const metadata = ['$http', '$q'];
@@ -67,28 +68,29 @@ describe('Function `bootstrapFactory`', () => {
       }
     });
 
-    spyOn(ngModule, 'factory').and.callFake((name: string, fn: Function) => {
-      expect((fn as any).$inject).toEqual(metadata);
-    });
-
     bootstrapFactory(ngModule, TestFactory);
+
+    expect((TestFactory.$get as any).$inject).toEqual(metadata);
   });
 
   it('should define a permanent metadata for a declaration', () => {
-    bootstrapper.unarm('inject');
+    class TestFactory {
+      public static $get() {}
+    }
 
-    bootstrapper.defineMetadata.and.callFake(
-      (declaration: any, type: string, data: any) => {
-        expect(declaration).toEqual(TestFactory);
-        expect(type).toEqual(tokens.permanent.factory);
-        expect(data).toEqual({
-          name: 'TestFactory',
-          instance: TestFactory.$get
-        });
-      });
+    bootstrapper.unarm('inject');
 
     bootstrapFactory(ngModule, TestFactory);
 
     expect(bootstrapper.defineMetadata).toHaveBeenCalled();
+
+    expect(bootstrapper.defineMetadata).toHaveBeenCalledWith(
+      TestFactory,
+      tokens.permanent.factory,
+      {
+        name: 'TestFactory',
+        instance: TestFactory.$get
+      }
+    );
   });
 });

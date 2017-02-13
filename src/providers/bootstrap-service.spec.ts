@@ -22,32 +22,32 @@ class Bootstrapper {
 }
 
 describe('Function `bootstrapService`', () => {
-  class TestService {
-  }
-
-  let ngModule: angular.IModule;
+  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = angular.module('TestModule', []);
+    ngModule = {
+      service: jasmine.createSpy('angular.IModule#service')
+    };
     bootstrapper = new Bootstrapper();
   });
 
   it('should create a service', () => {
-    bootstrapper.unarm('all');
+    class TestService {
+    }
 
-    spyOn(ngModule, 'service').and.callFake((name: string, declaration: any) => {
-      expect(name).toEqual('TestService');
-      expect(declaration).toEqual(TestService);
-    });
+    bootstrapper.unarm('all');
 
     bootstrapService(ngModule, TestService);
 
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
-    expect(ngModule.service).toHaveBeenCalled();
+    expect(ngModule.service).toHaveBeenCalledWith('TestService', TestService);
   });
 
   it('should add common injections to the service', () => {
+    class TestService {
+    }
+
     bootstrapper.unarm('meta');
 
     const metadata = ['$http', '$q'];
@@ -59,28 +59,26 @@ describe('Function `bootstrapService`', () => {
       }
     });
 
-    spyOn(ngModule, 'service').and.callFake((name: string, declaration: any) => {
-      expect(declaration.$inject).toEqual(metadata);
-    });
-
     bootstrapService(ngModule, TestService);
+
+    expect((TestService as any).$inject).toEqual(metadata);
   });
 
   it('should define a permanent metadata for a declaration', () => {
-    bootstrapper.unarm('inject');
+    class TestService {
+    }
 
-    bootstrapper.defineMetadata.and.callFake(
-      (declaration: any, type: symbol, data: any) => {
-        expect(declaration).toEqual(TestService);
-        expect(type).toEqual(tokens.permanent.service);
-        expect(data).toEqual({
-          name: 'TestService',
-          instance: TestService
-        });
-      });
+    bootstrapper.unarm('inject');
 
     bootstrapService(ngModule, TestService);
 
-    expect(bootstrapper.defineMetadata).toHaveBeenCalled();
+    expect(bootstrapper.defineMetadata).toHaveBeenCalledWith(
+      TestService,
+      tokens.permanent.service,
+      {
+        name: 'TestService',
+        instance: TestService
+      }
+    );
   });
 });

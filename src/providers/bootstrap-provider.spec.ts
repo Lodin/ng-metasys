@@ -9,43 +9,40 @@ class Bootstrapper {
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
   public unarm(...toUnarm: string[]) {
-    const hasAll = toUnarm.indexOf('all') !== -1;
+    const hasAll = toUnarm.includes('all');
 
-    if (toUnarm.indexOf('inject') !== -1 || hasAll) {
+    if (toUnarm.includes('inject') || hasAll) {
       this.bootstrapInject.and.returnValue(null);
     }
 
-    if (toUnarm.indexOf('meta') !== -1 || hasAll) {
+    if (toUnarm.includes('meta') || hasAll) {
       this.defineMetadata.and.returnValue(null);
     }
   }
 }
 
 describe('Function `bootstrapProvider`', () => {
-  class TestProvider {
-    public $get() {}
-  }
-
-  let ngModule: angular.IModule;
+  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = angular.module('TestModule', []);
+    ngModule = {
+      provider: jasmine.createSpy('angular.IModule#provider')
+    };
     bootstrapper = new Bootstrapper();
   });
 
   it('should create a provider', () => {
-    bootstrapper.unarm('all');
+    class TestProvider {
+      public $get() {}
+    }
 
-    spyOn(ngModule, 'provider').and.callFake((name: string, declaration: any) => {
-      expect(name).toEqual('TestProvider');
-      expect(declaration).toEqual(TestProvider);
-    });
+    bootstrapper.unarm('all');
 
     bootstrapProvider(ngModule, TestProvider);
 
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
-    expect(ngModule.provider).toHaveBeenCalled();
+    expect(ngModule.provider).toHaveBeenCalledWith('TestProvider', TestProvider);
   });
 
   it('should throw an error if declaration does not have method $get', () => {
@@ -56,6 +53,10 @@ describe('Function `bootstrapProvider`', () => {
   });
 
   it('should add injections to the provider $get method', () => {
+    class TestProvider {
+      public $get() {}
+    }
+
     bootstrapper.unarm('meta');
 
     const metadata = ['$http', '$q'];
@@ -67,28 +68,27 @@ describe('Function `bootstrapProvider`', () => {
       }
     });
 
-    spyOn(ngModule, 'provider').and.callFake((name: string, declaration: any) => {
-      expect(declaration.prototype.$get.$inject).toEqual(metadata);
-    });
-
     bootstrapProvider(ngModule, TestProvider);
+
+    expect((TestProvider.prototype.$get as any).$inject).toEqual(metadata);
   });
 
   it('should define a permanent metadata for a declaration', () => {
-    bootstrapper.unarm('inject');
+    class TestProvider {
+      public $get() {}
+    }
 
-    bootstrapper.defineMetadata.and.callFake(
-      (declaration: any, type: string, data: any) => {
-        expect(declaration).toEqual(TestProvider);
-        expect(type).toEqual(tokens.permanent.provider);
-        expect(data).toEqual({
-          name: 'TestProvider',
-          instance: TestProvider
-        });
-      });
+    bootstrapper.unarm('inject');
 
     bootstrapProvider(ngModule, TestProvider);
 
-    expect(bootstrapper.defineMetadata).toHaveBeenCalled();
+    expect(bootstrapper.defineMetadata).toHaveBeenCalledWith(
+      TestProvider,
+      tokens.permanent.provider,
+      {
+        name: 'TestProvider',
+        instance: TestProvider
+      }
+    );
   });
 });
