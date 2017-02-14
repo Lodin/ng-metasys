@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 export {default as bootstrap} from './bootstrap/bootstrap';
 export {default as Component} from './component/component-decorator';
 export {modules, getMetadata} from './core/reflection';

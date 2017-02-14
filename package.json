@@ -32,7 +32,6 @@
     "@types/angular": "^1.5.7",
     "@types/camelcase": "0.0.30",
     "@types/jasmine": "^2.5.41",
-    "@types/reflect-metadata": "0.0.5",
     "awesome-typescript-loader": "^3.0.4-rc.0",
     "codecov": "^1.0.1",
     "copyfiles": "^1.2.0",
@@ -53,14 +52,12 @@
     "typescript": "^2.2.0-dev.20170210",
     "webpack": "^2.2.1"
   },
-  "optionalDependencies": {
-    "core-js": "^2.4.1"
-  },
   "peerDependencies": {
     "angular": "^1.5.0",
     "tslib": "^1.5.0"
   },
   "dependencies": {
-    "camelcase": "^4.0.0"
+    "camelcase": "^4.0.0",
+    "reflect-metadata": "^0.1.9"
   }
 }
