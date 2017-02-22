@@ -9,6 +9,13 @@ export const permanentList = [
   tokens.permanent.provider
 ];
 
+export const injectablePermanentList = [
+  tokens.permanent.service,
+  tokens.permanent.provider,
+  tokens.permanent.filter,
+  tokens.permanent.factory
+];
+
 export const providersList = [
   tokens.providers.service,
   tokens.providers.factory,

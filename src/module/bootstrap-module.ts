@@ -1,7 +1,8 @@
 import * as angular from 'angular';
 import * as tokens from '../core/tokens';
-import {moduleList} from '../core/token-lists';
+import {injectablePermanentList, moduleList} from '../core/token-lists';
 import {modules} from '../core/reflection';
+import {pluginRegistry} from '../core/plugin-registry';
 import bootstrapComponent from '../component/bootstrap-component';
 import bootstrapDirective from '../directive/bootstrap-directive';
 import bootstrapFilter from '../filter/bootstrap-filter';
@@ -90,7 +91,42 @@ const checkMetadata: CheckMetadata =
     }
 
     if (part) {
-      throw new Error(`Module ${name} has broken ${part} (one or more ${part}s is undefined)`);
+      throw new Error(`Module ${name} has broken ${part} (one or more ${part}s are undefined)`);
+    }
+  };
+
+type ConvertNames = (declarations: any[]) => string[];
+const convertNames: ConvertNames =
+  declarations => {
+    const len = declarations.length;
+    const names = new Array<string>(len);
+
+    for (let i = 0; i < len; i++) {
+      let searchSuccess = false;
+      const declaration = declarations[i];
+
+      for (const token of injectablePermanentList) {
+        if (Reflect.hasMetadata(token, declaration.prototype)) {
+          const metadata = Reflect.getMetadata(token, declaration.prototype);
+          names[i] = metadata.name;
+          searchSuccess = true;
+        }
+      }
+
+      if (!searchSuccess) {
+        throw new Error(`Declaration ${declaration.name} is not found in registry`);
+      }
+    }
+
+    return names;
+  };
+
+type ApplyPlugins = (ngModule: angular.IModule, declaration: any) => void;
+const applyPlugins: ApplyPlugins =
+  (ngModule, declaration) => {
+    for (const plugin of pluginRegistry) {
+      const injections: string[] = plugin.injections ? convertNames(plugin.injections) : [];
+      plugin.bootstrap(ngModule, declaration, ...injections);
     }
   };
 
@@ -124,6 +160,8 @@ const bootstrapModule: BootstrapModule =
     }
 
     initConfig(ngModule, declaration);
+
+    applyPlugins(ngModule, declaration);
 
     return ngModule.name;
   };

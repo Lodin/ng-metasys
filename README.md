@@ -530,5 +530,130 @@ expect(getMetadata(AppComponent)).toEqual({
 });
 ```
 
+## Plug-in system
+This package implements only basic AngularJS functional. But there
+are many additional packages extending AngularJS core - may be your 
+own, - and they have to be implemented. For such purposes there is 
+plug-in system that allows to implement own decorator and include it 
+to the common bootstrapping flow. 
+ 
+Plugin has following structure:
+```
+<name>
+├── <name>-bootstrap.js
+├── <name>-decorator.js
+├── <name>-token.js
+├── <name>-reflection.js
+├── index.js
+```
+File `<name>-token.js` defines the token where the metadata will 
+be stored. Token should be a `Symbol` to avoid any possible 
+collision. You also can define the permanent token here if you
+want your data to be accessible through the custom `getMetadata`
+function.
+```javascript
+// my-token.js
+export const token = Symbol('my');
+export const permanentToken = Symbol('permanent:my');
+```
+File `<name>-decorator` describes a decorator storing metadata of 
+the target class. Metadata should be stored using `Reflect` 
+from `reflect-metadata` package.
+```javascript
+// my-decorator.js
+import {token} from './my-token'
+const My = 
+  metadata => 
+    target => 
+      Reflect.defineMetadata(token, metadata, target.prototype);
+
+export default My;
+```
+File `<name>-bootstrap.js` contains bootstrap function being loaded
+during the bootstrapping process. To add the plugin bootstrapping 
+function to the `ng-metasys` flow, it should be put into 
+`registerPlugin` function that can be imported from 
+`ng-metasys/plugin`.
+
+Bootstrap function receives angular module and the declaration 
+belonging to it. First thing you should do in your bootstrap 
+function is to check if this declaration is the declaration 
+you saved data for. Then just call necessary module function
+and init the data you have.
+
+If you want data to be accessible through `getMetadata` function
+you have to register your permanent token and metadata using
+`defineMetadata` function from the `ng-metasys` plugin. Then it
+will be accessible from your custom `getMetadata` function.
+```javascript
+import {registerPlugin, defineMetadata} from 'ng-metasys/plugin';
+import {token, permanentToken} from './my-token';
+
+const myBootstrap = 
+  (ngModule, declaration) => {
+    if (!Reflect.hasMetadata(token, declaration)) {
+      return;
+    }
+    
+    const metadata = Reflect.getMetadata(token, declaration.prototype);
+    
+    ngModule.run(['$q', () => {
+      // init your data 
+    }]);
+    
+    //register metadata with permanent token
+    defineMetadata(declaration, permanentToken, metadata);
+  };
+
+registerPlugin(myBootstrap);
+```
+If you have injectables written in terms of `ng-metasys` to
+be injected into `ngModule` functions, pass them in array to
+the `registerPlugin` as second argument. You can get their names 
+as third and following arguments of your bootstrap function. 
+
+**Note:** injectable should be initialized in current module or 
+in it's dependencies written in terms of `ng-metasys`.
+```javascript
+import {registerPlugin} from 'ng-metasys/plugin';
+import {token} from './my-token';
+import {MyServiceOne} from './my-service-one';
+import {MyServiceTwo} from './my-service-two';
+
+const myBootstrap = 
+  (ngModule, declaration, myServiceOneName, myServiceTwoName) => {
+    if (!Reflect.hasMetadata(token, declaration)) {
+      return;
+    }
+    
+    ngModule.run(['$q', myServiceOneName, myServiceTwoName, 
+      ($q, myServiceOne, myServiceTwo) => {
+        // init your data 
+      }
+    ]);
+  };
+
+registerPlugin(myBootstrap, [MyServiceOne, MyServiceTwo]);
+```
+File `<name>-reflection.js` defines your custom `getMetadata`
+function. It is optional - only if you want to get access to the
+metadata of your plugin. To get metadata from this function use 
+`getPluginMetadata` from `ng-metasys/plugin` and your permanent
+token.
+```javascript
+import {getPluginMetadata} from `ng-metasys/plugin`;
+import {permanentToken} from './my-token';
+
+const getMyMetadata = declaration => getPluginMetadata(permanentToken, declaration);
+
+export default getMyMetadata;
+```
+File `index.js` exports your decorator and custom `getMetadata` 
+function (if any).
+```javascript
+export {default as My} from './my-decorator';
+export {default as getMyMetadata} from './my-reflection';
+```
+
 ## License
 Information about license can be found [here](./LICENSE).
