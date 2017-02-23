@@ -1,5 +1,6 @@
 import * as angular from 'angular';
 import * as tokens from '../core/tokens';
+import {pluginRegistry, PluginRegistryItem} from '../core/plugin-registry';
 import * as NgmsReflect from '../core/reflection';
 import * as bootstrapComponent from '../component/bootstrap-component';
 import * as bootstrapDirective from '../directive/bootstrap-directive';
@@ -62,7 +63,7 @@ describe('Function `bootstrapModule`', () => {
     (NgmsReflect as any).modules = new Map();
   });
 
-  it('should create bare module and write it to the `moduleList`', () => {
+  it('should create bare module and write it to the `modules`', () => {
     Reflect.defineMetadata(tokens.module.self, {}, TestModule.prototype);
 
     bootstrapper.unarm();
@@ -196,6 +197,10 @@ describe('Function `bootstrapModule`', () => {
 
     afterEach(() => {
       Reflect.deleteMetadata(tokens.module.self, TestModule.prototype);
+      Reflect.deleteMetadata(tokens.module.config, TestModule);
+      Reflect.deleteMetadata(tokens.module.run, TestModule);
+      Reflect.deleteMetadata(tokens.module.value, TestModule);
+      Reflect.deleteMetadata(tokens.module.constant, TestModule);
     });
 
     it('should initialize `config`', () => {
@@ -225,7 +230,7 @@ describe('Function `bootstrapModule`', () => {
 
       expect(() => {
         bootstrapModule(TestModule);
-      }).toThrowError('Module TestModule has broken import (one or more imports is undefined)');
+      }).toThrowError('Module TestModule has broken import (one or more imports are undefined)');
     });
 
     it('should check metadata declarations', () => {
@@ -233,8 +238,7 @@ describe('Function `bootstrapModule`', () => {
 
       expect(() => {
         bootstrapModule(TestModule);
-      }).toThrowError('Module TestModule has broken declaration (one or more declarations is ' +
-        'undefined)');
+      }).toThrow();
     });
 
     it('should check metadata providers', () => {
@@ -242,7 +246,84 @@ describe('Function `bootstrapModule`', () => {
 
       expect(() => {
         bootstrapModule(TestModule);
-      }).toThrowError('Module TestModule has broken provider (one or more providers is undefined)');
+      }).toThrow();
+    });
+  });
+
+  describe('at plugin system', () => {
+    type Define = (token: symbol, declaration: any) => void;
+    const define: Define =
+      (token, declaration) =>
+        Reflect.defineMetadata(token, {name: declaration.name}, declaration.prototype);
+
+    let plugin: PluginRegistryItem;
+
+    beforeEach(() => {
+      Reflect.defineMetadata(tokens.module.self, {}, TestModule.prototype);
+      bootstrapper.unarm();
+    });
+
+    afterEach(() => {
+      pluginRegistry.length = 0;
+      Reflect.deleteMetadata(tokens.module.self, TestModule.prototype);
+    });
+
+    it('should apply plugins for the declaration', () => {
+      plugin = {
+        bootstrap: jasmine.createSpy('PluginRegistryItem.bootstrap')
+      };
+
+      pluginRegistry.push(plugin);
+
+      const moduleName = bootstrapModule(TestModule);
+
+      expect(plugin.bootstrap).toHaveBeenCalledWith(angular.module(moduleName), TestModule);
+      expect(plugin.bootstrap).toHaveBeenCalledTimes(1);
+      expect((plugin.bootstrap as any).calls.mostRecent().args.length).toEqual(2);
+    });
+
+    it('should send injections names to the plugin bootstrap function', () => {
+      class TestService {}
+      class TestProvider {}
+      class TestFilter {}
+      class TestFactory {}
+
+      define(tokens.permanent.service, TestService);
+      define(tokens.permanent.provider, TestProvider);
+      define(tokens.permanent.filter, TestFilter);
+      define(tokens.permanent.factory, TestFactory);
+
+      plugin = {
+        bootstrap: jasmine.createSpy('PluginRegistryItem.bootstrap'),
+        injections: [TestService, TestProvider, TestFilter, TestFactory]
+      };
+
+      pluginRegistry.push(plugin);
+
+      const moduleName = bootstrapModule(TestModule);
+
+      expect(plugin.bootstrap).toHaveBeenCalledWith(
+        angular.module(moduleName),
+        TestModule,
+        'TestService',
+        'TestProvider',
+        'TestFilter',
+        'TestFactory'
+      );
+    });
+
+    it('should throw an error if metadata for required declaration is not exist', () => {
+      class TestService {}
+
+      plugin = {
+        bootstrap: jasmine.createSpy('PluginRegistryItem.bootstrap'),
+        injections: [TestService]
+      };
+
+      pluginRegistry.push(plugin);
+
+      expect(() => bootstrapModule(TestModule))
+        .toThrowError('Declaration TestService is not found in registry');
     });
   });
 });

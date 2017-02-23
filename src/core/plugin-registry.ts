@@ -1,20 +1,17 @@
 type BootstrapFunction =
   (ngModule: angular.IModule, ...injections: string[]) => void;
 
-type RegisterPlugin = (bootstrap: BootstrapFunction, injection?: string[]) => void;
+type RegisterPlugin = (bootstrap: BootstrapFunction, injection?: any[]) => void;
 
 type PluginRegistryItem = {
   bootstrap: BootstrapFunction,
-  injections?: string[]
+  injections?: any[]
 };
 
 const pluginRegistry: PluginRegistryItem[] = [];
 
 const registerPlugin: RegisterPlugin =
-  (
-    bootstrap: BootstrapFunction,
-    injectons?: string[]
-  ) => {
+  (bootstrap, injectons) => {
     const item: PluginRegistryItem = {bootstrap};
 
     if (injectons) {

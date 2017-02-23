@@ -17,15 +17,18 @@ const getMetadata: GetMetadata =
       }
     }
 
-    return null;
+    throw new Error(`Declaration ${declaration.name} have no specified metadata`);
   };
 
 type GetPluginMetadata = (type: symbol, declaration: any) => any;
 const getPluginMetadata: GetPluginMetadata =
-  (type, declaration) =>
-    Reflect.hasMetadata(type, declaration.prototype)
-      ? Reflect.getMetadata(type, declaration.prototype)
-      : null;
+  (type, declaration) => {
+    if (Reflect.hasMetadata(type, declaration.prototype)) {
+      return Reflect.getMetadata(type, declaration.prototype);
+    }
+
+    throw new Error(`Declaration ${declaration.name} have no specified metadata`);
+  };
 
 export {
   modules,
