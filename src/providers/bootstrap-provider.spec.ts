@@ -3,6 +3,7 @@ import * as NgmsReflect from '../core/reflection';
 import * as tokens from '../core/tokens';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapProvider from './bootstrap-provider';
+import Provider from './provider-decorator';
 
 class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapInject, 'default');
@@ -21,14 +22,16 @@ class Bootstrapper {
   }
 }
 
+const createFakeModule = () => ({
+  provider: jasmine.createSpy('angular.IModule#provider')
+});
+
 describe('Function `bootstrapProvider`', () => {
   let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = {
-      provider: jasmine.createSpy('angular.IModule#provider')
-    };
+    ngModule = createFakeModule();
     bootstrapper = new Bootstrapper();
   });
 
@@ -49,7 +52,7 @@ describe('Function `bootstrapProvider`', () => {
     expect(() => {
       class TestProviderError {}
       bootstrapProvider(ngModule, TestProviderError);
-    }).toThrow();
+    }).toThrowError('Provider TestProviderError should have method "$get"');
   });
 
   it('should add injections to the provider $get method', () => {
@@ -90,5 +93,28 @@ describe('Function `bootstrapProvider`', () => {
         instance: TestProvider
       }
     );
+  });
+});
+
+describe('Decorator `Provider` and function `bootstrapProvider`', () => {
+  let ngModule: any;
+  let bootstrapper: Bootstrapper;
+
+  beforeEach(() => {
+    ngModule = createFakeModule();
+    bootstrapper = new Bootstrapper();
+  });
+
+  it('should work together', () => {
+    bootstrapper.unarm('all');
+
+    @Provider
+    class TestProvider {
+      public $get() {}
+    }
+
+    bootstrapProvider(ngModule, TestProvider);
+
+    expect(ngModule.provider).toHaveBeenCalledWith('TestProvider', TestProvider);
   });
 });

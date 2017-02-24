@@ -14,7 +14,7 @@ describe('Decorator `@Inject`', () => {
     expect(metadata).toEqual(['$http', MockInject]);
   });
 
-  it('should inject data to the methods of declaration (method inject)', () => {
+  it('should inject data to the methods of declaration (method injection)', () => {
     class TestDeclaration {
       @Inject('$http')
       public static config() {

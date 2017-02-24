@@ -3,19 +3,20 @@ import * as tokens from '../core/tokens';
 import * as NgmsReflect from '../core/reflection';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapFilter from './bootstrap-filter';
+import Filter from './filter-decorator';
 
 class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapInject, 'default');
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
   public unarm(...toUnarm: string[]) {
-    const hasAll = toUnarm.indexOf('all') !== -1;
+    const hasAll = toUnarm.includes('all');
 
-    if (toUnarm.indexOf('inject') !== -1 || hasAll) {
+    if (toUnarm.includes('inject') || hasAll) {
       this.bootstrapInject.and.returnValue(null);
     }
 
-    if (toUnarm.indexOf('meta') !== -1 || hasAll) {
+    if (toUnarm.includes('meta') || hasAll) {
       this.defineMetadata.and.returnValue(null);
     }
   }
@@ -83,5 +84,31 @@ describe('Function `bootstrapFilter`', () => {
         instance: TestFilter.execute
       }
     );
+  });
+});
+
+describe('Decorator `Filter` and function `bootstrapFilter`', () => {
+  let ngModule: any;
+  let bootstrapper: Bootstrapper;
+
+  beforeEach(() => {
+    ngModule = {
+      filter: jasmine.createSpy('angular.IModule#filter')
+    };
+    bootstrapper = new Bootstrapper();
+  });
+
+  it('should work together', () => {
+    bootstrapper.unarm('all');
+
+    @Filter
+    class TestFilter {
+      public static execute() {
+      }
+    }
+
+    bootstrapFilter(ngModule, TestFilter);
+
+    expect(ngModule.filter).toHaveBeenCalledWith('test', TestFilter.execute);
   });
 });

@@ -8,6 +8,12 @@ import * as bootstrapFilter from '../filter/bootstrap-filter';
 import * as bootstrapProviders from '../providers/bootstrap-providers';
 import * as bootstrapModuleConfig from './bootstrap-module-config';
 import bootstrapModule from './bootstrap-module';
+import Module from './module-decorator';
+import {ModuleMetadata} from './module-metadata';
+import Config from './config-decorator';
+import Value from './value-decorator';
+import Constant from './constant-decorator';
+import Run from './run-decorator';
 
 class Bootstrapper {
   public bootstrapComponent = spyOn(bootstrapComponent, 'default');
@@ -28,6 +34,14 @@ class Bootstrapper {
   }
 }
 
+const createFakeTestModule = () => ({
+  name: 'TestModule',
+  config: jasmine.createSpy('angular.IModule#config'),
+  constant: jasmine.createSpy('angular.IModule#constant'),
+  run: jasmine.createSpy('angular.IModule#run'),
+  value: jasmine.createSpy('angular.IModule#value')
+});
+
 describe('Function `bootstrapModule`', () => {
   class TestModule {
     public static value = 1;
@@ -47,13 +61,7 @@ describe('Function `bootstrapModule`', () => {
   beforeEach(() => {
     bootstrapper = new Bootstrapper();
     ngModuleFn = spyOn(angular, 'module');
-    testModule = {
-      name: 'TestModule',
-      config: jasmine.createSpy('angular.IModule#config'),
-      constant: jasmine.createSpy('angular.IModule#constant'),
-      run: jasmine.createSpy('angular.IModule#run'),
-      value: jasmine.createSpy('angular.IModule#value')
-    };
+    testModule = createFakeTestModule();
 
     ngModuleFn.and.returnValue(testModule);
   });
@@ -106,16 +114,20 @@ describe('Function `bootstrapModule`', () => {
     bootstrapper.unarm();
 
     ngModuleFn.and.callFake(
-      (name: string, dependencies: string[]): any => {
-        if (name === 'DependencyModule') {
-          return dependencyModule;
-        }
-
-        expect(dependencies).toEqual(['localStorageModule', 'ui.router', 'DependencyModule']);
-        return testModule;
-      });
+      (name: string): any =>
+        name === 'DependencyModule'
+          ? dependencyModule
+          : testModule
+    );
 
     bootstrapModule(TestModule);
+
+    expect(ngModuleFn).toHaveBeenCalledTimes(2);
+    expect(ngModuleFn).toHaveBeenCalledWith('TestModule', [
+      'localStorageModule',
+      'ui.router',
+      'DependencyModule'
+    ]);
   });
 
   it('should initialize declarations', () => {
@@ -283,10 +295,14 @@ describe('Function `bootstrapModule`', () => {
     });
 
     it('should send injections names to the plugin bootstrap function', () => {
-      class TestService {}
-      class TestProvider {}
-      class TestFilter {}
-      class TestFactory {}
+      class TestService {
+      }
+      class TestProvider {
+      }
+      class TestFilter {
+      }
+      class TestFactory {
+      }
 
       define(tokens.permanent.service, TestService);
       define(tokens.permanent.provider, TestProvider);
@@ -313,7 +329,8 @@ describe('Function `bootstrapModule`', () => {
     });
 
     it('should throw an error if metadata for required declaration is not exist', () => {
-      class TestService {}
+      class TestService {
+      }
 
       plugin = {
         bootstrap: jasmine.createSpy('PluginRegistryItem.bootstrap'),
@@ -325,5 +342,66 @@ describe('Function `bootstrapModule`', () => {
       expect(() => bootstrapModule(TestModule))
         .toThrowError('Declaration TestService is not found in registry');
     });
+  });
+});
+
+describe('Decorator `Module` and function `bootstrapModule`', () => {
+  let ngModuleFn: jasmine.Spy;
+
+  beforeEach(() => {
+    ngModuleFn = spyOn(angular, 'module');
+  });
+
+  afterEach(() => {
+    NgmsReflect.modules.clear();
+  });
+
+  it('should work together', () => {
+    ngModuleFn.and.callThrough();
+
+    @Module({})
+    class DependencyModule {
+    }
+
+    const metadata: ModuleMetadata = {
+      imports: ['localStorageModule', DependencyModule]
+    };
+
+    @Module(metadata)
+    class TestModule {
+    }
+
+    bootstrapModule(TestModule);
+
+    expect(ngModuleFn).toHaveBeenCalledWith('DependencyModule', []);
+    expect(ngModuleFn)
+      .toHaveBeenCalledWith('TestModule', ['localStorageModule', 'DependencyModule']);
+  });
+
+  it('should work together with `Config`, `Run`, `Value` and `Constant` decorators', () => {
+    const testModule = createFakeTestModule();
+    ngModuleFn.and.returnValue(testModule);
+
+    @Module({})
+    class TestModule {
+      @Value public static value = 1;
+      @Constant public static constant = 'testConst';
+
+      @Config
+      public static config() {
+      }
+
+      @Run
+      public static run() {
+      }
+    }
+
+    bootstrapModule(TestModule);
+
+    expect(ngModuleFn).toHaveBeenCalledWith('TestModule', []);
+    expect(testModule.value).toHaveBeenCalledWith('value', TestModule.value);
+    expect(testModule.constant).toHaveBeenCalledWith('constant', TestModule.constant);
+    expect(testModule.config).toHaveBeenCalledWith(TestModule.config);
+    expect(testModule.run).toHaveBeenCalledWith(TestModule.run);
   });
 });

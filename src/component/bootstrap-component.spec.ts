@@ -4,6 +4,7 @@ import * as bootstrapInject from '../extensions/bootstrap-inject';
 import * as bootstrapBind from '../extensions/bootstrap-bind';
 import * as bootstrapTransclude from '../extensions/bootstrap-transclude';
 import bootstrapComponent from './bootstrap-component';
+import Component from './component-decorator';
 import {ComponentMetadata} from './component-metadata';
 
 class Bootstrapper {
@@ -223,5 +224,33 @@ describe('Function `bootstrapComponent`', () => {
     );
 
     clear(TestComponent);
+  });
+});
+
+describe('Decorator `Component` and function `bootstrapComponent`', () => {
+  let ngModule: any;
+  let bootstrapper: Bootstrapper;
+
+  beforeEach(() => {
+    ngModule = {
+      component: jasmine.createSpy('angular.IModule#component')
+    };
+    bootstrapper = new Bootstrapper();
+  });
+
+  it('should work together', () => {
+    bootstrapper.unarm('all');
+
+    @Component({
+      selector: 'app-test',
+      template: '<div></div>'
+    })
+    class TestComponent {}
+
+    bootstrapComponent(ngModule, TestComponent);
+    expect(ngModule.component).toHaveBeenCalledWith('appTest', {
+      template: '<div></div>',
+      controller: TestComponent
+    });
   });
 });

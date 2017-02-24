@@ -6,6 +6,7 @@ import * as bootstrapBind from '../extensions/bootstrap-bind';
 import * as bootstrapTransclude from '../extensions/bootstrap-transclude';
 import * as bootstrapLink from './bootstrap-link';
 import bootstrapDirective from './bootstrap-directive';
+import Directive from './directive-decorator';
 import {DirectiveMetadata} from './directive-metadata';
 
 class Bootstrapper {
@@ -16,7 +17,7 @@ class Bootstrapper {
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
   public unarm(...toUnarm: string[]) {
-    const hasAll = toUnarm.indexOf('all') !== -1;
+    const hasAll = toUnarm.includes('all');
 
     if (toUnarm.includes('inject') || hasAll) {
       this.bootstrapInject.and.returnValue(null);
@@ -294,5 +295,40 @@ describe('Function `bootstrapDirective`', () => {
     );
 
     clear(TestDirective);
+  });
+});
+
+describe('Decorator `Directive` and function `bootstrapDirective`', () => {
+  let ngModule: any;
+  let bootstrapper: Bootstrapper;
+
+  beforeEach(() => {
+    ngModule = {
+      directive: jasmine.createSpy('angular.IModule#directive')
+    };
+    bootstrapper = new Bootstrapper();
+  });
+
+  it('should work together', () => {
+    bootstrapper.unarm('all');
+
+    @Directive({
+      selector: '[test-attribute]',
+      template: '<div></div>'
+    })
+    class TestDirective {}
+
+    bootstrapDirective(ngModule, TestDirective);
+    expect(ngModule.directive).toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
+
+    const callback = ngModule.directive.calls.argsFor(0)[1];
+
+    expect(callback()).toEqual({
+      restrict: 'A',
+      template: '<div></div>',
+      controller: TestDirective,
+      controllerAs: '$ctrl',
+      scope: true
+    });
   });
 });

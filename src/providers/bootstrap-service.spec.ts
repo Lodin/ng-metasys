@@ -3,6 +3,7 @@ import * as NgmsReflect from '../core/reflection';
 import * as tokens from '../core/tokens';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapService from './bootstrap-service';
+import Service from './service-decorator';
 
 class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapInject, 'default');
@@ -21,14 +22,16 @@ class Bootstrapper {
   }
 }
 
+const createFakeModule = () => ({
+  service: jasmine.createSpy('angular.IModule#service')
+});
+
 describe('Function `bootstrapService`', () => {
   let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = {
-      service: jasmine.createSpy('angular.IModule#service')
-    };
+    ngModule = createFakeModule();
     bootstrapper = new Bootstrapper();
   });
 
@@ -80,5 +83,28 @@ describe('Function `bootstrapService`', () => {
         instance: TestService
       }
     );
+  });
+});
+
+describe('Decorator `Service` and function `bootstrapService`', () => {
+  let ngModule: any;
+  let bootstrapper: Bootstrapper;
+
+  beforeEach(() => {
+    ngModule = createFakeModule();
+    bootstrapper = new Bootstrapper();
+  });
+
+  it('should work together', () => {
+    bootstrapper.unarm('all');
+
+    @Service
+    class TestService {
+      public $get() {}
+    }
+
+    bootstrapService(ngModule, TestService);
+
+    expect(ngModule.service).toHaveBeenCalledWith('TestService', TestService);
   });
 });

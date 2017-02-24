@@ -1,6 +1,7 @@
 import * as angular from 'angular';
 import * as tokens from '../core/tokens';
 import bootstrapInject from './bootstrap-inject';
+import Inject from './inject-decorator';
 
 describe('Function `bootstrapInject`', () => {
   class MockInjectDeclaration {}
@@ -109,5 +110,50 @@ describe('Function `bootstrapInject`', () => {
 
       clear(TestDeclaration);
     });
+  });
+});
+
+describe('Decorator `Inject` and function `bootstrapInject`', () => {
+  class MockInjectDeclaration {}
+
+  it('should work together at common injection', () => {
+    @Inject('$http', MockInjectDeclaration)
+    class TestDeclaration {
+    }
+
+    const injector = bootstrapInject(TestDeclaration);
+    injector.injectCommon(TestDeclaration);
+    expect((TestDeclaration as any).$inject).toEqual(['$http', 'MockInjectDeclaration']);
+  });
+
+  it('should work together at method injection', () => {
+    class TestDeclaration {
+      @Inject('$http')
+      public static config() {
+      }
+
+      @Inject(MockInjectDeclaration)
+      public static run() {
+      }
+    }
+
+    const injector = bootstrapInject(TestDeclaration);
+    injector.injectMethods(TestDeclaration, 'config');
+    injector.injectMethods(TestDeclaration, 'run');
+    expect((TestDeclaration.config as any).$inject).toEqual(['$http']);
+    expect((TestDeclaration.run as any).$inject).toEqual(['MockInjectDeclaration']);
+  });
+
+  it('should work together at parameter injection', () => {
+    class TestDeclaration {
+      public constructor(
+        @Inject('$http') $http: any,
+        @Inject(MockInjectDeclaration) mockInject: any
+      ) {}
+    }
+
+    const injector = bootstrapInject(TestDeclaration);
+    injector.injectCommon(TestDeclaration);
+    expect((TestDeclaration as any).$inject).toEqual(['$http', 'MockInjectDeclaration']);
   });
 });

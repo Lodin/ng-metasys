@@ -34,7 +34,6 @@ export const directiveList = [
 ];
 
 export const moduleList = [
-  tokens.module.self,
   tokens.module.config,
   tokens.module.run,
   tokens.module.value,

@@ -3,6 +3,7 @@ import * as NgmsReflect from '../core/reflection';
 import * as tokens from '../core/tokens';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapFactory from './bootstrap-factory';
+import Factory from './factory-decorator';
 
 class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapInject, 'default');
@@ -21,14 +22,16 @@ class Bootstrapper {
   }
 }
 
+const createFakeModule = () => ({
+  factory: jasmine.createSpy('angular.IModule#factory')
+});
+
 describe('Function `bootstrapFactory`', () => {
   let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = {
-      factory: jasmine.createSpy('angular.IModule#factory')
-    };
+    ngModule = createFakeModule();
     bootstrapper = new Bootstrapper();
   });
 
@@ -49,7 +52,7 @@ describe('Function `bootstrapFactory`', () => {
     expect(() => {
       class TestFactoryError {}
       bootstrapFactory(ngModule, TestFactoryError);
-    }).toThrow();
+    }).toThrowError('Factory TestFactoryError should have static method "$get"');
   });
 
   it('should add injections to the factory $get method', () => {
@@ -92,5 +95,28 @@ describe('Function `bootstrapFactory`', () => {
         instance: TestFactory.$get
       }
     );
+  });
+});
+
+describe('Decorator `Factory` and function `bootstrapFactory`', () => {
+  let ngModule: any;
+  let bootstrapper: Bootstrapper;
+
+  beforeEach(() => {
+    ngModule = createFakeModule();
+    bootstrapper = new Bootstrapper();
+  });
+
+  it('should work together', () => {
+    bootstrapper.unarm('all');
+
+    @Factory
+    class TestFactory {
+      public static $get() {}
+    }
+
+    bootstrapFactory(ngModule, TestFactory);
+
+    expect(ngModule.factory).toHaveBeenCalledWith('TestFactory', TestFactory.$get);
   });
 });

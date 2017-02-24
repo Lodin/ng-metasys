@@ -7,7 +7,7 @@ type BootstrapProvider = (ngModule: angular.IModule, declaration: any) => void;
 const bootstrapProvider: BootstrapProvider =
   (ngModule, declaration) => {
     if (!declaration.prototype.$get) {
-      throw new Error(`Provider ${declaration.name} should have method '$get'`);
+      throw new Error(`Provider ${declaration.name} should have method "$get"`);
     }
 
     const inject = bootstrapInject(declaration);

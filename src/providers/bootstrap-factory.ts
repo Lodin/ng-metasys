@@ -7,7 +7,7 @@ type BootstrapFactory = (ngModule: angular.IModule, declaration: any) => void;
 const bootstrapFactory: BootstrapFactory =
   (ngModule, declaration) => {
     if (!declaration.$get) {
-      throw new Error(`Factory ${declaration.name} should have static method '$get'`);
+      throw new Error(`Factory ${declaration.name} should have static method "$get"`);
     }
 
     const inject = bootstrapInject(declaration);
