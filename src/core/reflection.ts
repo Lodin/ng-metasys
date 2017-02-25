@@ -1,3 +1,4 @@
+import {NgmsMetadata} from './reflecton-types';
 import * as tokens from './tokens';
 import {permanentList} from './token-lists';
 
@@ -8,7 +9,7 @@ const defineMetadata: DefineMetadata =
   (declaration, type, data) =>
     Reflect.defineMetadata(type, data, declaration.prototype);
 
-type GetMetadata = (declaration: any) => any;
+type GetMetadata = (declaration: any) => NgmsMetadata;
 const getMetadata: GetMetadata =
   declaration => {
     for (const token of permanentList) {

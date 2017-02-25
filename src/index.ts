@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 
+export * from './core/reflecton-types';
 export {default as bootstrap} from './bootstrap/bootstrap';
 export {default as Component} from './component/component-decorator';
 export {
