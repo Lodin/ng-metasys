@@ -2,7 +2,16 @@ import 'reflect-metadata';
 
 export {default as bootstrap} from './bootstrap/bootstrap';
 export {default as Component} from './component/component-decorator';
-export {modules, getMetadata} from './core/reflection';
+export {
+  modules,
+  getMetadata,
+  isComponent,
+  isDirective,
+  isFactory,
+  isFilter,
+  isProvider,
+  isService
+} from './core/reflection';
 export {default as Directive} from './directive/directive-decorator';
 export {default as Link} from './directive/link-decorator';
 export {default as Inject} from './extensions/inject-decorator';

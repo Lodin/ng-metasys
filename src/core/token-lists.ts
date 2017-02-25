@@ -39,9 +39,3 @@ export const moduleList = [
   tokens.module.value,
   tokens.module.constant
 ];
-
-export const providers = [
-  tokens.providers.service,
-  tokens.providers.factory,
-  tokens.providers.provider
-];

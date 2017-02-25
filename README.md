@@ -529,6 +529,27 @@ expect(getMetadata(AppComponent)).toEqual({
   }
 });
 ```
+## Matchers
+If you want to know what the `ng-metasys` element is represented by 
+specific declaration, you can use the one of the matcher functions: 
+* `isComponent`,
+* `isDirective`,
+* `isFactory`,
+* `isFilter`,
+* `isProvider`,
+* `isService`
+
+```javascript
+import {Component, isComponent} from 'ng-metasys';
+
+@Component({
+  selector: 'my-app',
+  template: '<div></div>'
+})
+export class AppComponent {}
+
+assert(isComponent(AppComponent) === true);
+```
 
 ## Plug-in system
 This package implements only basic AngularJS functional. But there

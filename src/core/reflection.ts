@@ -1,4 +1,4 @@
-import * as angular from 'angular';
+import * as tokens from './tokens';
 import {permanentList} from './token-lists';
 
 const modules = new Map<string, angular.IModule>();
@@ -30,6 +30,19 @@ const getPluginMetadata: GetPluginMetadata =
     throw new Error(`Declaration ${declaration.name} have no specified metadata`);
   };
 
+type MatcherFactory = (type: symbol) => (declaration: any) => boolean;
+const matcherFactory: MatcherFactory =
+  type =>
+    declaration =>
+      Reflect.hasMetadata(type, declaration.prototype);
+
+const isComponent = matcherFactory(tokens.component);
+const isDirective = matcherFactory(tokens.directive.self);
+const isFactory = matcherFactory(tokens.providers.factory);
+const isFilter = matcherFactory(tokens.filter);
+const isProvider = matcherFactory(tokens.providers.provider);
+const isService = matcherFactory(tokens.providers.service);
+
 export {
   modules,
   DefineMetadata,
@@ -37,5 +50,11 @@ export {
   GetMetadata,
   getMetadata,
   GetPluginMetadata,
-  getPluginMetadata
+  getPluginMetadata,
+  isComponent,
+  isDirective,
+  isFactory,
+  isFilter,
+  isProvider,
+  isService
 };

@@ -1,4 +1,13 @@
-import {modules, defineMetadata, getMetadata, getPluginMetadata} from './reflection';
+import {
+  modules,
+  defineMetadata,
+  getMetadata,
+  getPluginMetadata,
+  isComponent,
+  isDirective,
+  isFactory,
+  isFilter, isProvider, isService
+} from './reflection';
 import * as tokens from './tokens';
 
 describe('Map `modules`', () => {
@@ -22,7 +31,8 @@ describe('Function `defineMetadata`', () => {
 
 describe('Function `getMetadata`', () => {
   it('should get metadata for declaration', () => {
-    class TestDeclaration {}
+    class TestDeclaration {
+    }
 
     const data = {name: 'TestDeclaration', instance: TestDeclaration};
     Reflect.defineMetadata(tokens.permanent.service, data, TestDeclaration.prototype);
@@ -31,7 +41,8 @@ describe('Function `getMetadata`', () => {
   });
 
   it('should throw error if declaration does not belong to the "ng-metasys" system', () => {
-    class TestDeclaration {}
+    class TestDeclaration {
+    }
 
     expect(() => getMetadata(TestDeclaration))
       .toThrowError('Declaration TestDeclaration have no specified metadata');
@@ -40,7 +51,8 @@ describe('Function `getMetadata`', () => {
 
 describe('Function `getPluginMetadata`', () => {
   it('should get metadata saved by specified token', () => {
-    class TestDeclaration {}
+    class TestDeclaration {
+    }
     const testToken = Symbol();
 
     Reflect.defineMetadata(testToken, {name: 'Test'}, TestDeclaration.prototype);
@@ -49,10 +61,36 @@ describe('Function `getPluginMetadata`', () => {
   });
 
   it('should throw an error if metadata is not exist', () => {
-    class TestDeclaration {}
+    class TestDeclaration {
+    }
     const testToken = Symbol();
 
     expect(() => getPluginMetadata(testToken, TestDeclaration))
       .toThrowError('Declaration TestDeclaration have no specified metadata');
   });
 });
+
+type MatcherTester = (type: string, token: symbol, matcher: Function) => void;
+const matcherTester: MatcherTester =
+  (type, token, matcher) => {
+    describe(`Matcher \`is${type.charAt(0).toUpperCase() + type.slice(1)}\``, () => {
+      it(`should detect if the declaration is ${type}`, () => {
+        class TestDeclaration {
+        }
+        class AnotherDeclaration {
+        }
+
+        Reflect.defineMetadata(token, {}, TestDeclaration.prototype);
+
+        expect(matcher(TestDeclaration)).toBeTruthy();
+        expect(matcher(AnotherDeclaration)).not.toBeTruthy();
+      });
+    });
+  };
+
+matcherTester('component', tokens.component, isComponent);
+matcherTester('directive', tokens.directive.self, isDirective);
+matcherTester('factory', tokens.providers.factory, isFactory);
+matcherTester('filter', tokens.filter, isFilter);
+matcherTester('provider', tokens.providers.provider, isProvider);
+matcherTester('service', tokens.providers.service, isService);
