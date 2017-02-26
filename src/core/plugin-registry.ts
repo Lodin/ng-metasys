@@ -3,10 +3,10 @@ type BootstrapFunction =
 
 type RegisterPlugin = (bootstrap: BootstrapFunction, injection?: any[]) => void;
 
-type PluginRegistryItem = {
-  bootstrap: BootstrapFunction,
-  injections?: any[]
-};
+interface PluginRegistryItem {
+  bootstrap: BootstrapFunction;
+  injections?: any[];
+}
 
 const pluginRegistry: PluginRegistryItem[] = [];
 

@@ -1,12 +1,26 @@
-type FnBased = {name: string, instance: Function};
-type ClassBased = {name: string, instance: any};
+interface FnBased {
+  name: string;
+  instance: Function;
+}
 
-export type NgmsComponent = angular.IComponentOptions & {name: string};
-export type NgmsDirective = angular.IDirective & {name: string};
-export type NgmsFactory = FnBased;
-export type NgmsFilter = FnBased;
-export type NgmsProvider = ClassBased;
-export type NgmsService = ClassBased;
+interface ClassBased {
+  name: string;
+  instance: any;
+}
+
+export interface NgmsComponent extends angular.IComponentOptions {
+  name: string;
+}
+
+export interface NgmsDirective extends angular.IDirective {
+  name: string;
+}
+
+export interface NgmsFactory extends FnBased {}
+export interface NgmsFilter extends FnBased {}
+export interface NgmsProvider extends ClassBased {}
+export interface NgmsService extends ClassBased {}
+
 export type NgmsMetadata =
   NgmsComponent
   | NgmsDirective
