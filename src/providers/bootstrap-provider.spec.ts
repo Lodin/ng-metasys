@@ -9,6 +9,10 @@ class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapInject, 'default');
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
+  public ngModule = {
+    provider: jasmine.createSpy('angular.IModule#provider')
+  };
+
   public unarm(...toUnarm: string[]) {
     const hasAll = toUnarm.includes('all');
 
@@ -22,16 +26,10 @@ class Bootstrapper {
   }
 }
 
-const createFakeModule = () => ({
-  provider: jasmine.createSpy('angular.IModule#provider')
-});
-
 describe('Function `bootstrapProvider`', () => {
-  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = createFakeModule();
     bootstrapper = new Bootstrapper();
   });
 
@@ -42,16 +40,16 @@ describe('Function `bootstrapProvider`', () => {
 
     bootstrapper.unarm('all');
 
-    bootstrapProvider(ngModule, TestProvider);
+    bootstrapProvider(bootstrapper.ngModule as any, TestProvider);
 
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
-    expect(ngModule.provider).toHaveBeenCalledWith('TestProvider', TestProvider);
+    expect(bootstrapper.ngModule.provider).toHaveBeenCalledWith('TestProvider', TestProvider);
   });
 
   it('should throw an error if declaration does not have method $get', () => {
     expect(() => {
       class TestProviderError {}
-      bootstrapProvider(ngModule, TestProviderError);
+      bootstrapProvider(bootstrapper.ngModule as any, TestProviderError);
     }).toThrowError('Provider TestProviderError should have method "$get"');
   });
 
@@ -71,7 +69,7 @@ describe('Function `bootstrapProvider`', () => {
       }
     });
 
-    bootstrapProvider(ngModule, TestProvider);
+    bootstrapProvider(bootstrapper.ngModule as any, TestProvider);
 
     expect((TestProvider.prototype.$get as any).$inject).toEqual(metadata);
   });
@@ -83,7 +81,7 @@ describe('Function `bootstrapProvider`', () => {
 
     bootstrapper.unarm('inject');
 
-    bootstrapProvider(ngModule, TestProvider);
+    bootstrapProvider(bootstrapper.ngModule as any, TestProvider);
 
     expect(bootstrapper.defineMetadata).toHaveBeenCalledWith(
       TestProvider,
@@ -97,11 +95,9 @@ describe('Function `bootstrapProvider`', () => {
 });
 
 describe('Decorator `Provider` and function `bootstrapProvider`', () => {
-  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = createFakeModule();
     bootstrapper = new Bootstrapper();
   });
 
@@ -113,8 +109,8 @@ describe('Decorator `Provider` and function `bootstrapProvider`', () => {
       public $get() {}
     }
 
-    bootstrapProvider(ngModule, TestProvider);
+    bootstrapProvider(bootstrapper.ngModule as any, TestProvider);
 
-    expect(ngModule.provider).toHaveBeenCalledWith('TestProvider', TestProvider);
+    expect(bootstrapper.ngModule.provider).toHaveBeenCalledWith('TestProvider', TestProvider);
   });
 });

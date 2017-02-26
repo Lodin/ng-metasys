@@ -22,6 +22,14 @@ class Bootstrapper {
   public bootstrapProviders = spyOn(bootstrapProviders, 'default');
   public bootstrapModuleConfig = spyOn(bootstrapModuleConfig, 'default');
 
+  public ngModule = {
+    name: 'TestModule',
+    config: jasmine.createSpy('angular.IModule#config'),
+    constant: jasmine.createSpy('angular.IModule#constant'),
+    run: jasmine.createSpy('angular.IModule#run'),
+    value: jasmine.createSpy('angular.IModule#value')
+  };
+
   constructor() {
     this.bootstrapComponent.and.returnValue(null);
     this.bootstrapDirective.and.returnValue(null);
@@ -33,14 +41,6 @@ class Bootstrapper {
     this.bootstrapModuleConfig.and.returnValue(null);
   }
 }
-
-const createFakeTestModule = () => ({
-  name: 'TestModule',
-  config: jasmine.createSpy('angular.IModule#config'),
-  constant: jasmine.createSpy('angular.IModule#constant'),
-  run: jasmine.createSpy('angular.IModule#run'),
-  value: jasmine.createSpy('angular.IModule#value')
-});
 
 describe('Function `bootstrapModule`', () => {
   class TestModule {
@@ -55,15 +55,13 @@ describe('Function `bootstrapModule`', () => {
   }
 
   let bootstrapper: Bootstrapper;
-  let testModule: any;
   let ngModuleFn: jasmine.Spy;
 
   beforeEach(() => {
     bootstrapper = new Bootstrapper();
     ngModuleFn = spyOn(angular, 'module');
-    testModule = createFakeTestModule();
 
-    ngModuleFn.and.returnValue(testModule);
+    ngModuleFn.and.returnValue(bootstrapper.ngModule);
   });
 
   afterEach(() => {
@@ -117,7 +115,7 @@ describe('Function `bootstrapModule`', () => {
       (name: string): any =>
         name === 'DependencyModule'
           ? dependencyModule
-          : testModule
+          : bootstrapper.ngModule
     );
 
     bootstrapModule(TestModule);
@@ -198,7 +196,7 @@ describe('Function `bootstrapModule`', () => {
 
       bootstrapModule(TestModule);
 
-      expect((testModule as any)[type]).toHaveBeenCalled();
+      expect((bootstrapper.ngModule as any)[type]).toHaveBeenCalled();
       expect(bootstrapper.bootstrapModuleConfig).toHaveBeenCalled();
       expect(angular.module).toHaveBeenCalled();
     };
@@ -217,22 +215,22 @@ describe('Function `bootstrapModule`', () => {
 
     it('should initialize `config`', () => {
       testModuleConfig(tokens.module.config, 'config');
-      expect(testModule.config).toHaveBeenCalledWith(TestModule.config);
+      expect(bootstrapper.ngModule.config).toHaveBeenCalledWith(TestModule.config);
     });
 
     it('should initialize `run`', () => {
       testModuleConfig(tokens.module.run, 'run');
-      expect(testModule.run).toHaveBeenCalledWith(TestModule.run);
+      expect(bootstrapper.ngModule.run).toHaveBeenCalledWith(TestModule.run);
     });
 
     it('should initialize `value`', () => {
       testModuleConfig(tokens.module.value, 'value');
-      expect(testModule.value).toHaveBeenCalledWith('value', TestModule.value);
+      expect(bootstrapper.ngModule.value).toHaveBeenCalledWith('value', TestModule.value);
     });
 
     it('should initialize `constant`', () => {
       testModuleConfig(tokens.module.constant, 'constant');
-      expect(testModule.constant).toHaveBeenCalledWith('constant', TestModule.constant);
+      expect(bootstrapper.ngModule.constant).toHaveBeenCalledWith('constant', TestModule.constant);
     });
   });
 
@@ -346,9 +344,11 @@ describe('Function `bootstrapModule`', () => {
 });
 
 describe('Decorator `Module` and function `bootstrapModule`', () => {
+  let bootstrapper: Bootstrapper;
   let ngModuleFn: jasmine.Spy;
 
   beforeEach(() => {
+    bootstrapper = new Bootstrapper();
     ngModuleFn = spyOn(angular, 'module');
   });
 
@@ -379,8 +379,8 @@ describe('Decorator `Module` and function `bootstrapModule`', () => {
   });
 
   it('should work together with `Config`, `Run`, `Value` and `Constant` decorators', () => {
-    const testModule = createFakeTestModule();
-    ngModuleFn.and.returnValue(testModule);
+    bootstrapper.bootstrapModuleConfig.and.callThrough();
+    ngModuleFn.and.returnValue(bootstrapper.ngModule);
 
     @Module({})
     class TestModule {
@@ -399,9 +399,9 @@ describe('Decorator `Module` and function `bootstrapModule`', () => {
     bootstrapModule(TestModule);
 
     expect(ngModuleFn).toHaveBeenCalledWith('TestModule', []);
-    expect(testModule.value).toHaveBeenCalledWith('value', TestModule.value);
-    expect(testModule.constant).toHaveBeenCalledWith('constant', TestModule.constant);
-    expect(testModule.config).toHaveBeenCalledWith(TestModule.config);
-    expect(testModule.run).toHaveBeenCalledWith(TestModule.run);
+    expect(bootstrapper.ngModule.value).toHaveBeenCalledWith('value', TestModule.value);
+    expect(bootstrapper.ngModule.constant).toHaveBeenCalledWith('constant', TestModule.constant);
+    expect(bootstrapper.ngModule.config).toHaveBeenCalledWith(TestModule.config);
+    expect(bootstrapper.ngModule.run).toHaveBeenCalledWith(TestModule.run);
   });
 });

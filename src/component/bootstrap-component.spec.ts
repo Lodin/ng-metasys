@@ -13,6 +13,10 @@ class Bootstrapper {
   public bootstrapTransclude = spyOn(bootstrapTransclude, 'default');
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
+  public ngModule = {
+    component: jasmine.createSpy('angular.IModule#component')
+  };
+
   public unarm(...toUnarm: string[]) {
     const hasAll = toUnarm.includes('all');
 
@@ -48,13 +52,9 @@ describe('Function `bootstrapComponent`', () => {
     declaration =>
       Reflect.deleteMetadata(tokens.component, declaration.prototype);
 
-  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = {
-      component: jasmine.createSpy('angular.IModule#component')
-    };
     bootstrapper = new Bootstrapper();
   });
 
@@ -69,12 +69,12 @@ describe('Function `bootstrapComponent`', () => {
 
     bootstrapper.unarm('all');
 
-    bootstrapComponent(ngModule, TestComponent);
+    bootstrapComponent(bootstrapper.ngModule as any, TestComponent);
 
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
     expect(bootstrapper.bootstrapBind).toHaveBeenCalled();
     expect(bootstrapper.bootstrapTransclude).toHaveBeenCalled();
-    expect(ngModule.component).toHaveBeenCalledWith('appTest', {
+    expect(bootstrapper.ngModule.component).toHaveBeenCalledWith('appTest', {
       template: '<div></div>',
       controller: TestComponent
     });
@@ -93,9 +93,9 @@ describe('Function `bootstrapComponent`', () => {
 
     bootstrapper.unarm('all');
 
-    bootstrapComponent(ngModule, TestComponent);
+    bootstrapComponent(bootstrapper.ngModule as any, TestComponent);
 
-    expect(ngModule.component).toHaveBeenCalledWith('appTest', {
+    expect(bootstrapper.ngModule.component).toHaveBeenCalledWith('appTest', {
       templateUrl: 'test.component.html',
       controller: TestComponent
     });
@@ -114,9 +114,9 @@ describe('Function `bootstrapComponent`', () => {
 
     bootstrapper.unarm('all');
 
-    bootstrapComponent(ngModule, TestComponent);
+    bootstrapComponent(bootstrapper.ngModule as any, TestComponent);
 
-    expect(ngModule.component).toHaveBeenCalledWith('appTest', {
+    expect(bootstrapper.ngModule.component).toHaveBeenCalledWith('appTest', {
       controller: TestComponent,
       controllerAs: 'vm'
     });
@@ -140,9 +140,9 @@ describe('Function `bootstrapComponent`', () => {
 
     bootstrapper.unarm('bind', 'transclude', 'meta');
 
-    bootstrapComponent(ngModule, TestComponent);
+    bootstrapComponent(bootstrapper.ngModule as any, TestComponent);
 
-    expect(ngModule.component).toHaveBeenCalledWith('appTest', {
+    expect(bootstrapper.ngModule.component).toHaveBeenCalledWith('appTest', {
       controller: TestComponent
     });
 
@@ -165,9 +165,9 @@ describe('Function `bootstrapComponent`', () => {
 
     bootstrapper.unarm('inject', 'transclude', 'meta');
 
-    bootstrapComponent(ngModule, TestComponent);
+    bootstrapComponent(bootstrapper.ngModule as any, TestComponent);
 
-    expect(ngModule.component).toHaveBeenCalledWith('appTest', {
+    expect(bootstrapper.ngModule.component).toHaveBeenCalledWith('appTest', {
       controller: TestComponent,
       bindings: {
         someObject: '<',
@@ -188,9 +188,9 @@ describe('Function `bootstrapComponent`', () => {
     bootstrapper.unarm('inject', 'bind', 'meta');
     bootstrapper.bootstrapTransclude.and.returnValue({slot: 'testSlot'});
 
-    bootstrapComponent(ngModule, TestComponent);
+    bootstrapComponent(bootstrapper.ngModule as any, TestComponent);
 
-    expect(ngModule.component).toHaveBeenCalledWith('appTest', {
+    expect(bootstrapper.ngModule.component).toHaveBeenCalledWith('appTest', {
       controller: TestComponent,
       transclude: {slot: 'testSlot'}
     });
@@ -210,7 +210,7 @@ describe('Function `bootstrapComponent`', () => {
     decorate(TestComponent, metadata);
     bootstrapper.unarm('inject', 'bind', 'transclude');
 
-    bootstrapComponent(ngModule, TestComponent);
+    bootstrapComponent(bootstrapper.ngModule as any, TestComponent);
 
     expect(bootstrapper.defineMetadata).toHaveBeenCalledWith(
       TestComponent,
@@ -228,13 +228,9 @@ describe('Function `bootstrapComponent`', () => {
 });
 
 describe('Decorator `Component` and function `bootstrapComponent`', () => {
-  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = {
-      component: jasmine.createSpy('angular.IModule#component')
-    };
     bootstrapper = new Bootstrapper();
   });
 
@@ -247,8 +243,8 @@ describe('Decorator `Component` and function `bootstrapComponent`', () => {
     })
     class TestComponent {}
 
-    bootstrapComponent(ngModule, TestComponent);
-    expect(ngModule.component).toHaveBeenCalledWith('appTest', {
+    bootstrapComponent(bootstrapper.ngModule as any, TestComponent);
+    expect(bootstrapper.ngModule.component).toHaveBeenCalledWith('appTest', {
       template: '<div></div>',
       controller: TestComponent
     });

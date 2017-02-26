@@ -9,6 +9,10 @@ class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapInject, 'default');
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
+  public ngModule = {
+    factory: jasmine.createSpy('angular.IModule#factory')
+  };
+
   public unarm(...toUnarm: string[]) {
     const hasAll = toUnarm.includes('all');
 
@@ -22,16 +26,10 @@ class Bootstrapper {
   }
 }
 
-const createFakeModule = () => ({
-  factory: jasmine.createSpy('angular.IModule#factory')
-});
-
 describe('Function `bootstrapFactory`', () => {
-  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = createFakeModule();
     bootstrapper = new Bootstrapper();
   });
 
@@ -42,16 +40,16 @@ describe('Function `bootstrapFactory`', () => {
 
     bootstrapper.unarm('all');
 
-    bootstrapFactory(ngModule, TestFactory);
+    bootstrapFactory(bootstrapper.ngModule as any, TestFactory);
 
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
-    expect(ngModule.factory).toHaveBeenCalledWith('TestFactory', TestFactory.$get);
+    expect(bootstrapper.ngModule.factory).toHaveBeenCalledWith('TestFactory', TestFactory.$get);
   });
 
   it('should throw an error if declaration does not have static method $get', () => {
     expect(() => {
       class TestFactoryError {}
-      bootstrapFactory(ngModule, TestFactoryError);
+      bootstrapFactory(bootstrapper.ngModule as any, TestFactoryError);
     }).toThrowError('Factory TestFactoryError should have static method "$get"');
   });
 
@@ -71,7 +69,7 @@ describe('Function `bootstrapFactory`', () => {
       }
     });
 
-    bootstrapFactory(ngModule, TestFactory);
+    bootstrapFactory(bootstrapper.ngModule as any, TestFactory);
 
     expect((TestFactory.$get as any).$inject).toEqual(metadata);
   });
@@ -83,7 +81,7 @@ describe('Function `bootstrapFactory`', () => {
 
     bootstrapper.unarm('inject');
 
-    bootstrapFactory(ngModule, TestFactory);
+    bootstrapFactory(bootstrapper.ngModule as any, TestFactory);
 
     expect(bootstrapper.defineMetadata).toHaveBeenCalled();
 
@@ -99,11 +97,9 @@ describe('Function `bootstrapFactory`', () => {
 });
 
 describe('Decorator `Factory` and function `bootstrapFactory`', () => {
-  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = createFakeModule();
     bootstrapper = new Bootstrapper();
   });
 
@@ -115,8 +111,8 @@ describe('Decorator `Factory` and function `bootstrapFactory`', () => {
       public static $get() {}
     }
 
-    bootstrapFactory(ngModule, TestFactory);
+    bootstrapFactory(bootstrapper.ngModule as any, TestFactory);
 
-    expect(ngModule.factory).toHaveBeenCalledWith('TestFactory', TestFactory.$get);
+    expect(bootstrapper.ngModule.factory).toHaveBeenCalledWith('TestFactory', TestFactory.$get);
   });
 });

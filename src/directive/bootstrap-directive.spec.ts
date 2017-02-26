@@ -16,6 +16,10 @@ class Bootstrapper {
   public bootstrapLink = spyOn(bootstrapLink, 'default');
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
+  public ngModule = {
+    directive: jasmine.createSpy('angular.IModule#directive')
+  };
+
   public unarm(...toUnarm: string[]) {
     const hasAll = toUnarm.includes('all');
 
@@ -55,13 +59,9 @@ describe('Function `bootstrapDirective`', () => {
     declaration =>
       Reflect.deleteMetadata(tokens.directive.self, declaration.prototype);
 
-  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = {
-      directive: jasmine.createSpy('angular.IModule#directive')
-    };
     bootstrapper = new Bootstrapper();
   });
 
@@ -76,15 +76,16 @@ describe('Function `bootstrapDirective`', () => {
 
     bootstrapper.unarm('all');
 
-    bootstrapDirective(ngModule, TestDirective);
+    bootstrapDirective(bootstrapper.ngModule as any, TestDirective);
 
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
     expect(bootstrapper.bootstrapBind).toHaveBeenCalled();
     expect(bootstrapper.bootstrapTransclude).toHaveBeenCalled();
     expect(bootstrapper.bootstrapLink).toHaveBeenCalled();
-    expect(ngModule.directive).toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
+    expect(bootstrapper.ngModule.directive)
+      .toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
 
-    const callback = ngModule.directive.calls.argsFor(0)[1];
+    const callback = bootstrapper.ngModule.directive.calls.argsFor(0)[1];
 
     expect(callback()).toEqual({
       restrict: 'A',
@@ -108,11 +109,12 @@ describe('Function `bootstrapDirective`', () => {
 
     bootstrapper.unarm('all');
 
-    bootstrapDirective(ngModule, TestDirective);
+    bootstrapDirective(bootstrapper.ngModule as any, TestDirective);
 
-    expect(ngModule.directive).toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
+    expect(bootstrapper.ngModule.directive)
+      .toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
 
-    const callback = ngModule.directive.calls.argsFor(0)[1];
+    const callback = bootstrapper.ngModule.directive.calls.argsFor(0)[1];
 
     expect(callback()).toEqual({
       restrict: 'A',
@@ -136,11 +138,12 @@ describe('Function `bootstrapDirective`', () => {
 
     bootstrapper.unarm('all');
 
-    bootstrapDirective(ngModule, TestDirective);
+    bootstrapDirective(bootstrapper.ngModule as any, TestDirective);
 
-    expect(ngModule.directive).toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
+    expect(bootstrapper.ngModule.directive)
+      .toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
 
-    const callback = ngModule.directive.calls.argsFor(0)[1];
+    const callback = bootstrapper.ngModule.directive.calls.argsFor(0)[1];
 
     expect(callback()).toEqual({
       restrict: 'A',
@@ -168,9 +171,10 @@ describe('Function `bootstrapDirective`', () => {
 
     bootstrapper.unarm('bind', 'transclude', 'link', 'meta');
 
-    bootstrapDirective(ngModule, TestDirective);
+    bootstrapDirective(bootstrapper.ngModule as any, TestDirective);
 
-    expect(ngModule.directive).toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
+    expect(bootstrapper.ngModule.directive)
+      .toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
 
     expect(TestDirective.$inject).toEqual(['$http', '$q']);
 
@@ -191,11 +195,12 @@ describe('Function `bootstrapDirective`', () => {
 
     bootstrapper.unarm('inject', 'transclude', 'link', 'meta');
 
-    bootstrapDirective(ngModule, TestDirective);
+    bootstrapDirective(bootstrapper.ngModule as any, TestDirective);
 
-    expect(ngModule.directive).toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
+    expect(bootstrapper.ngModule.directive)
+      .toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
 
-    const callback = ngModule.directive.calls.argsFor(0)[1];
+    const callback = bootstrapper.ngModule.directive.calls.argsFor(0)[1];
 
     expect(callback()).toEqual({
       restrict: 'A',
@@ -221,11 +226,12 @@ describe('Function `bootstrapDirective`', () => {
     bootstrapper.unarm('inject', 'bind', 'link', 'meta');
     bootstrapper.bootstrapTransclude.and.returnValue({slot: 'testSlot'});
 
-    bootstrapDirective(ngModule, TestDirective);
+    bootstrapDirective(bootstrapper.ngModule as any, TestDirective);
 
-    expect(ngModule.directive).toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
+    expect(bootstrapper.ngModule.directive)
+      .toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
 
-    const callback = ngModule.directive.calls.argsFor(0)[1];
+    const callback = bootstrapper.ngModule.directive.calls.argsFor(0)[1];
 
     expect(callback()).toEqual({
       restrict: 'A',
@@ -249,12 +255,13 @@ describe('Function `bootstrapDirective`', () => {
     bootstrapper.unarm('inject', 'bind', 'transclude');
     bootstrapper.bootstrapLink.and.returnValue('link');
 
-    bootstrapDirective(ngModule, TestDirective);
+    bootstrapDirective(bootstrapper.ngModule as any, TestDirective);
 
     expect(bootstrapper.bootstrapLink).toHaveBeenCalled();
-    expect(ngModule.directive).toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
+    expect(bootstrapper.ngModule.directive)
+      .toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
 
-    const callback = ngModule.directive.calls.argsFor(0)[1];
+    const callback = bootstrapper.ngModule.directive.calls.argsFor(0)[1];
 
     expect(callback()).toEqual({
       restrict: 'A',
@@ -279,7 +286,7 @@ describe('Function `bootstrapDirective`', () => {
     decorate(TestDirective, metadata);
     bootstrapper.unarm('inject', 'bind', 'transclude');
 
-    bootstrapDirective(ngModule, TestDirective);
+    bootstrapDirective(bootstrapper.ngModule as any, TestDirective);
 
     expect(bootstrapper.defineMetadata).toHaveBeenCalledWith(
       TestDirective,
@@ -299,13 +306,9 @@ describe('Function `bootstrapDirective`', () => {
 });
 
 describe('Decorator `Directive` and function `bootstrapDirective`', () => {
-  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = {
-      directive: jasmine.createSpy('angular.IModule#directive')
-    };
     bootstrapper = new Bootstrapper();
   });
 
@@ -318,10 +321,11 @@ describe('Decorator `Directive` and function `bootstrapDirective`', () => {
     })
     class TestDirective {}
 
-    bootstrapDirective(ngModule, TestDirective);
-    expect(ngModule.directive).toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
+    bootstrapDirective(bootstrapper.ngModule as any, TestDirective);
+    expect(bootstrapper.ngModule.directive)
+      .toHaveBeenCalledWith('testAttribute', jasmine.any(Function));
 
-    const callback = ngModule.directive.calls.argsFor(0)[1];
+    const callback = bootstrapper.ngModule.directive.calls.argsFor(0)[1];
 
     expect(callback()).toEqual({
       restrict: 'A',

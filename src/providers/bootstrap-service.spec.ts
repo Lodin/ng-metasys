@@ -9,6 +9,10 @@ class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapInject, 'default');
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
+  public ngModule = {
+    service: jasmine.createSpy('angular.IModule#service')
+  };
+
   public unarm(...toUnarm: string[]) {
     const hasAll = toUnarm.includes('all');
 
@@ -22,16 +26,10 @@ class Bootstrapper {
   }
 }
 
-const createFakeModule = () => ({
-  service: jasmine.createSpy('angular.IModule#service')
-});
-
 describe('Function `bootstrapService`', () => {
-  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = createFakeModule();
     bootstrapper = new Bootstrapper();
   });
 
@@ -41,10 +39,10 @@ describe('Function `bootstrapService`', () => {
 
     bootstrapper.unarm('all');
 
-    bootstrapService(ngModule, TestService);
+    bootstrapService(bootstrapper.ngModule as any, TestService);
 
     expect(bootstrapper.bootstrapInject).toHaveBeenCalled();
-    expect(ngModule.service).toHaveBeenCalledWith('TestService', TestService);
+    expect(bootstrapper.ngModule.service).toHaveBeenCalledWith('TestService', TestService);
   });
 
   it('should add common injections to the service', () => {
@@ -62,7 +60,7 @@ describe('Function `bootstrapService`', () => {
       }
     });
 
-    bootstrapService(ngModule, TestService);
+    bootstrapService(bootstrapper.ngModule as any, TestService);
 
     expect((TestService as any).$inject).toEqual(metadata);
   });
@@ -73,7 +71,7 @@ describe('Function `bootstrapService`', () => {
 
     bootstrapper.unarm('inject');
 
-    bootstrapService(ngModule, TestService);
+    bootstrapService(bootstrapper.ngModule as any, TestService);
 
     expect(bootstrapper.defineMetadata).toHaveBeenCalledWith(
       TestService,
@@ -87,11 +85,9 @@ describe('Function `bootstrapService`', () => {
 });
 
 describe('Decorator `Service` and function `bootstrapService`', () => {
-  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = createFakeModule();
     bootstrapper = new Bootstrapper();
   });
 
@@ -103,8 +99,8 @@ describe('Decorator `Service` and function `bootstrapService`', () => {
       public $get() {}
     }
 
-    bootstrapService(ngModule, TestService);
+    bootstrapService(bootstrapper.ngModule as any, TestService);
 
-    expect(ngModule.service).toHaveBeenCalledWith('TestService', TestService);
+    expect(bootstrapper.ngModule.service).toHaveBeenCalledWith('TestService', TestService);
   });
 });

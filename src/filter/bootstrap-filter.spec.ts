@@ -9,6 +9,10 @@ class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapInject, 'default');
   public defineMetadata = spyOn(NgmsReflect, 'defineMetadata');
 
+  public ngModule = {
+    filter: jasmine.createSpy('angular.IModule#filter')
+  };
+
   public unarm(...toUnarm: string[]) {
     const hasAll = toUnarm.includes('all');
 
@@ -23,13 +27,9 @@ class Bootstrapper {
 }
 
 describe('Function `bootstrapFilter`', () => {
-  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = {
-      filter: jasmine.createSpy('angular.IModule#filter')
-    };
     bootstrapper = new Bootstrapper();
   });
 
@@ -41,9 +41,9 @@ describe('Function `bootstrapFilter`', () => {
 
     bootstrapper.unarm('all');
 
-    bootstrapFilter(ngModule, TestFilter);
+    bootstrapFilter(bootstrapper.ngModule as any, TestFilter);
 
-    expect(ngModule.filter).toHaveBeenCalledWith('test', TestFilter.execute);
+    expect(bootstrapper.ngModule.filter).toHaveBeenCalledWith('test', TestFilter.execute);
   });
 
   it('should add injections to the `execute` function', () => {
@@ -61,7 +61,7 @@ describe('Function `bootstrapFilter`', () => {
       }
     });
 
-    bootstrapFilter(ngModule, TestFilter);
+    bootstrapFilter(bootstrapper.ngModule as any, TestFilter);
 
     expect(TestFilter.execute.$inject).toEqual(['$http', '$q']);
   });
@@ -74,7 +74,7 @@ describe('Function `bootstrapFilter`', () => {
 
     bootstrapper.unarm('inject');
 
-    bootstrapFilter(ngModule, TestFilter);
+    bootstrapFilter(bootstrapper.ngModule as any, TestFilter);
 
     expect(bootstrapper.defineMetadata).toHaveBeenCalledWith(
       TestFilter,
@@ -88,13 +88,9 @@ describe('Function `bootstrapFilter`', () => {
 });
 
 describe('Decorator `Filter` and function `bootstrapFilter`', () => {
-  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   beforeEach(() => {
-    ngModule = {
-      filter: jasmine.createSpy('angular.IModule#filter')
-    };
     bootstrapper = new Bootstrapper();
   });
 
@@ -107,8 +103,8 @@ describe('Decorator `Filter` and function `bootstrapFilter`', () => {
       }
     }
 
-    bootstrapFilter(ngModule, TestFilter);
+    bootstrapFilter(bootstrapper.ngModule as any, TestFilter);
 
-    expect(ngModule.filter).toHaveBeenCalledWith('test', TestFilter.execute);
+    expect(bootstrapper.ngModule.filter).toHaveBeenCalledWith('test', TestFilter.execute);
   });
 });

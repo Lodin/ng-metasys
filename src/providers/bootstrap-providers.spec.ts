@@ -1,4 +1,3 @@
-import * as angular from 'angular';
 import * as tokens from '../core/tokens';
 import * as bootstrapFactory from './bootstrap-factory';
 import * as bootstrapProvider from './bootstrap-provider';
@@ -33,7 +32,7 @@ class Bootstrapper {
 describe('Function `bootstrapProviders`', () => {
   class TestProvider {}
 
-  let ngModule: angular.IModule;
+  let ngModule: any;
   let bootstrapper: Bootstrapper;
 
   const testProviders = (type: symbol) => {
@@ -45,7 +44,7 @@ describe('Function `bootstrapProviders`', () => {
   };
 
   beforeEach(() => {
-    ngModule = angular.module('TestModule', []);
+    ngModule = {name: 'TestModule'};
     bootstrapper = new Bootstrapper();
   });
 
