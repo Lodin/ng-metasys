@@ -594,7 +594,7 @@ File `<name>-bootstrap.js` contains bootstrap function being loaded
 during the bootstrapping process. To add the plugin bootstrapping 
 function to the `ng-metasys` flow, it should be put into 
 `registerPlugin` function that can be imported from 
-`ng-metasys/plugin`.
+`ng-metasys`.
 
 Bootstrap function receives angular module and the declaration 
 belonging to it. First thing you should do in your bootstrap 
@@ -604,10 +604,10 @@ and init the data you have.
 
 If you want data to be accessible through `getMetadata` function
 you have to register your permanent token and metadata using
-`defineMetadata` function from the `ng-metasys` plugin. Then it
+`defineMetadata` function from the `ng-metasys`. Then it
 will be accessible from your custom `getMetadata` function.
 ```javascript
-import {registerPlugin, defineMetadata} from 'ng-metasys/plugin';
+import {registerPlugin, defineMetadata} from 'ng-metasys';
 import {token, permanentToken} from './my-token';
 
 const myBootstrap = 
@@ -636,7 +636,7 @@ as third and following arguments of your bootstrap function.
 **Note:** injectable should be initialized in current module or 
 in it's dependencies written in terms of `ng-metasys`.
 ```javascript
-import {registerPlugin} from 'ng-metasys/plugin';
+import {registerPlugin} from 'ng-metasys';
 import {token} from './my-token';
 import {MyServiceOne} from './my-service-one';
 import {MyServiceTwo} from './my-service-two';
@@ -659,10 +659,10 @@ registerPlugin(myBootstrap, [MyServiceOne, MyServiceTwo]);
 File `<name>-reflection.js` defines your custom `getMetadata`
 function. It is optional - only if you want to get access to the
 metadata of your plugin. To get metadata from this function use 
-`getPluginMetadata` from `ng-metasys/plugin` and your permanent
+`getPluginMetadata` from `ng-metasys` and your permanent
 token.
 ```javascript
-import {getPluginMetadata} from `ng-metasys/plugin`;
+import {getPluginMetadata} from `ng-metasys`;
 import {permanentToken} from './my-token';
 
 const getMyMetadata = declaration => getPluginMetadata(permanentToken, declaration);

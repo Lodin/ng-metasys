@@ -27,3 +27,6 @@ export {default as Value} from './module/value-decorator';
 export {default as Factory} from './providers/factory-decorator';
 export {default as Provider} from './providers/provider-decorator';
 export {default as Service} from './providers/service-decorator';
+
+// Plugin System
+export * from './plugin';
