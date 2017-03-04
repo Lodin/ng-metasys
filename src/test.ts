@@ -1,7 +1,6 @@
-import 'core-js/es6';
-import 'core-js/es7/reflect';
+import 'reflect-metadata';
 
-declare var __karma__: any;
+declare const __karma__: any;
 
 __karma__.loaded = () => {};
 
