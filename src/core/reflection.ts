@@ -35,7 +35,12 @@ type MatcherFactory = (type: symbol) => (declaration: any) => boolean;
 const matcherFactory: MatcherFactory =
   type =>
     declaration =>
-      Reflect.hasMetadata(type, declaration.prototype);
+      Reflect.hasMetadata(
+        type,
+        typeof declaration === 'function'
+          ? declaration.prototype
+          : declaration
+      );
 
 const isComponent = matcherFactory(tokens.component);
 const isDirective = matcherFactory(tokens.directive.self);

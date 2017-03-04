@@ -85,6 +85,18 @@ const matcherTester: MatcherTester =
         expect(matcher(TestDeclaration)).toBeTruthy();
         expect(matcher(AnotherDeclaration)).not.toBeTruthy();
       });
+
+      it(`should detect if the delcaration is ${type} when declaration prototype is used`, () => {
+        class TestDeclaration {
+        }
+        class AnotherDeclaration {
+        }
+
+        Reflect.defineMetadata(token, {}, TestDeclaration.prototype);
+
+        expect(matcher(TestDeclaration.prototype)).toBeTruthy();
+        expect(matcher(AnotherDeclaration.prototype)).not.toBeTruthy();
+      });
     });
   };
 
