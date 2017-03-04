@@ -10,6 +10,7 @@ export {
   isDirective,
   isFactory,
   isFilter,
+  isModule,
   isProvider,
   isService
 } from './core/reflection';

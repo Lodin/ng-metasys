@@ -6,7 +6,10 @@ import {
   isComponent,
   isDirective,
   isFactory,
-  isFilter, isProvider, isService
+  isFilter,
+  isModule,
+  isProvider,
+  isService
 } from './reflection';
 import * as tokens from './tokens';
 
@@ -104,5 +107,6 @@ matcherTester('component', tokens.component, isComponent);
 matcherTester('directive', tokens.directive.self, isDirective);
 matcherTester('factory', tokens.providers.factory, isFactory);
 matcherTester('filter', tokens.filter, isFilter);
+matcherTester('module', tokens.module.self, isModule);
 matcherTester('provider', tokens.providers.provider, isProvider);
 matcherTester('service', tokens.providers.service, isService);

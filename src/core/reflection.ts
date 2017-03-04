@@ -46,6 +46,7 @@ const isComponent = matcherFactory(tokens.component);
 const isDirective = matcherFactory(tokens.directive.self);
 const isFactory = matcherFactory(tokens.providers.factory);
 const isFilter = matcherFactory(tokens.filter);
+const isModule = matcherFactory(tokens.module.self);
 const isProvider = matcherFactory(tokens.providers.provider);
 const isService = matcherFactory(tokens.providers.service);
 
@@ -61,6 +62,7 @@ export {
   isDirective,
   isFactory,
   isFilter,
+  isModule,
   isProvider,
   isService
 };
