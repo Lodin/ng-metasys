@@ -3,6 +3,7 @@
   "version": "1.0.0-alpha.0",
   "description": "A decorator framework for AngularJS that makes easy using Angular meta-info with ES2015 modules",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "npm run rm:dist && npm run tsc && npm run copy:dts",
     "copy:dts": "cd src && copyfiles **/*.d.ts ../dist",
