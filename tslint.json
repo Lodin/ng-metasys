@@ -1,6 +1,6 @@
 {
   "extends": "tslint:recommended",
-  "rulesDirectory": "../node_modules/tslint-eslint-rules/dist/rules",
+  "rulesDirectory": "./node_modules/tslint-eslint-rules/dist/rules",
   "rules": {
     "array-bracket-spacing": [true, "never"],
     "arrow-parens": [true, "ban-single-arg-parens"],

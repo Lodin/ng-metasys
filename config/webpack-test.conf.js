@@ -51,7 +51,7 @@ module.exports = {
         include: srcRoot,
         loader: 'awesome-typescript-loader',
         options: {
-          configFileName: path.resolve(srcRoot, 'tsconfig.json'),
+          configFileName: path.resolve(projectRoot, 'tsconfig.json'),
           forkChecker: true
         }
       }

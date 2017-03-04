@@ -9,12 +9,12 @@
     "lib": ["es2015", "dom", "es2016"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../dist",
+    "outDir": "./dist",
     "sourceMap": true,
     "strictNullChecks": true,
     "target": "es5",
     "typeRoots": [
-      "../node_modules/@types"
+      "./node_modules/@types"
     ],
     "types": [
       "jasmine",
@@ -22,6 +22,9 @@
       "camelcase"
     ]
   },
+  "include": [
+    "src/**/*.ts"
+  ],
   "exclude": [
     "**/*.spec.ts"
   ]

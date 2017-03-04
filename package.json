@@ -10,7 +10,7 @@
     "prepublish": "npm run build",
     "rm:dist": "rimraf dist",
     "test": "karma start config/karma.conf.js",
-    "tsc": "tsc -p src"
+    "tsc": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
