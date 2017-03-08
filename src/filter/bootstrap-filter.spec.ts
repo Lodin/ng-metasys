@@ -16,7 +16,7 @@ class Bootstrapper {
     const hasAll = toUnarm.includes('all');
 
     if (toUnarm.includes('inject') || hasAll) {
-      this.bootstrapInject.and.returnValue(null);
+      this.bootstrapInject.and.returnValue(new bootstrapInject.DeclarationInjector({}));
     }
 
     if (toUnarm.includes('meta') || hasAll) {
@@ -62,7 +62,7 @@ describe('Function `bootstrapFilter`', () => {
 
     bootstrapFilter(bootstrapper.ngModule as any, TestFilter);
 
-    expect(TestFilter.execute.$inject).toEqual(['$http', '$q']);
+    expect((TestFilter.execute as any).$inject).toEqual(['$http', '$q']);
   });
 
   it('should define a permanent metadata for a declaration', () => {

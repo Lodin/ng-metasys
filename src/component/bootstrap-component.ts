@@ -5,6 +5,7 @@ import {defineMetadata} from '../core/reflection';
 import bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapBind from '../extensions/bootstrap-bind';
 import bootstrapTransclude from '../extensions/bootstrap-transclude';
+import {SlotCollection} from '../extensions/slot-collection';
 import {ComponentMetadata} from './component-metadata';
 
 type BootstrapComponent = (ngModule: angular.IModule, declaration: any) => void;
@@ -28,19 +29,19 @@ const bootstrapComponent: BootstrapComponent =
     }
 
     const injector = bootstrapInject(declaration);
-    const properties = bootstrapBind(declaration);
+    const bindings = bootstrapBind(declaration);
     const transclude = bootstrapTransclude(declaration);
 
-    if (injector && injector.hasCommon) {
+    if (injector.hasCommon) {
       injector.injectCommon(declaration);
     }
 
-    if (properties) {
-      data.bindings = properties;
+    if (bindings) {
+      data.bindings = bindings as {[property: string]: string};
     }
 
     if (transclude) {
-      data.transclude = transclude;
+      data.transclude = transclude as boolean|SlotCollection;
     }
 
     const name = camelCase(metadata.selector);

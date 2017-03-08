@@ -57,8 +57,7 @@ const initMethods: InitMethods =
     for (const method in data) {
       methods[method] = new Array<string>(data[method].length);
 
-      const len = data[method].length;
-      for (let i = 0; i < len; i++) {
+      for (let i = 0, len = data[method].length; i < len; i++) {
         const inject = data[method][i];
         methods[method][i] =
           typeof inject === 'string'

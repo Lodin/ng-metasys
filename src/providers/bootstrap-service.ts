@@ -8,7 +8,7 @@ const bootstrapService: BootstrapService =
   (ngModule, declaration) => {
     const inject = bootstrapInject(declaration);
 
-    if (inject && inject.hasCommon) {
+    if (inject.hasCommon) {
       inject.injectCommon(declaration);
     }
 

@@ -21,7 +21,7 @@ class Bootstrapper {
     const hasAll = toUnarm.includes('all');
 
     if (toUnarm.includes('inject') || hasAll) {
-      this.bootstrapInject.and.returnValue(null);
+      this.bootstrapInject.and.returnValue(new bootstrapInject.DeclarationInjector({}));
     }
 
     if (toUnarm.includes('bind') || hasAll) {

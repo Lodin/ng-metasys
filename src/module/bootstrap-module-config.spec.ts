@@ -6,7 +6,7 @@ class Bootstrapper {
   public bootstrapInject = spyOn(bootstrapInject, 'default');
 
   public unarm(): void {
-    this.bootstrapInject.and.returnValue(null);
+    this.bootstrapInject.and.returnValue(new bootstrapInject.DeclarationInjector({}));
   }
 }
 

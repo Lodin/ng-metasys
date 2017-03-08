@@ -4,6 +4,7 @@ import * as tokens from '../core/tokens';
 import bootstrapInject from '../extensions/bootstrap-inject';
 import bootstrapBind from '../extensions/bootstrap-bind';
 import bootstrapTransclude from '../extensions/bootstrap-transclude';
+import {SlotCollection} from '../extensions/slot-collection';
 import {DirectiveMetadata} from './directive-metadata';
 import bootstrapLink from './bootstrap-link';
 import parseSelector from './parse-selector';
@@ -32,24 +33,24 @@ const bootstrapDirective: BootstrapDirective =
     }
 
     const injector = bootstrapInject(declaration);
-    const properties = bootstrapBind(declaration);
+    const bindings = bootstrapBind(declaration);
     const transclude = bootstrapTransclude(declaration);
     const link = bootstrapLink(declaration);
 
-    if (injector && injector.hasCommon) {
+    if (injector.hasCommon) {
       injector.injectCommon(declaration);
     }
 
-    if (properties) {
-      data.bindToController = properties;
+    if (bindings) {
+      data.bindToController = bindings as {[binding: string]: string};
     }
 
     if (transclude) {
-      data.transclude = transclude;
+      data.transclude = transclude as boolean|SlotCollection;
     }
 
     if (link) {
-      data.link = declaration[link];
+      data.link = declaration[link as string];
     }
 
     const [name, restrict] = parseSelector(metadata.selector);

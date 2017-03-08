@@ -13,7 +13,7 @@ const bootstrapFilter: BootstrapFilter =
   (ngModule, declaration) => {
     const inject = bootstrapInject(declaration);
 
-    if (inject && inject.hasMethods) {
+    if (inject.hasMethods) {
       inject.injectMethods(declaration, 'execute');
     }
 
