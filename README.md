@@ -558,7 +558,7 @@ own, - and they have to be implemented. For such purposes there is
 plug-in system that allows to implement own decorator and include it 
 to the common bootstrapping flow. 
  
-Plugin has following structure:
+Plug-in has following structure:
 ```
 <name>
 ├── <name>-bootstrap.js
@@ -591,7 +591,7 @@ const My =
 export default My;
 ```
 File `<name>-bootstrap.js` contains bootstrap function being loaded
-during the bootstrapping process. To add the plugin bootstrapping 
+during the bootstrapping process. To add the plug-in bootstrapping 
 function to the `ng-metasys` flow, it should be put into 
 `registerPlugin` function that can be imported from 
 `ng-metasys`.
@@ -658,7 +658,7 @@ registerPlugin(myBootstrap, [MyServiceOne, MyServiceTwo]);
 ```
 File `<name>-reflection.js` defines your custom `getMetadata`
 function. It is optional - only if you want to get access to the
-metadata of your plugin. To get metadata from this function use 
+metadata of your plug-in. To get metadata from this function use 
 `getPluginMetadata` from `ng-metasys` and your permanent
 token.
 ```javascript
