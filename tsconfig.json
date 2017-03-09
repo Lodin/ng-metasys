@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
     "alwaysStrict": true,
+    "baseUrl": "",
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
     "noImplicitAny": true,
     "lib": ["dom", "es2016"],
+    "mapRoot": "./src",
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "./dist",
@@ -19,8 +21,7 @@
     ]
   },
   "include": [
-    "src/**/*.ts",
-    "node_modules/reflect-metadata/Reflect.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "**/*.spec.ts"
