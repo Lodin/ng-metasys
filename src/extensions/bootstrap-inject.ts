@@ -83,10 +83,11 @@ const bootstrapInject: BootstrapInject =
       declaration.prototype && Reflect.hasMetadata(tokens.inject.param, declaration.prototype);
 
     if (hasCommonInject || hasParamsInject) {
-      const token = hasCommonInject ? tokens.inject.self : tokens.inject.param;
+      const commons = hasParamsInject
+        ? Array.from(Reflect.getMetadata(tokens.inject.param, declaration.prototype))
+        : Reflect.getMetadata(tokens.inject.self, declaration.prototype);
 
-      injections.common
-        = initCommon(Reflect.getMetadata(token, declaration.prototype));
+      injections.common = initCommon(commons);
     }
 
     if (Reflect.hasMetadata(tokens.inject.method, declaration)) {

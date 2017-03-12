@@ -16,19 +16,26 @@ const methodInject: MethodInject =
     Reflect.getMetadata(tokens.inject.method, target)[property] = injections;
   };
 
-type ParamInject = (injections: any[], target: any) => void;
+type ParamInject = (injections: any[], target: any, index: number) => void;
 const paramInject: ParamInject =
-  (injections, target) => {
+  (injections, target, index) => {
     if (injections.length > 1) {
       throw new Error('Only one injectable can be injected to the constructor parameter');
     }
 
+    const [injection] = injections;
+
     if (!Reflect.hasMetadata(tokens.inject.param, target.prototype)) {
-      Reflect.defineMetadata(tokens.inject.param, injections, target.prototype);
+      Reflect.defineMetadata(tokens.inject.param, {
+        [index]: injection,
+        length: 1
+      }, target.prototype);
       return;
     }
 
-    Reflect.getMetadata(tokens.inject.param, target.prototype).unshift(...injections);
+    const params = Reflect.getMetadata(tokens.inject.param, target.prototype);
+    params[index] = injection;
+    params.length += 1;
   };
 
 type InjectDecorator =
@@ -42,7 +49,7 @@ const Inject: InjectDecorator =
       }
 
       if (index !== undefined && typeof index === 'number') {
-        paramInject(injections, target);
+        paramInject(injections, target, index);
       } else if (property && target[property]) {
         methodInject(injections, target, property);
       } else {

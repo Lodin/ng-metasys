@@ -46,7 +46,7 @@ describe('Decorator `@Inject`', () => {
     }
 
     const metadata = Reflect.getMetadata(tokens.inject.param, TestDeclaration.prototype);
-    expect(metadata).toEqual(['$http', MockInject]);
+    expect(metadata).toEqual({0: '$http', 1: MockInject, length: 2});
   });
 
   it('should throw an error if there are more than one token while injecting to the constructor ' +

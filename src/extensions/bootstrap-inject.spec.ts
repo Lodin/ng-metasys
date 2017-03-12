@@ -66,10 +66,11 @@ describe('Function `bootstrapInject`', () => {
       public static config() {}
     }
 
-    Reflect.defineMetadata(tokens.inject.param, [
-      '$http',
-      MockInjectDeclaration
-    ], TestDeclaration.prototype);
+    Reflect.defineMetadata(tokens.inject.param, {
+      0: '$http',
+      1: MockInjectDeclaration,
+      length: 2
+    }, TestDeclaration.prototype);
 
     const injector = bootstrapInject(TestDeclaration);
     expect(injector.hasCommon).toBeTruthy();
