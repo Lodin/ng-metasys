@@ -1,4 +1,3 @@
-import * as angular from 'angular';
 import * as NgmsReflect from '../core/reflection';
 import * as tokens from '../core/tokens';
 import * as bootstrapInject from '../extensions/bootstrap-inject';
