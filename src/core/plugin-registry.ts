@@ -1,5 +1,5 @@
 type BootstrapFunction =
-  (ngModule: angular.IModule, ...injections: string[]) => void;
+  (ngModule: angular.IModule, declaration: any, ...injections: string[]) => void;
 
 interface PluginRegistryItem {
   bootstrap: BootstrapFunction;
