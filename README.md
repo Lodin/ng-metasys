@@ -287,7 +287,7 @@ export class SomeFactory {
 Which is equivalent to the following code:
 ```javascript
 angular.module('AppModule')
-  .factory('someFactory', ['$http', function execute($http) {}]);
+  .factory('someFactory', ['$http', function $get($http) {}]);
 ```
 
 ## @Provider
@@ -675,6 +675,10 @@ function (if any).
 export {default as My} from './my-decorator';
 export {default as getMyMetadata} from './my-reflection';
 ```
+
+### Available plug-ins:
+* [ngms-plugin-ui-router-states](https://github.com/Lodin/ngms-plugin-ui-router-states) - plug-in
+for the [angular-ui-router](https://github.com/angular-ui/ui-router).
 
 ## License
 Information about license can be found [here](./LICENSE).
