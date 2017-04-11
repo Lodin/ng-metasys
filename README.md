@@ -521,7 +521,7 @@ expect(getMetadata(AppComponent)).toEqual({
   name: 'myApp',
   template: '<div></div>',
   controller: AppComponent,
-  componentAs: '$ctrl',
+  controllerAs: '$ctrl',
   transclude: true,
   bindings: {
     $router: '<',
